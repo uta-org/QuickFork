@@ -96,10 +96,14 @@ namespace QuickFork.Shell.Pages
 
         private static void DisplayNewOptions()
         {
+            Console.WriteLine();
+
             var newForkMenu = new Menu();
             NewForkOptions().ForEach(o => newForkMenu.Add(o));
 
             newForkMenu.Display();
+
+            Console.WriteLine();
         }
 
         public static IEnumerable<Option> NewForkOptions()

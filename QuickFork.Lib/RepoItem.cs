@@ -2,6 +2,7 @@
 using Onion.SolutionParser.Parser.Model;
 using QuickFork.Lib.Properties;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using uzLib.Lite;
@@ -32,15 +33,26 @@ namespace QuickFork.Lib
         public async void Execute(string projectPath, OperationType operationType = OperationType.AddProjToSLN, bool? doLinking = null)
         {
             string folderName = GitUrl.GetFileNameFromUrlWithoutExtension(),
-                   FolderPath = Path.Combine(Settings.Default.SyncFolder, folderName);
+                   FolderPath = Path.Combine(Settings.Default.SyncFolder, folderName),
+                   workingPath = Settings.Default.SyncFolder;
 
-            if (!doLinking.HasValue || doLinking.HasValue && !doLinking.HasValue)
+            if (!Directory.Exists(FolderPath))
             {
-                MyShell.CurrentInfo.WorkingDirectory = Path.GetDirectoryName(FolderPath);
-                await MyShell.SendCommand($"clone {GitUrl} {folderName}");
+                if (!doLinking.HasValue || doLinking.HasValue && !doLinking.Value)
+                {
+                    MyShell.CurrentInfo.WorkingDirectory = workingPath;
+                    await MyShell.SendCommand($"clone {GitUrl} {folderName}");
+                }
+            }
+            else
+            {
+                Console.WriteLine();
+                Console.WriteLine("Folder already exists, skipping...");
+                Console.WriteLine();
             }
 
-            if (!doLinking.HasValue || doLinking.HasValue && doLinking.HasValue)
+            if (!doLinking.HasValue || doLinking.HasValue && doLinking.Value)
+            {
                 switch (operationType)
                 {
                     case OperationType.AddProjToSLN:
@@ -52,14 +64,28 @@ namespace QuickFork.Lib
                             throw new Exception("Multiple solutions isn't supported yet!");
 
                         var solution = SolutionParser.Parse(solutions[0]) as Solution;
-                        string[] projs = Directory.GetFiles(FolderPath, "*.csproj", SearchOption.AllDirectories);
+                        var projs = Directory.GetFiles(FolderPath, "*.csproj", SearchOption.AllDirectories).Where(p => !p.Contains("Demo") && !p.Contains("Test"));
+                        int projCount = projs.Count();
 
-                        if (projs.Length == 0)
+                        if (projCount == 0)
                             throw new Exception($"The cloned repo '{Path.GetFileName(FolderPath)}' doesn't have any *.csproj files. If you need to support another kind of project, please, fork this project and implement it!");
-                        else if (projs.Length == 1)
+                        else if (projCount == 1)
                         {
-                            var guid = Guid.NewGuid();
-                            solution.Projects = solution.Projects.ToList().AddAndGet(new Project(guid, Path.GetFileNameWithoutExtension(projectPath), projectPath, guid));
+                            Guid typeGuid;
+                            IEnumerable<Project> projects;
+
+                            if (solution.Projects.IsNullOrEmpty())
+                            {
+                                projects = new List<Project>();
+                                typeGuid = Guid.NewGuid();
+                            }
+                            else
+                            {
+                                projects = solution.Projects;
+                                typeGuid = projects.First().TypeGuid;
+                            }
+
+                            solution.Projects = projects.ToList().AddAndGet(new Project(typeGuid, Path.GetFileNameWithoutExtension(projectPath), projectPath, Guid.NewGuid()));
 
                             File.WriteAllText(solutions[0], SolutionRenderer.Render(solution));
                         }
@@ -73,6 +99,11 @@ namespace QuickFork.Lib
                         NativeMethods.CreateSymbolicLink(FolderPath, folderName, NativeEnums.SymbolicLinkFlags.Directory);
                         break;
                 }
+
+                Console.WriteLine();
+                Console.WriteLine($"Execution of '{operationType}' has been done succesfully!");
+                Console.WriteLine();
+            }
         }
 
         public override string ToString()
