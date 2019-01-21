@@ -49,7 +49,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="QuickFork.cs" />
+    <Compile Include="Forker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RepoItem.cs" />
   </ItemGroup>

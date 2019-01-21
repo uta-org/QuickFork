@@ -6,7 +6,7 @@ using uzLib.Lite.Extensions;
 
 namespace QuickFork.Lib
 {
-    public static class QuickFork
+    public static class Forker
     {
         private static Settings MySettings => Settings.Default;
 
