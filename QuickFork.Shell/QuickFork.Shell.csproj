@@ -32,7 +32,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>QuickFork.Console.Runner</StartupObject>
+    <StartupObject>QuickFork.Shell.Runner</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EasyConsole, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">

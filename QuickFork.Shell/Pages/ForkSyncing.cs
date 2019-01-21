@@ -3,8 +3,6 @@ using QuickFork.Lib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using uzLib.Lite.Extensions;
 
 namespace QuickFork.Shell.Pages
@@ -21,7 +19,6 @@ namespace QuickFork.Shell.Pages
         public ForkSyncing(Program program)
             : base("Fork Syncing", program, GetOptions().ToArray())
         {
-            // Instance = this;
             Forker.LoadSettings();
         }
 
@@ -31,7 +28,9 @@ namespace QuickFork.Shell.Pages
 
             if (isNew)
             {
-                base.Display();
+                Console.WriteLine("There isn't any available prject to select, please, create a new one:");
+                Console.WriteLine();
+                SelectProject(-1);
                 Console.WriteLine();
             }
             else
@@ -41,9 +40,6 @@ namespace QuickFork.Shell.Pages
 
                 base.Display();
             }
-
-            if (isNew)
-                Console.WriteLine();
         }
 
         public static void SelectProject(int index)
@@ -59,9 +55,6 @@ namespace QuickFork.Shell.Pages
                 var repoItem = Forker.Fork(gitUrl, folderPath);
 
                 Console.WriteLine("Project has created succesfully!");
-                DisplayNewOptions();
-
-                return;
             }
 
             DisplayNewOptions();
@@ -80,10 +73,6 @@ namespace QuickFork.Shell.Pages
             {
                 Forker.RepoCollection.AsEnumerable().ForEach((r, i) => list.Add(new Option(r.ToString(), () => SelectProject(i))));
                 list.Add(new Option("Create new local clone", () => SelectProject(-1)));
-            }
-            else
-            {
-                list.AddRange(NewForkOptions());
             }
 
             return list;
