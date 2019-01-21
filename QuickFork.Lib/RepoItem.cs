@@ -85,7 +85,7 @@ namespace QuickFork.Lib
                                 typeGuid = projects.First().TypeGuid;
                             }
 
-                            solution.Projects = projects.ToList().AddAndGet(new Project(typeGuid, Path.GetFileNameWithoutExtension(projectPath), projectPath, Guid.NewGuid()));
+                            solution.Projects = projects.ToList().AddAndGet(new Project(typeGuid, Path.GetFileNameWithoutExtension(projectPath), projs.First(), Guid.NewGuid()));
 
                             File.WriteAllText(solutions[0], SolutionRenderer.Render(solution));
                         }
@@ -100,7 +100,6 @@ namespace QuickFork.Lib
                         break;
                 }
 
-                Console.WriteLine();
                 Console.WriteLine($"Execution of '{operationType}' has been done succesfully!");
                 Console.WriteLine();
             }

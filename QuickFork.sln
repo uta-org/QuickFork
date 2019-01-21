@@ -1,4 +1,3 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2026
@@ -16,6 +15,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickFork.Lib", "QuickFork.Lib\QuickFork.Lib.csproj", "{88947410-A67F-4577-8403-50054F83380C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "uzLib.Lite", "..\uzLib.Lite\uzLib.Lite\uzLib.Lite.csproj", "{D4DA84F9-521F-438B-9C70-7FE8F4D1F32A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyConsole", "D:\VISUAL STUDIO\Visual Studio Projects\SyncFolder\EasyConsole\EasyConsole\EasyConsole.csproj", "{DA79BA94-FAD6-462F-89C7-774FE822D594}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +40,10 @@ Global
 		{D4DA84F9-521F-438B-9C70-7FE8F4D1F32A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4DA84F9-521F-438B-9C70-7FE8F4D1F32A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4DA84F9-521F-438B-9C70-7FE8F4D1F32A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA79BA94-FAD6-462F-89C7-774FE822D594}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA79BA94-FAD6-462F-89C7-774FE822D594}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA79BA94-FAD6-462F-89C7-774FE822D594}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA79BA94-FAD6-462F-89C7-774FE822D594}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
