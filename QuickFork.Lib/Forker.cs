@@ -12,14 +12,29 @@ namespace QuickFork.Lib
 
         public static List<RepoItem> RepoCollection { get; private set; }
 
-        public static RepoItem Fork(string gitUrl, string folderPath)
+        static Forker()
         {
-            return RepoCollection.InsertOrGet(new RepoItem(folderPath, gitUrl), r => r.GitUrl == gitUrl);
+            if (RepoCollection == null)
+                RepoCollection = new List<RepoItem>();
+        }
+
+        public static RepoItem Fork(string gitUrl, string folderPath, bool fSave = true)
+        {
+            bool firstTime;
+            var item = RepoCollection.InsertOrGet(new RepoItem(folderPath, gitUrl), r => r.GitUrl == gitUrl, out firstTime);
+
+            if (fSave && firstTime)
+                SaveInstance();
+
+            return item;
         }
 
         public static void LoadSettings()
         {
-            RepoCollection = JsonConvert.DeserializeObject<List<RepoItem>>(MySettings.RepoCollection);
+            string loadString = MySettings.RepoCollection;
+
+            if (!string.IsNullOrEmpty(loadString))
+                RepoCollection = JsonConvert.DeserializeObject<List<RepoItem>>(loadString);
         }
 
         public static void SaveInstance()

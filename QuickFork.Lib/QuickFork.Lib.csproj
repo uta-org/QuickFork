@@ -44,6 +44,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums.cs" />
+    <Compile Include="Libs\Onion.SolutionParser.Parser\GlobalSectionParser.cs" />
+    <Compile Include="Libs\Onion.SolutionParser.Parser\HeaderParser.cs" />
+    <Compile Include="Libs\Onion.SolutionParser.Parser\ISolutionItemParser.cs" />
+    <Compile Include="Libs\Onion.SolutionParser.Parser\ISolutionParser.cs" />
+    <Compile Include="Libs\Onion.SolutionParser.Parser\ISolutionRenderer.cs" />
+    <Compile Include="Libs\Onion.SolutionParser.Parser\Model\GlobalSection.cs" />
+    <Compile Include="Libs\Onion.SolutionParser.Parser\Model\ISolution.cs" />
+    <Compile Include="Libs\Onion.SolutionParser.Parser\Model\ISolutionItem.cs" />
+    <Compile Include="Libs\Onion.SolutionParser.Parser\Model\Project.cs" />
+    <Compile Include="Libs\Onion.SolutionParser.Parser\Model\ProjectSection.cs" />
+    <Compile Include="Libs\Onion.SolutionParser.Parser\Model\Solution.cs" />
+    <Compile Include="Libs\Onion.SolutionParser.Parser\ProjectParser.cs" />
+    <Compile Include="Libs\Onion.SolutionParser.Parser\SolutionItemParserBase.cs" />
+    <Compile Include="Libs\Onion.SolutionParser.Parser\SolutionParser.cs" />
+    <Compile Include="Libs\Onion.SolutionParser.Parser\SolutionRenderer.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>

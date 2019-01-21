@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2026
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickFork.Console", "QuickFork.Console\QuickFork.Console.csproj", "{16BFC3E4-8CDB-4BC1-A11D-F228111E8318}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickFork.Shell", "QuickFork.Shell\QuickFork.Shell.csproj", "{16BFC3E4-8CDB-4BC1-A11D-F228111E8318}"
 	ProjectSection(ProjectDependencies) = postProject
 		{88947410-A67F-4577-8403-50054F83380C} = {88947410-A67F-4577-8403-50054F83380C}
 	EndProjectSection

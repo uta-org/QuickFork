@@ -5,9 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuickFork.Console
+namespace QuickFork.Shell
 {
-    using Console = System.Console;
     using Pages;
 
     internal class MainPage : MenuPage

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuickFork.Console
+namespace QuickFork.Shell
 {
     internal class Runner
     {

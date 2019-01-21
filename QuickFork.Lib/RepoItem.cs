@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using uzLib.Lite;
+using uzLib.Lite.Extensions;
 
 namespace QuickFork.Lib
 {
@@ -37,6 +38,11 @@ namespace QuickFork.Lib
                     NativeMethods.CreateSymbolicLink(FolderPath, folderName, NativeEnums.SymbolicLinkFlags.Directory);
                     break;
             }
+        }
+
+        public override string ToString()
+        {
+            return $"{GitUrl.GetFileNameFromUrl()} - {Path.GetFileName(FolderPath)}";
         }
     }
 }
