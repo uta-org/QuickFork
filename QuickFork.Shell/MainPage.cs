@@ -1,9 +1,5 @@
 ﻿using EasyConsole;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace QuickFork.Shell
 {
@@ -22,23 +18,5 @@ namespace QuickFork.Shell
           new Option("Exit", () => Environment.Exit(0)))
         {
         }
-
-        /*public override void Display()
-        {
-            base.Display();
-        }*/
-
-        /*private static void Main(string[] args)
-        {
-            var menu = new EasyConsole.Menu()
-              .Add("Sync a fork", () => SyncFork())
-              .Add("Exit", () => Environment.Exit(0));
-
-            menu.Display();
-        }
-
-        private static void SyncFork()
-        {
-        }*/
     }
 }

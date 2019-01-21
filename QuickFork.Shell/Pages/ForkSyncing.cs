@@ -44,6 +44,8 @@ namespace QuickFork.Shell.Pages
 
         public static void SelectProject(int index)
         {
+            RepoItem repoItem;
+
             if (index == -1)
             {
                 Console.Write("Project Repo Url: ");
@@ -52,12 +54,19 @@ namespace QuickFork.Shell.Pages
                 Console.Write("Project Folder Path: ");
                 string folderPath = Console.ReadLine();
 
-                var repoItem = Forker.Fork(gitUrl, folderPath);
+                repoItem = Forker.Fork(gitUrl, folderPath);
 
                 Console.WriteLine("Project has created succesfully!");
             }
+            else
+                repoItem = Forker.RepoCollection[index];
 
             DisplayNewOptions();
+
+            Console.Write("Write the path to your project: ");
+            string projectPath = Console.ReadLine();
+
+            repoItem.Execute(projectPath, Type);
         }
 
         public static void SetType(OperationType type)
