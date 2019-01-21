@@ -4,9 +4,12 @@ using System;
 namespace QuickFork.Shell
 {
     using Pages;
+    using Lib.Properties;
 
     internal class MainPage : MenuPage
     {
+        private static Settings LibSettings => Settings.Default;
+
         private MainPage()
             : base("", null, null)
         {
@@ -19,6 +22,20 @@ namespace QuickFork.Shell
           new Option("Fork Syncing (only linking)", () => program.NavigateTo<ForkSyncing>().DoLinking = false),
           new Option("Exit", () => Environment.Exit(0)))
         {
+        }
+
+        public override void Display()
+        {
+            if (string.IsNullOrEmpty(LibSettings.SyncFolder))
+            {
+                Console.Write("First of all, please, set the base folder where new repositories will be cloned: ");
+                string syncPath = Console.ReadLine();
+
+                LibSettings.SyncFolder = syncPath;
+                LibSettings.Save();
+            }
+
+            base.Display();
         }
     }
 }

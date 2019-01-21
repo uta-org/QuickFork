@@ -23,7 +23,19 @@ namespace QuickFork.Shell.Pages
             : base("Fork Syncing", program, GetOptions().ToArray())
         {
             Instance = this;
-            Forker.LoadSettings();
+        }
+
+        public static List<Option> GetOptions()
+        {
+            List<Option> list = new List<Option>();
+
+            if (Forker.RepoCollection.Count > 0)
+            {
+                Forker.RepoCollection.AsEnumerable().ForEach((r, i) => list.Add(new Option(r.ToString(), () => SelectProject(i))));
+                list.Add(new Option("Create new local clone", () => SelectProject(-1)));
+            }
+
+            return list;
         }
 
         public override void Display()
@@ -32,7 +44,7 @@ namespace QuickFork.Shell.Pages
 
             if (isNew)
             {
-                Console.WriteLine("There isn't any available prject to select, please, create a new one:");
+                Console.WriteLine("There isn't any available project to select, please, create a new one.");
                 Console.WriteLine();
                 SelectProject(-1);
                 Console.WriteLine();
@@ -54,11 +66,9 @@ namespace QuickFork.Shell.Pages
             {
                 Console.Write("Project Repo Url: ");
                 string gitUrl = Console.ReadLine();
+                Console.WriteLine();
 
-                Console.Write("Project Folder Path: ");
-                string folderPath = Console.ReadLine();
-
-                repoItem = Forker.Fork(gitUrl, folderPath);
+                repoItem = Forker.Fork(gitUrl);
 
                 Console.WriteLine("Project has created succesfully!");
             }
@@ -83,19 +93,6 @@ namespace QuickFork.Shell.Pages
         public static void SetType(OperationType type)
         {
             Type = type;
-        }
-
-        public static List<Option> GetOptions()
-        {
-            List<Option> list = new List<Option>();
-
-            if (Forker.RepoCollection.Count > 0)
-            {
-                Forker.RepoCollection.AsEnumerable().ForEach((r, i) => list.Add(new Option(r.ToString(), () => SelectProject(i))));
-                list.Add(new Option("Create new local clone", () => SelectProject(-1)));
-            }
-
-            return list;
         }
 
         private static void DisplayNewOptions()

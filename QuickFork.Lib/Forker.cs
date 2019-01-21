@@ -18,10 +18,10 @@ namespace QuickFork.Lib
                 RepoCollection = new List<RepoItem>();
         }
 
-        public static RepoItem Fork(string gitUrl, string folderPath, bool fSave = true)
+        public static RepoItem Fork(string gitUrl, bool fSave = true)
         {
             bool firstTime;
-            var item = RepoCollection.InsertOrGet(new RepoItem(folderPath, gitUrl), r => r.GitUrl == gitUrl, out firstTime);
+            var item = RepoCollection.InsertOrGet(new RepoItem(gitUrl), r => r.GitUrl == gitUrl, out firstTime);
 
             if (fSave && firstTime)
                 SaveInstance();

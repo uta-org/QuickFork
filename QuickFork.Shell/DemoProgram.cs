@@ -1,19 +1,17 @@
 ﻿using EasyConsole;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace QuickFork.Shell
 {
     using Pages;
+    using Lib;
 
     internal class DemoProgram : Program
     {
         public DemoProgram()
             : base("EasyConsole Demo", breadcrumbHeader: true)
         {
+            Forker.LoadSettings();
+
             AddPage(new MainPage(this));
             AddPage(new ForkSyncing(this));
 

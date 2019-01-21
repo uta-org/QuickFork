@@ -1,5 +1,6 @@
 ﻿using Onion.SolutionParser.Parser;
 using Onion.SolutionParser.Parser.Model;
+using QuickFork.Lib.Properties;
 using System;
 using System.IO;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace QuickFork.Lib
     public class RepoItem
     {
         public static GitShell MyShell { get; private set; }
-        public string FolderPath { get; private set; }
+
         public string GitUrl { get; private set; }
 
         private RepoItem()
@@ -19,15 +20,20 @@ namespace QuickFork.Lib
             MyShell = new GitShell();
         }
 
-        public RepoItem(string folderPath, string gitUrl)
+        public RepoItem(string gitUrl)
             : this()
         {
-            FolderPath = folderPath;
             GitUrl = gitUrl;
         }
 
         public async void Execute(string projectPath, OperationType operationType = OperationType.AddProjToSLN, bool? doLinking = null)
         {
+            string FolderPath = Path.Combine(Settings.Default.SyncFolder, GitUrl.GetFileNameFromUrlWithoutExtension());
+
+            /*Console.WriteLine(GitUrl);
+            Console.WriteLine(FolderPath);
+            return;*/
+
             string folderName = Path.GetFileName(FolderPath);
 
             if (!doLinking.HasValue || doLinking.HasValue && !doLinking.HasValue)
@@ -73,7 +79,7 @@ namespace QuickFork.Lib
 
         public override string ToString()
         {
-            return $"{GitUrl.GetFileNameFromUrl()} - {Path.GetFileName(FolderPath)}";
+            return $"{GitUrl.GetFileNameFromUrlWithoutExtension()} ({GitUrl})";
         }
     }
 }
