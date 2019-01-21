@@ -66,7 +66,14 @@ namespace QuickFork.Shell.Pages
             Console.Write("Write the path to your project: ");
             string projectPath = Console.ReadLine();
 
-            repoItem.Execute(projectPath, Type);
+            try
+            {
+                repoItem.Execute(projectPath, Type);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"The following occured: {ex.Message}");
+            }
         }
 
         public static void SetType(OperationType type)
