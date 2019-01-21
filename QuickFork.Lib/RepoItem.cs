@@ -23,18 +23,16 @@ namespace QuickFork.Lib
         public RepoItem(string gitUrl)
             : this()
         {
+            if (!Uri.IsWellFormedUriString(gitUrl, UriKind.RelativeOrAbsolute))
+                throw new Exception("Invalid url given");
+
             GitUrl = gitUrl;
         }
 
         public async void Execute(string projectPath, OperationType operationType = OperationType.AddProjToSLN, bool? doLinking = null)
         {
-            string FolderPath = Path.Combine(Settings.Default.SyncFolder, GitUrl.GetFileNameFromUrlWithoutExtension());
-
-            /*Console.WriteLine(GitUrl);
-            Console.WriteLine(FolderPath);
-            return;*/
-
-            string folderName = Path.GetFileName(FolderPath);
+            string folderName = GitUrl.GetFileNameFromUrlWithoutExtension(),
+                   FolderPath = Path.Combine(Settings.Default.SyncFolder, folderName);
 
             if (!doLinking.HasValue || doLinking.HasValue && !doLinking.HasValue)
             {

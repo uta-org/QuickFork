@@ -5,6 +5,7 @@ namespace QuickFork.Shell
 {
     using Pages;
     using Lib.Properties;
+    using uzLib.Lite.Extensions;
 
     internal class MainPage : MenuPage
     {
@@ -28,8 +29,7 @@ namespace QuickFork.Shell
         {
             if (string.IsNullOrEmpty(LibSettings.SyncFolder))
             {
-                Console.Write("First of all, please, set the base folder where new repositories will be cloned: ");
-                string syncPath = Console.ReadLine();
+                string syncPath = ConsoleHelper.GetValidPath("First of all, please, set the base folder where new repositories will be cloned: ");
 
                 LibSettings.SyncFolder = syncPath;
                 LibSettings.Save();

@@ -77,8 +77,7 @@ namespace QuickFork.Shell.Pages
 
             DisplayNewOptions();
 
-            Console.Write("Write the path to your project: ");
-            string projectPath = Console.ReadLine();
+            string projectPath = ConsoleHelper.GetValidPath("Write the path to your project: ");
 
             try
             {
