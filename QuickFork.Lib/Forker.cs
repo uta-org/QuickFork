@@ -2,6 +2,7 @@
 using QuickFork.Lib.Properties;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using uzLib.Lite.Extensions;
 
 namespace QuickFork.Lib
@@ -11,6 +12,7 @@ namespace QuickFork.Lib
         private static Settings MySettings => Settings.Default;
 
         public static List<RepoItem> RepoCollection { get; private set; }
+        public static StringCollection StoredFolders { get; private set; }
 
         static Forker()
         {
@@ -29,6 +31,12 @@ namespace QuickFork.Lib
             return item;
         }
 
+        public static void AddProjectPath(string projectPath)
+        {
+            if (!StoredFolders.Contains(projectPath))
+                StoredFolders.Add(projectPath);
+        }
+
         public static void LoadSettings()
         {
             string loadString = MySettings.RepoCollection;
@@ -43,6 +51,7 @@ namespace QuickFork.Lib
                 throw new Exception("You deleted exe config file!");
 
             MySettings.RepoCollection = JsonConvert.SerializeObject(RepoCollection);
+            MySettings.StoredFolders = StoredFolders;
             MySettings.Save();
         }
     }

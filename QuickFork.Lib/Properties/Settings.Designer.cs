@@ -46,5 +46,16 @@ namespace QuickFork.Lib.Properties {
                 this["SyncFolder"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection StoredFolders {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["StoredFolders"]));
+            }
+            set {
+                this["StoredFolders"] = value;
+            }
+        }
     }
 }
