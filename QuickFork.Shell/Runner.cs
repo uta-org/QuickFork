@@ -8,6 +8,7 @@ namespace QuickFork.Shell
         {
             new DemoProgram().Run();
 
+            Console.WriteLine("Press any key to exit...");
             Console.Read();
         }
     }
