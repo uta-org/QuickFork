@@ -1,4 +1,5 @@
-﻿using Onion.SolutionParser.Parser;
+﻿using EasyConsole;
+using Onion.SolutionParser.Parser;
 using Onion.SolutionParser.Parser.Model;
 using QuickFork.Lib.Properties;
 using System;
@@ -64,38 +65,42 @@ namespace QuickFork.Lib
                             throw new Exception("Multiple solutions isn't supported yet!");
 
                         var solution = SolutionParser.Parse(solutions[0]) as Solution;
-                        var projs = Directory.GetFiles(FolderPath, "*.csproj", SearchOption.AllDirectories).Where(p => !p.Contains("Demo") && !p.Contains("Test"));
+                        var projs = Directory.GetFiles(FolderPath, "*.csproj", SearchOption.AllDirectories);
+                        // .Where(p => !p.Contains("Demo") && !p.Contains("Test")); // <== No longer needed
                         int projCount = projs.Count();
+
+                        Guid typeGuid;
+                        IEnumerable<Project> projects;
 
                         if (projCount == 0)
                             throw new Exception($"The cloned repo '{Path.GetFileName(FolderPath)}' doesn't have any *.csproj files. If you need to support another kind of project, please, fork this project and implement it!");
                         else if (projCount == 1)
                         {
-                            Guid typeGuid;
-                            IEnumerable<Project> projects;
+                            GetProjects(solution, out typeGuid, out projects);
 
-                            if (solution.Projects.IsNullOrEmpty())
-                            {
-                                projects = new List<Project>();
-                                typeGuid = Guid.NewGuid();
-                            }
-                            else
-                            {
-                                projects = solution.Projects;
-                                typeGuid = projects.First().TypeGuid;
-                            }
-
-                            solution.Projects = projects.ToList().AddAndGet(new Project(
-                                typeGuid,
-                                Path.GetFileNameWithoutExtension(projectPath),
-                                !IOHelper.IsRelative(workingPath, projs.First()) ? projs.First() : IOHelper.MakeRelativePath(workingPath, projs.First()),
-                                Guid.NewGuid()));
+                            solution.Projects = projects.ToList().AddAndGet(GetProject(projectPath, workingPath, projs.First(), typeGuid));
 
                             File.WriteAllText(solutions[0], SolutionRenderer.Render(solution));
                         }
                         else
+                        {
                             // Let user choose one, several or all csprojs.
-                            throw new Exception($"Multiple projects option aren't implemented yet.");
+
+                            int selectedProj = -1;
+                            var csprojMenu = new Menu();
+
+                            projs.ForEach((proj, i) => csprojMenu.Add(Path.GetFileNameWithoutExtension(proj), () => selectedProj = i));
+                            csprojMenu.Add("Add all projects", () => selectedProj = -1);
+
+                            csprojMenu.Display();
+
+                            GetProjects(solution, out typeGuid, out projects);
+
+                            if (selectedProj == -1)
+                                solution.Projects = projects.ToList().AddRangeAndGet(projs.Select(proj => GetProject(projectPath, workingPath, proj, typeGuid)));
+                            else
+                                solution.Projects = projects.ToList().AddAndGet(GetProject(projectPath, workingPath, projs[selectedProj], typeGuid));
+                        }
 
                         break;
 
@@ -107,6 +112,29 @@ namespace QuickFork.Lib
                 Console.WriteLine($"Execution of '{operationType}' has been done succesfully!");
                 Console.WriteLine();
             }
+        }
+
+        private static void GetProjects(Solution solution, out Guid typeGuid, out IEnumerable<Project> projects)
+        {
+            if (solution.Projects.IsNullOrEmpty())
+            {
+                projects = new List<Project>();
+                typeGuid = Guid.NewGuid();
+            }
+            else
+            {
+                projects = solution.Projects;
+                typeGuid = projects.First().TypeGuid;
+            }
+        }
+
+        private static Project GetProject(string projectPath, string workingPath, string proj, Guid typeGuid)
+        {
+            return new Project(
+                                            typeGuid,
+                                            Path.GetFileNameWithoutExtension(projectPath),
+                                            !IOHelper.IsRelative(workingPath, proj) ? proj : IOHelper.MakeRelativePath(workingPath, proj),
+                                            Guid.NewGuid());
         }
 
         public override string ToString()

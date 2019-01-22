@@ -62,6 +62,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\SyncFolder\EasyConsole\EasyConsole\EasyConsole.csproj">
+      <Project>{DA79BA94-FAD6-462F-89C7-774FE822D594}</Project>
+      <Name>EasyConsole</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SyncFolder\SolutionParser\src\Onion.SolutionParser.Parser\Onion.SolutionParser.Parser.csproj">
       <Project>{91fef9d7-5376-4ea4-be09-cfb0ebb083fd}</Project>
       <Name>Onion.SolutionParser.Parser</Name>
