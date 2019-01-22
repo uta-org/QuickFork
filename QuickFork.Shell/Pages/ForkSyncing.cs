@@ -66,7 +66,7 @@ namespace QuickFork.Shell.Pages
 
             if (index == -1)
             {
-                Console.Write("Project Repo Url: ");
+                Console.Write("Project Repo Url < .git extension >: ");
                 string gitUrl = Console.ReadLine();
                 Console.WriteLine();
 

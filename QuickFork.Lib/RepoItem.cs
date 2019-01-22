@@ -85,7 +85,11 @@ namespace QuickFork.Lib
                                 typeGuid = projects.First().TypeGuid;
                             }
 
-                            solution.Projects = projects.ToList().AddAndGet(new Project(typeGuid, Path.GetFileNameWithoutExtension(projectPath), IOHelper.MakeRelativePath(workingPath, projs.First()), Guid.NewGuid()));
+                            solution.Projects = projects.ToList().AddAndGet(new Project(
+                                typeGuid,
+                                Path.GetFileNameWithoutExtension(projectPath),
+                                !IOHelper.IsRelative(workingPath, projs.First()) ? projs.First() : IOHelper.MakeRelativePath(workingPath, projs.First()),
+                                Guid.NewGuid()));
 
                             File.WriteAllText(solutions[0], SolutionRenderer.Render(solution));
                         }

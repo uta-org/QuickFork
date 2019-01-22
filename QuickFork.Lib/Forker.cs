@@ -43,6 +43,12 @@ namespace QuickFork.Lib
 
             if (!string.IsNullOrEmpty(loadString))
                 RepoCollection = JsonConvert.DeserializeObject<List<RepoItem>>(loadString);
+
+            if (MySettings.StoredFolders == null)
+            {
+                MySettings.StoredFolders = new StringCollection();
+                MySettings.Save();
+            }
         }
 
         public static void SaveInstance()
