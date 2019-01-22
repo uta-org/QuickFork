@@ -1,7 +1,9 @@
 ﻿using EasyConsole;
 using QuickFork.Lib;
+using QuickFork.Lib.Properties;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using uzLib.Lite.Extensions;
 
@@ -77,7 +79,27 @@ namespace QuickFork.Shell.Pages
 
             DisplayNewOptions();
 
-            string projectPath = ConsoleHelper.GetValidPath("Write the path to your project: ");
+            string projectPath = "";
+            int selectedProject = -1;
+            bool newProject = true;
+
+            if (Settings.Default.StoredFolders.Count > 0)
+            {
+                Console.WriteLine();
+
+                var projectsMenu = new Menu();
+
+                Settings.Default.StoredFolders.Cast<string>().ForEach((path, i) => projectsMenu.Add(Path.GetDirectoryName(path), () => { selectedProject = i; newProject = false; }));
+                projectsMenu.Add("Add new project", () => selectedProject = -1);
+
+                projectsMenu.Display();
+
+                if (!newProject)
+                    projectPath = Settings.Default.StoredFolders[selectedProject];
+            }
+
+            if (newProject)
+                projectPath = ConsoleHelper.GetValidPath("Write the path to your project: ");
 
             try
             {
