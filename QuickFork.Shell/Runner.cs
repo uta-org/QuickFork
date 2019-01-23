@@ -6,10 +6,13 @@ namespace QuickFork.Shell
     {
         private static void Main(string[] args)
         {
-            new DemoProgram().Run();
+            var program = new DemoProgram().Run();
 
-            Console.WriteLine("Press any key to exit...");
-            Console.Read();
+            if (!program.IsExiting)
+            {
+                Console.WriteLine("Press any key to exit...");
+                Console.Read();
+            }
         }
     }
 }

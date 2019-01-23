@@ -18,6 +18,9 @@ namespace QuickFork.Lib
         {
             if (RepoCollection == null)
                 RepoCollection = new List<RepoItem>();
+
+            if (StoredFolders == null)
+                StoredFolders = new StringCollection();
         }
 
         public static RepoItem Fork(string gitUrl, bool fSave = true)
@@ -49,6 +52,8 @@ namespace QuickFork.Lib
                 MySettings.StoredFolders = new StringCollection();
                 MySettings.Save();
             }
+            else
+                StoredFolders = MySettings.StoredFolders;
         }
 
         public static void SaveInstance()
@@ -56,9 +61,24 @@ namespace QuickFork.Lib
             if (MySettings == null)
                 throw new Exception("You deleted exe config file!");
 
-            MySettings.RepoCollection = JsonConvert.SerializeObject(RepoCollection);
+            SaveStoredFolders(false);
+            SaveRepoCollection();
+        }
+
+        public static void SaveStoredFolders(bool fSave = true)
+        {
             MySettings.StoredFolders = StoredFolders;
-            MySettings.Save();
+
+            if (fSave)
+                MySettings.Save();
+        }
+
+        public static void SaveRepoCollection(bool fSave = true)
+        {
+            MySettings.RepoCollection = JsonConvert.SerializeObject(RepoCollection);
+
+            if (fSave)
+                MySettings.Save();
         }
     }
 }

@@ -37,23 +37,25 @@ namespace QuickFork.Lib
                    FolderPath = Path.Combine(Settings.Default.SyncFolder, folderName),
                    workingPath = Settings.Default.SyncFolder;
 
-            if (!Directory.Exists(FolderPath))
+            if (!doLinking.HasValue || doLinking.HasValue && !doLinking.Value)
             {
-                if (!doLinking.HasValue || doLinking.HasValue && !doLinking.Value)
+                if (!Directory.Exists(FolderPath))
                 {
                     MyShell.CurrentInfo.WorkingDirectory = workingPath;
                     await MyShell.SendCommand($"clone {GitUrl} {folderName}");
                 }
-            }
-            else
-            {
-                Console.WriteLine();
-                Console.WriteLine("Folder already exists, skipping...");
-                Console.WriteLine();
+                else
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("Folder already exists, skipping...");
+                    Console.WriteLine();
+                }
             }
 
             if (!doLinking.HasValue || doLinking.HasValue && doLinking.Value)
             {
+                bool alreadyExists = false;
+
                 switch (operationType)
                 {
                     case OperationType.AddProjToSLN:
@@ -78,9 +80,7 @@ namespace QuickFork.Lib
                         {
                             GetProjects(solution, out typeGuid, out projects);
 
-                            solution.Projects = projects.ToList().AddAndGet(GetProject(projectPath, workingPath, projs.First(), typeGuid));
-
-                            File.WriteAllText(solutions[0], SolutionRenderer.Render(solution));
+                            solution.Projects = projects.ToList().AddAndGet(GetProject(projects, projectPath, projs.First(), typeGuid, out alreadyExists));
                         }
                         else
                         {
@@ -97,11 +97,25 @@ namespace QuickFork.Lib
                             GetProjects(solution, out typeGuid, out projects);
 
                             if (selectedProj == -1)
-                                solution.Projects = projects.ToList().AddRangeAndGet(projs.Select(proj => GetProject(projectPath, workingPath, proj, typeGuid)));
+                            {
+                                List<string> projectNames = new List<string>();
+
+                                solution.Projects = projects.ToList().AddRangeAndGet(projs.Select(proj =>
+                                {
+                                    string projectName;
+
+                                    var _proj = GetProject(projects, projectPath, proj, typeGuid, out alreadyExists, out projectName);
+                                    projectNames.Add(projectName);
+
+                                    return _proj;
+                                })
+                                .Where(p => !projectNames.Contains(p.Name)));
+                            }
                             else
-                                solution.Projects = projects.ToList().AddAndGet(GetProject(projectPath, workingPath, projs[selectedProj], typeGuid));
+                                solution.Projects = projects.ToList().AddAndGet(GetProject(projects, projectPath, projs[selectedProj], typeGuid, out alreadyExists));
                         }
 
+                        File.WriteAllText(solutions[0], SolutionRenderer.Render(solution));
                         break;
 
                     case OperationType.CreateSymlink:
@@ -109,8 +123,11 @@ namespace QuickFork.Lib
                         break;
                 }
 
-                Console.WriteLine($"Execution of '{operationType}' has been done succesfully!");
-                Console.WriteLine();
+                if (!alreadyExists)
+                {
+                    Console.WriteLine($"Execution of '{operationType}' has been done succesfully!");
+                    Console.WriteLine();
+                }
             }
         }
 
@@ -128,12 +145,31 @@ namespace QuickFork.Lib
             }
         }
 
-        private static Project GetProject(string projectPath, string workingPath, string proj, Guid typeGuid)
+        private static Project GetProject(IEnumerable<Project> projects, string projectPath, string proj, Guid typeGuid, out bool alreadyExists)
         {
+            string projectName;
+            return GetProject(projects, projectPath, proj, typeGuid, out alreadyExists, out projectName);
+        }
+
+        private static Project GetProject(IEnumerable<Project> projects, string projectPath, string proj, Guid typeGuid, out bool alreadyExists, out string projectName)
+        {
+            string _projectName = Path.GetFileName(projectPath).Replace("\\", "").Replace("/", "");
+            projectName = _projectName;
+
+            if (projects.Any(p => p.Name == _projectName))
+            {
+                Console.WriteLine();
+                Console.WriteLine("The project you are trying to add to solution already exists on solution.");
+                Console.WriteLine();
+                alreadyExists = true;
+                return null;
+            }
+
+            alreadyExists = false;
             return new Project(
                                             typeGuid,
-                                            Path.GetFileNameWithoutExtension(projectPath),
-                                            !IOHelper.IsRelative(workingPath, proj) ? proj : IOHelper.MakeRelativePath(workingPath, proj),
+                                            projectName,
+                                            !IOHelper.IsRelative(projectPath, proj) ? proj : IOHelper.MakeRelativePath(projectPath, proj),
                                             Guid.NewGuid());
         }
 

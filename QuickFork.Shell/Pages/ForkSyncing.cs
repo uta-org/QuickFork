@@ -1,6 +1,5 @@
 ﻿using EasyConsole;
 using QuickFork.Lib;
-using QuickFork.Lib.Properties;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,7 +11,11 @@ namespace QuickFork.Shell.Pages
     internal class ForkSyncing : MenuPage
     {
         public static ForkSyncing Instance { get; private set; }
-        public bool? DoLinking { get; set; }
+        public bool? DoLinking
+        {
+            get;
+            set;
+        }
 
         private static OperationType Type;
 
@@ -83,23 +86,25 @@ namespace QuickFork.Shell.Pages
             int selectedProject = -1;
             bool newProject = true;
 
-            if (Settings.Default.StoredFolders.Count > 0)
+            if (Forker.StoredFolders.Count > 0)
             {
-                Console.WriteLine();
-
                 var projectsMenu = new Menu();
 
-                Settings.Default.StoredFolders.Cast<string>().ForEach((path, i) => projectsMenu.Add(Path.GetDirectoryName(path), () => { selectedProject = i; newProject = false; }));
+                Forker.StoredFolders.Cast<string>().ForEach((path, i) => projectsMenu.Add(Path.GetFileName(path), () => { selectedProject = i; newProject = false; }));
                 projectsMenu.Add("Add new project", () => selectedProject = -1);
 
                 projectsMenu.Display();
 
                 if (!newProject)
-                    projectPath = Settings.Default.StoredFolders[selectedProject];
+                    projectPath = Forker.StoredFolders[selectedProject];
             }
 
             if (newProject)
+            {
                 projectPath = ConsoleHelper.GetValidPath("Write the path to your project: ");
+                Forker.StoredFolders.Add(projectPath);
+                Forker.SaveStoredFolders();
+            }
 
             try
             {
