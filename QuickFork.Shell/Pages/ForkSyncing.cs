@@ -10,12 +10,7 @@ namespace QuickFork.Shell.Pages
 {
     internal class ForkSyncing : MenuPage
     {
-        public static ForkSyncing Instance { get; private set; }
-        public bool? DoLinking
-        {
-            get;
-            set;
-        }
+        public static bool? DoLinking { get; set; }
 
         private static OperationType Type;
 
@@ -27,7 +22,6 @@ namespace QuickFork.Shell.Pages
         public ForkSyncing(Program program)
             : base("Fork Syncing", program, GetOptions().ToArray())
         {
-            Instance = this;
         }
 
         public static List<Option> GetOptions()
@@ -108,7 +102,7 @@ namespace QuickFork.Shell.Pages
 
             try
             {
-                repoItem.Execute(projectPath, Type, Instance.DoLinking);
+                repoItem.Execute(projectPath, Type, DoLinking);
             }
             catch (Exception ex)
             {

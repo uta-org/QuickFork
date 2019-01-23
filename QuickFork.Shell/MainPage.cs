@@ -1,11 +1,9 @@
 ﻿using EasyConsole;
-using System;
+using uzLib.Lite.Extensions;
 
 namespace QuickFork.Shell
 {
-    using Pages;
     using Lib.Properties;
-    using uzLib.Lite.Extensions;
 
     internal class MainPage : MenuPage
     {
@@ -16,12 +14,8 @@ namespace QuickFork.Shell
         {
         }
 
-        public MainPage(Program program)
-            : base("Main Page", program,
-          new Option("Fork Syncing (complete process)", () => program.NavigateTo<ForkSyncing>().DoLinking = null),
-          new Option("Fork Syncing (only cloning)", () => program.NavigateTo<ForkSyncing>().DoLinking = true),
-          new Option("Fork Syncing (only linking)", () => program.NavigateTo<ForkSyncing>().DoLinking = false),
-          new Option("Exit", () => Environment.Exit(0)))
+        public MainPage(Program program, params Option[] options)
+            : base("Main Page", program, options)
         {
         }
 
