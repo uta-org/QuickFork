@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using uzLib.Lite.Extensions;
 
 namespace QuickFork.Shell.Pages
@@ -9,29 +10,21 @@ namespace QuickFork.Shell.Pages
     using Lib;
     using Lib.Model;
 
-    internal class ForkSyncing : MenuPage
+    public class RepoSelection : MenuPage
     {
-        private static bool? DoLinking { get; set; }
+        public static ProjectItem CurrentItem { get; private set; }
 
-        private ProjectItem CurrentItem { get; }
+        public static string PackageFile => Path.Combine(CurrentItem.SelectedPath, "dependencies.json");
 
-        private ForkSyncing()
+        private RepoSelection()
             : base("", null, null)
         {
         }
 
-        public ForkSyncing(Program program, ProjectItem item)
-            : base("Fork Syncing", program,
-                new Option("Fork Syncing (complete process)", () => Set(null)),
-                new Option("Fork Syncing (only cloning)", () => Set(true)),
-                new Option("Fork Syncing (only linking)", () => Set(false)))
+        public RepoSelection(Program program, ProjectItem item)
+            : base("Repository Operations", program)
         {
             CurrentItem = item;
-        }
-
-        private static void Set(bool? value)
-        {
-            DoLinking = value;
         }
 
         public static List<Option> GetOptions(ProjectItem item)
@@ -46,9 +39,9 @@ namespace QuickFork.Shell.Pages
             return list;
         }
 
-        public static void SelectRepo(int index, ProjectItem item)
+        public static void SelectRepo(int index, ProjectItem pItem)
         {
-            RepoItem repoItem;
+            RepoItem rItem;
 
             if (index == -1)
             {
@@ -56,21 +49,15 @@ namespace QuickFork.Shell.Pages
                 string gitUrl = Console.ReadLine();
                 Console.WriteLine();
 
-                repoItem = new RepoItem(gitUrl);
+                rItem = new RepoItem(gitUrl);
 
                 Console.WriteLine("Repo has created succesfully!");
             }
             else
-                repoItem = Forker.Repos[item.SelectedPath][index];
+                rItem = Forker.Repos[pItem.SelectedPath][index];
 
-            try
-            {
-                repoItem?.Execute(item.SelectedPath, item.Type, DoLinking);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"The following occured: {ex.Message}");
-            }
+            MainProgram.Instance.AddPage(new RepoOperation(MainProgram.Instance, rItem, pItem));
+            MainProgram.Instance.NavigateTo<RepoOperation>();
         }
 
         public override void Display()

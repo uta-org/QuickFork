@@ -32,8 +32,8 @@ namespace QuickFork.Shell.Pages
         {
             CurrentItem.Type = type;
 
-            MainProgram.Instance.AddPage(new ForkSyncing(MainProgram.Instance, CurrentItem));
-            MainProgram.Instance.NavigateTo<ForkSyncing>();
+            MainProgram.Instance.AddPage(new RepoSelection(MainProgram.Instance, CurrentItem));
+            MainProgram.Instance.NavigateTo<RepoSelection>();
         }
     }
 }
