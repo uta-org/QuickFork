@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("QuickFork.Shell")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("United Teamwork Association")]
+[assembly: AssemblyCompany("UnitedTeamworkAssociation")]
 [assembly: AssemblyProduct("QuickFork.Shell")]
-[assembly: AssemblyCopyright("Copyright © UTA / z3nth10n 2019")]
+[assembly: AssemblyCopyright("Copyright © United Teamwork Association / z3nth10n 2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

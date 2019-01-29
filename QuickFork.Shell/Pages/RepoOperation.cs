@@ -18,7 +18,8 @@ namespace QuickFork.Shell.Pages
             : base("Repository Operation", program,
                 new Option($"Sync the '{rItem.Name}' repository to the '{pItem.Name}' project (clone + link)", () => Operate(null, rItem, pItem)),
                 new Option($"Only clone the '{rItem.Name}' repository", () => Operate(true, rItem, pItem)),
-                new Option($"Only link '{rItem.Name}' to the '{pItem.Name}' solution", () => Operate(false, rItem, pItem)))
+                new Option($"Only link '{rItem.Name}' to the '{pItem.Name}' solution", () => Operate(false, rItem, pItem)),
+                new Option("Add another repository", () => program.NavigateBack()))
         {
         }
 

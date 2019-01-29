@@ -46,18 +46,25 @@ namespace QuickFork.Shell.Pages
             if (index == -1)
             {
                 string gitUrl = "";
-                bool isValid = false;
+                bool isValid = false,
+                     alreadyAdded = false;
 
                 do
                 {
                     Console.Write("Project Repo Url < .git extension >: ");
                     gitUrl = Console.ReadLine();
 
+                    if (Forker.Repos.ContainsKey(gitUrl))
+                    {
+                        alreadyAdded = true;
+                        break;
+                    }
+
                     isValid = gitUrl.CheckURLValid();
 
                     if (!isValid)
                     {
-                        Console.WriteLine();
+                        Console.Clear();
                         Console.WriteLine("Invalid URL provided, please, type again.");
                     }
 
@@ -65,14 +72,21 @@ namespace QuickFork.Shell.Pages
                 }
                 while (!isValid);
 
-                rItem = new RepoItem(gitUrl);
+                if (!alreadyAdded)
+                {
+                    rItem = new RepoItem(gitUrl);
+                    rItem.Update(pItem.SelectedPath);
 
-                Console.WriteLine("Repository has created succesfully!");
+                    Console.WriteLine("Repository has created succesfully!");
+                }
+                else
+                {
+                    rItem = Forker.Repos[pItem.SelectedPath][index];
+                    Console.WriteLine($"This repository '{rItem.Name}' was already added!");
+                }
             }
             else
                 rItem = Forker.Repos[pItem.SelectedPath][index];
-
-            rItem.Update(pItem.SelectedPath);
 
             MainProgram.Instance.AddPage(new RepoOperation(MainProgram.Instance, rItem, pItem));
             MainProgram.Instance.NavigateTo<RepoOperation>();
