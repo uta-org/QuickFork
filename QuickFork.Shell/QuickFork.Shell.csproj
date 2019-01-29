@@ -48,7 +48,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainProgram.cs" />
-    <Compile Include="Pages\MainPage.cs" />
     <Compile Include="Pages\ForkSyncing.cs" />
     <Compile Include="Pages\ProjectOperation.cs" />
     <Compile Include="Pages\ProjectSelection.cs" />

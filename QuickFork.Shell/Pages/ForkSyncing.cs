@@ -11,9 +11,9 @@ namespace QuickFork.Shell.Pages
 
     internal class ForkSyncing : MenuPage
     {
-        public static bool? DoLinking { get; set; }
+        private static bool? DoLinking { get; set; }
 
-        private ProjectItem Item { get; }
+        private ProjectItem CurrentItem { get; }
 
         private ForkSyncing()
             : base("", null, null)
@@ -21,9 +21,17 @@ namespace QuickFork.Shell.Pages
         }
 
         public ForkSyncing(Program program, ProjectItem item)
-            : base("Fork Syncing", program, GetOptions(item).ToArray())
+            : base("Fork Syncing", program,
+                new Option("Fork Syncing (complete process)", () => Set(null)),
+                new Option("Fork Syncing (only cloning)", () => Set(true)),
+                new Option("Fork Syncing (only linking)", () => Set(false)))
         {
-            Item = item;
+            CurrentItem = item;
+        }
+
+        private static void Set(bool? value)
+        {
+            DoLinking = value;
         }
 
         public static List<Option> GetOptions(ProjectItem item)
@@ -67,18 +75,18 @@ namespace QuickFork.Shell.Pages
 
         public override void Display()
         {
-            bool isNew = !Forker.Repos.HasValues(Item.SelectedPath);
+            bool isNew = !Forker.Repos.HasValues(CurrentItem.SelectedPath);
 
             if (isNew)
             {
                 Console.WriteLine("There isn't any available repo to select, please, create a new one.");
                 Console.WriteLine();
-                SelectRepo(-1, Item);
+                SelectRepo(-1, CurrentItem);
                 Console.WriteLine();
             }
             else
             {
-                Console.WriteLine($"This are the {Forker.Repos[Item.SelectedPath].Count} local repo available. Which do you wish to use?");
+                Console.WriteLine($"This are the {Forker.Repos[CurrentItem.SelectedPath].Count} local repo available. Which do you wish to use?");
                 Console.WriteLine();
 
                 base.Display();

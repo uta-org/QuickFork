@@ -14,6 +14,7 @@ namespace QuickFork.Lib
     {
         private static Settings MySettings => Settings.Default;
 
+        public static string SyncFolder { get; set; }
         public static Dictionary<string, List<RepoItem>> Repos { get; private set; }
 
         public static StringCollection StoredFolders { get; private set; }
@@ -71,6 +72,8 @@ namespace QuickFork.Lib
         {
             if (MySettings == null)
                 throw new Exception("You deleted exe config file!");
+
+            MySettings.SyncFolder = SyncFolder;
 
             SaveStoredFolders(false);
             SaveRepoCollection();

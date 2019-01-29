@@ -22,7 +22,7 @@ namespace QuickFork.Shell.Pages
         {
         }
 
-        public static List<Option> GetOptions()
+        private static List<Option> GetOptions()
         {
             List<Option> list = new List<Option>();
 
@@ -30,6 +30,7 @@ namespace QuickFork.Shell.Pages
                 Forker.StoredFolders.Cast<string>().ForEach((path, i) => list.Add(new Option(Path.GetFileName(path), () => SelectProject(i))));
 
             list.Add(new Option("Add new project", () => SelectProject(-1)));
+            list.Add(new Option("Exit", () => Environment.Exit(0)));
 
             return list;
         }
@@ -58,6 +59,15 @@ namespace QuickFork.Shell.Pages
 
         public override void Display()
         {
+            if (string.IsNullOrEmpty(Forker.SyncFolder))
+            {
+                string syncPath = ConsoleHelper.GetValidPath("First of all, please, set the base folder where new repositories will be cloned: ");
+                Console.WriteLine();
+
+                Forker.SyncFolder = syncPath;
+                Forker.SaveInstance();
+            }
+
             bool isNew = Forker.StoredFolders.Count == 0;
 
             if (isNew)

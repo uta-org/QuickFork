@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Linq;
 using EasyConsole;
 
 namespace QuickFork.Shell
@@ -17,27 +17,9 @@ namespace QuickFork.Shell
 
             Forker.LoadSettings();
 
-            AddPage(new MainPage(this,
-                new Option("Fork Syncing (complete process)", () =>
-                {
-                    ForkSyncing.DoLinking = null;
-                    NavigateTo<ForkSyncing>();
-                }),
-                new Option("Fork Syncing (only cloning)", () =>
-                {
-                    ForkSyncing.DoLinking = true;
-                    NavigateTo<ForkSyncing>();
-                }),
-                new Option("Fork Syncing (only linking)", () =>
-                {
-                    ForkSyncing.DoLinking = false;
-                    NavigateTo<ForkSyncing>();
-                }),
-                new Option("Exit", () => Environment.Exit(0))));
+            AddPage(new ProjectSelection(this));
 
-            //AddPage(new ForkSyncing(this));
-
-            SetPage<MainPage>();
+            SetPage<ProjectSelection>();
         }
     }
 }
