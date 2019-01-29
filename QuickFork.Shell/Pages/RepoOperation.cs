@@ -1,10 +1,7 @@
 ﻿using EasyConsole;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.IO;
 using Newtonsoft.Json;
-using uzLib.Lite.Extensions;
 
 namespace QuickFork.Shell.Pages
 {
@@ -13,8 +10,6 @@ namespace QuickFork.Shell.Pages
 
     internal class RepoOperation : MenuPage
     {
-        private static bool? DoLinking { get; set; }
-
         private RepoOperation()
             : base("", null, null)
         {
@@ -28,13 +23,11 @@ namespace QuickFork.Shell.Pages
         {
         }
 
-        private static void Operate(bool? value, RepoItem rItem, ProjectItem pItem)
+        private static void Operate(bool? doLinking, RepoItem rItem, ProjectItem pItem)
         {
-            DoLinking = value;
-
             try
             {
-                rItem?.Execute(pItem.SelectedPath, pItem.Type, DoLinking);
+                rItem?.Execute(pItem.SelectedPath, pItem.Type, doLinking);
                 File.WriteAllText(RepoSelection.PackageFile, JsonConvert.SerializeObject(new Forker(pItem.SelectedPath), Formatting.Indented));
             }
             catch (Exception ex)
