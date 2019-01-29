@@ -6,7 +6,7 @@ namespace QuickFork.Shell
     {
         private static void Main(string[] args)
         {
-            var program = new DemoProgram().Run();
+            var program = new MainProgram().Run();
 
             if (!program.IsExiting)
             {

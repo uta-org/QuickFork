@@ -7,31 +7,42 @@ using uzLib.Lite.Extensions;
 
 namespace QuickFork.Lib
 {
-    public static class Forker
+    using Model;
+
+    [Serializable]
+    public class Forker
     {
         private static Settings MySettings => Settings.Default;
 
-        public static List<RepoItem> RepoCollection { get; private set; }
+        public static Dictionary<string, List<RepoItem>> Repos { get; private set; }
+
         public static StringCollection StoredFolders { get; private set; }
 
-        static Forker()
+        [JsonProperty]
+        public List<RepoItem> RepoCollection { get; private set; }
+
+        [JsonProperty]
+        public string ProjectPath { get; private set; }
+
+        private Forker()
+        {
+        }
+
+        public Forker(string projectPath)
         {
             if (RepoCollection == null)
                 RepoCollection = new List<RepoItem>();
 
             if (StoredFolders == null)
                 StoredFolders = new StringCollection();
-        }
 
-        public static RepoItem Fork(string gitUrl, bool fSave = true)
-        {
-            bool firstTime;
-            var item = RepoCollection.InsertOrGet(new RepoItem(gitUrl), r => r.GitUrl == gitUrl, out firstTime);
+            if (Repos == null)
+                Repos = new Dictionary<string, List<RepoItem>>();
 
-            if (fSave && firstTime)
-                SaveInstance();
+            ProjectPath = projectPath;
 
-            return item;
+            if (!Repos.ContainsKey(ProjectPath))
+                Repos.Add(ProjectPath, new List<RepoItem>());
         }
 
         public static void AddProjectPath(string projectPath)
@@ -42,10 +53,10 @@ namespace QuickFork.Lib
 
         public static void LoadSettings()
         {
-            string loadString = MySettings.RepoCollection;
+            string loadString = MySettings.Repos;
 
             if (!string.IsNullOrEmpty(loadString))
-                RepoCollection = JsonConvert.DeserializeObject<List<RepoItem>>(loadString);
+                Repos = JsonConvert.DeserializeObject<Dictionary<string, List<RepoItem>>>(loadString);
 
             if (MySettings.StoredFolders == null)
             {
@@ -75,7 +86,7 @@ namespace QuickFork.Lib
 
         public static void SaveRepoCollection(bool fSave = true)
         {
-            MySettings.RepoCollection = JsonConvert.SerializeObject(RepoCollection);
+            MySettings.Repos = JsonConvert.SerializeObject(Repos);
 
             if (fSave)
                 MySettings.Save();

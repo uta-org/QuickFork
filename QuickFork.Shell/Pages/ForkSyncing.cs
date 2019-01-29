@@ -1,63 +1,44 @@
 ﻿using EasyConsole;
-using QuickFork.Lib;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using uzLib.Lite.Extensions;
 
 namespace QuickFork.Shell.Pages
 {
+    using Lib;
+    using Lib.Model;
+
     internal class ForkSyncing : MenuPage
     {
         public static bool? DoLinking { get; set; }
 
-        private static OperationType Type;
+        private ProjectItem Item { get; }
 
         private ForkSyncing()
             : base("", null, null)
         {
         }
 
-        public ForkSyncing(Program program)
-            : base("Fork Syncing", program, GetOptions().ToArray())
+        public ForkSyncing(Program program, ProjectItem item)
+            : base("Fork Syncing", program, GetOptions(item).ToArray())
         {
+            Item = item;
         }
 
-        public static List<Option> GetOptions()
+        public static List<Option> GetOptions(ProjectItem item)
         {
             List<Option> list = new List<Option>();
 
-            if (Forker.RepoCollection.Count > 0)
-            {
-                Forker.RepoCollection.AsEnumerable().ForEach((r, i) => list.Add(new Option(r.ToString(), () => SelectProject(i))));
-                list.Add(new Option("Create new local clone", () => SelectProject(-1)));
-            }
+            if (Forker.Repos.Count > 0 && Forker.Repos.ContainsKey(item.SelectedPath))
+                Forker.Repos[item.SelectedPath].AsEnumerable().ForEach((r, i) => list.Add(new Option(r.ToString(), () => SelectRepo(i, item))));
+
+            list.Add(new Option("Create new local clone", () => SelectRepo(-1, item)));
 
             return list;
         }
 
-        public override void Display()
-        {
-            bool isNew = Forker.RepoCollection.Count == 0;
-
-            if (isNew)
-            {
-                Console.WriteLine("There isn't any available project to select, please, create a new one.");
-                Console.WriteLine();
-                SelectProject(-1);
-                Console.WriteLine();
-            }
-            else
-            {
-                Console.WriteLine($"This are the {Forker.RepoCollection.Count} local projects available. Which do you wish to use?");
-                Console.WriteLine();
-
-                base.Display();
-            }
-        }
-
-        public static void SelectProject(int index)
+        public static void SelectRepo(int index, ProjectItem item)
         {
             RepoItem repoItem;
 
@@ -67,42 +48,16 @@ namespace QuickFork.Shell.Pages
                 string gitUrl = Console.ReadLine();
                 Console.WriteLine();
 
-                repoItem = Forker.Fork(gitUrl);
+                repoItem = new RepoItem(gitUrl);
 
-                Console.WriteLine("Project has created succesfully!");
+                Console.WriteLine("Repo has created succesfully!");
             }
             else
-                repoItem = Forker.RepoCollection[index];
-
-            DisplayNewOptions();
-
-            string projectPath = "";
-            int selectedProject = -1;
-            bool newProject = true;
-
-            if (Forker.StoredFolders.Count > 0)
-            {
-                var projectsMenu = new Menu();
-
-                Forker.StoredFolders.Cast<string>().ForEach((path, i) => projectsMenu.Add(Path.GetFileName(path), () => { selectedProject = i; newProject = false; }));
-                projectsMenu.Add("Add new project", () => selectedProject = -1);
-
-                projectsMenu.Display();
-
-                if (!newProject)
-                    projectPath = Forker.StoredFolders[selectedProject];
-            }
-
-            if (newProject)
-            {
-                projectPath = ConsoleHelper.GetValidPath("Write the path to your project: ");
-                Forker.StoredFolders.Add(projectPath);
-                Forker.SaveStoredFolders();
-            }
+                repoItem = Forker.Repos[item.SelectedPath][index];
 
             try
             {
-                repoItem.Execute(projectPath, Type, DoLinking);
+                repoItem?.Execute(item.SelectedPath, item.Type, DoLinking);
             }
             catch (Exception ex)
             {
@@ -110,27 +65,24 @@ namespace QuickFork.Shell.Pages
             }
         }
 
-        public static void SetType(OperationType type)
+        public override void Display()
         {
-            Type = type;
-        }
+            bool isNew = !Forker.Repos.HasValues(Item.SelectedPath);
 
-        private static void DisplayNewOptions()
-        {
-            Console.WriteLine();
+            if (isNew)
+            {
+                Console.WriteLine("There isn't any available repo to select, please, create a new one.");
+                Console.WriteLine();
+                SelectRepo(-1, Item);
+                Console.WriteLine();
+            }
+            else
+            {
+                Console.WriteLine($"This are the {Forker.Repos[Item.SelectedPath].Count} local repo available. Which do you wish to use?");
+                Console.WriteLine();
 
-            var newForkMenu = new Menu();
-            NewForkOptions().ForEach(o => newForkMenu.Add(o));
-
-            newForkMenu.Display();
-
-            Console.WriteLine();
-        }
-
-        public static IEnumerable<Option> NewForkOptions()
-        {
-            yield return new Option("Search .csproj and add to solution specified", () => SetType(OperationType.AddProjToSLN));
-            yield return new Option("Create a symlink", () => SetType(OperationType.CreateSymlink));
+                base.Display();
+            }
         }
     }
 }

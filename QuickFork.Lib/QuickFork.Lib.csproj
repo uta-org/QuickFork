@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums.cs" />
+    <Compile Include="Model\ProjectItem.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -51,7 +52,7 @@
     </Compile>
     <Compile Include="Forker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RepoItem.cs" />
+    <Compile Include="Model\RepoItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -75,5 +76,6 @@
       <Name>uzLib.Lite</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

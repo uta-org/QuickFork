@@ -47,9 +47,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DemoProgram.cs" />
-    <Compile Include="MainPage.cs" />
+    <Compile Include="MainProgram.cs" />
+    <Compile Include="Pages\MainPage.cs" />
     <Compile Include="Pages\ForkSyncing.cs" />
+    <Compile Include="Pages\ProjectOperation.cs" />
+    <Compile Include="Pages\ProjectSelection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Runner.cs" />
   </ItemGroup>
