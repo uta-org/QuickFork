@@ -45,9 +45,25 @@ namespace QuickFork.Shell.Pages
 
             if (index == -1)
             {
-                Console.Write("Project Repo Url < .git extension >: ");
-                string gitUrl = Console.ReadLine();
-                Console.WriteLine();
+                string gitUrl = "";
+                bool isValid = false;
+
+                do
+                {
+                    Console.Write("Project Repo Url < .git extension >: ");
+                    gitUrl = Console.ReadLine();
+
+                    isValid = gitUrl.CheckURLValid();
+
+                    if (!isValid)
+                    {
+                        Console.WriteLine();
+                        Console.WriteLine("Invalid URL provided, please, type again.");
+                    }
+
+                    Console.WriteLine();
+                }
+                while (!isValid);
 
                 rItem = new RepoItem(gitUrl);
 
@@ -55,6 +71,8 @@ namespace QuickFork.Shell.Pages
             }
             else
                 rItem = Forker.Repos[pItem.SelectedPath][index];
+
+            rItem.Update(pItem.SelectedPath);
 
             MainProgram.Instance.AddPage(new RepoOperation(MainProgram.Instance, rItem, pItem));
             MainProgram.Instance.NavigateTo<RepoOperation>();

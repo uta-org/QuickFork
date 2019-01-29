@@ -167,6 +167,7 @@ namespace QuickFork.Lib.Model
                 Console.WriteLine();
                 Console.WriteLine("The project you are trying to add to solution already exists on solution.");
                 Console.WriteLine();
+
                 alreadyExists = true;
                 return null;
             }

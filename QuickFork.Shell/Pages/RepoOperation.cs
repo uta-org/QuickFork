@@ -1,7 +1,6 @@
 ﻿using EasyConsole;
 using System;
 using System.IO;
-using Newtonsoft.Json;
 
 namespace QuickFork.Shell.Pages
 {
@@ -27,12 +26,16 @@ namespace QuickFork.Shell.Pages
         {
             try
             {
+                Forker.Add(pItem.SelectedPath, rItem);
+
                 rItem?.Execute(pItem.SelectedPath, pItem.Type, doLinking);
-                File.WriteAllText(RepoSelection.PackageFile, JsonConvert.SerializeObject(new Forker(pItem.SelectedPath), Formatting.Indented));
+
+                if (!doLinking.HasValue || doLinking.HasValue && !doLinking.Value)
+                    File.WriteAllText(RepoSelection.PackageFile, Forker.SerializeProject(pItem.SelectedPath));
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"The following occured: {ex.Message}");
+                Console.WriteLine($"The following {ex.GetType().Name} occured: {ex.Message}");
             }
         }
     }

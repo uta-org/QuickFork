@@ -45,9 +45,6 @@ namespace QuickFork.Shell.Pages
                 projectPath = ConsoleHelper.GetValidPath("Write the path to your project: ");
                 Console.WriteLine();
 
-                Forker.StoredFolders.Add(projectPath);
-                Forker.SaveStoredFolders();
-
                 Console.WriteLine("Project has created succesfully!");
             }
             else

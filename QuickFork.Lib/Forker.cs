@@ -8,8 +8,11 @@ namespace QuickFork.Lib
 {
     using Model;
 
-    [Serializable]
-    public class Forker
+    //[Serializable]
+    /// <summary>
+    /// Forker class
+    /// </summary>
+    public static class Forker
     {
         /// <summary>
         /// Gets my settings.
@@ -49,8 +52,8 @@ namespace QuickFork.Lib
         /// <value>
         /// The repo collection.
         /// </value>
-        [JsonProperty]
-        public List<RepoItem> RepoCollection { get; private set; }
+        //[JsonProperty]
+        //public List<RepoItem> RepoCollection { get; private set; }
 
         /// <summary>
         /// Gets the project path.
@@ -58,42 +61,37 @@ namespace QuickFork.Lib
         /// <value>
         /// The project path.
         /// </value>
-        [JsonProperty]
-        public string ProjectPath { get; private set; }
+        //[JsonProperty]
+        //public string ProjectPath { get; private set; }
 
-        /// <summary>
+        /*/// <summary>
         /// Prevents a default instance of the <see cref="Forker"/> class from being created.
         /// </summary>
         private Forker()
         {
-        }
+        }*/
 
-        /// <summary>
+        /*/// <summary>
         /// Initializes a new instance of the <see cref="Forker"/> class.
         /// </summary>
         /// <param name="projectPath">The project path.</param>
-        public Forker(string projectPath)
+        //public Forker(string projectPath)
+        //{
+        //    if (RepoCollection == null)
+        //        RepoCollection = new List<RepoItem>();
+
+        //    ProjectPath = projectPath;
+
+        //    if (!Repos.ContainsKey(ProjectPath))
+        //        Repos.Add(ProjectPath, new List<RepoItem>());
+        //}*/
+
+        public static string SerializeProject(string projectPath)
         {
-            if (RepoCollection == null)
-                RepoCollection = new List<RepoItem>();
+            if (!Repos.ContainsKey(projectPath))
+                throw new Exception("Can't serialize provided path (it's not present on Dictionary)!");
 
-            if (StoredFolders == null)
-                StoredFolders = new StringCollection();
-
-            ProjectPath = projectPath;
-
-            if (!Repos.ContainsKey(ProjectPath))
-                Repos.Add(ProjectPath, new List<RepoItem>());
-        }
-
-        /// <summary>
-        /// Adds the project path.
-        /// </summary>
-        /// <param name="projectPath">The project path.</param>
-        public static void AddProjectPath(string projectPath)
-        {
-            if (!StoredFolders.Contains(projectPath))
-                StoredFolders.Add(projectPath);
+            return JsonConvert.SerializeObject(Repos[projectPath], Formatting.Indented);
         }
 
         /// <summary>
@@ -109,6 +107,9 @@ namespace QuickFork.Lib
             if (Repos == null)
                 Repos = new Dictionary<string, List<RepoItem>>();
 
+            if (StoredFolders == null)
+                StoredFolders = new StringCollection();
+
             if (MySettings.StoredFolders == null)
             {
                 MySettings.StoredFolders = new StringCollection();
@@ -118,6 +119,24 @@ namespace QuickFork.Lib
                 StoredFolders = MySettings.StoredFolders;
 
             SyncFolder = MySettings.SyncFolder;
+        }
+
+        /// <summary>
+        /// Adds the project path.
+        /// </summary>
+        /// <param name="projectPath">The project path.</param>
+        public static void Add(string projectPath, RepoItem rItem)
+        {
+            if (!StoredFolders.Contains(projectPath))
+            {
+                StoredFolders.Add(projectPath);
+                SaveStoredFolders();
+            }
+
+            if (!Repos.ContainsKey(projectPath))
+                Repos.Add(projectPath, new List<RepoItem>());
+
+            Repos[projectPath].Add(rItem);
         }
 
         /// <summary>
@@ -132,7 +151,7 @@ namespace QuickFork.Lib
             MySettings.SyncFolder = SyncFolder;
 
             SaveStoredFolders(false);
-            SaveRepoCollection();
+            SaveRepos();
         }
 
         /// <summary>
@@ -151,7 +170,7 @@ namespace QuickFork.Lib
         /// Saves the repo collection.
         /// </summary>
         /// <param name="fSave">if set to <c>true</c> [f save].</param>
-        public static void SaveRepoCollection(bool fSave = true)
+        internal static void SaveRepos(bool fSave = true)
         {
             MySettings.Repos = JsonConvert.SerializeObject(Repos);
 
