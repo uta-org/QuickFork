@@ -22,7 +22,7 @@ namespace QuickFork.Shell.Pages
         }
 
         public RepoSelection(Program program, ProjectItem item)
-            : base("Repository Operations", program)
+            : base("Repository Selection", program, GetOptions(item).ToArray())
         {
             CurrentItem = item;
         }
@@ -51,7 +51,7 @@ namespace QuickFork.Shell.Pages
 
                 rItem = new RepoItem(gitUrl);
 
-                Console.WriteLine("Repo has created succesfully!");
+                Console.WriteLine("Repository has created succesfully!");
             }
             else
                 rItem = Forker.Repos[pItem.SelectedPath][index];

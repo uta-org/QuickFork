@@ -16,10 +16,10 @@ namespace QuickFork.Shell.Pages
         }
 
         public RepoOperation(Program program, RepoItem rItem, ProjectItem pItem)
-            : base("Repository Operations", program,
-                new Option("Sync the entire repository to a project", () => Operate(null, rItem, pItem)),
-                new Option("Only clone the repository", () => Operate(true, rItem, pItem)),
-                new Option("Link an existing repository to an existing solution", () => Operate(false, rItem, pItem)))
+            : base("Repository Operation", program,
+                new Option($"Sync the '{rItem.Name}' repository to the '{pItem.Name}' project (clone + link)", () => Operate(null, rItem, pItem)),
+                new Option($"Only clone the '{rItem.Name}' repository", () => Operate(true, rItem, pItem)),
+                new Option($"Only link '{rItem.Name}' to the '{pItem.Name}' solution", () => Operate(false, rItem, pItem)))
         {
         }
 

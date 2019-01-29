@@ -20,6 +20,9 @@ namespace QuickFork.Lib.Model
         [JsonProperty]
         public string GitUrl { get; set; }
 
+        [JsonIgnore]
+        public string Name => GitUrl.GetFileNameFromUrlWithoutExtension();
+
         private RepoItem()
         {
             MyShell = new GitShell();
@@ -36,7 +39,7 @@ namespace QuickFork.Lib.Model
 
         public async void Execute(string projectPath, OperationType operationType = OperationType.AddProjToSLN, bool? doLinking = null)
         {
-            string folderName = GitUrl.GetFileNameFromUrlWithoutExtension(),
+            string folderName = Name,
                    FolderPath = Path.Combine(Settings.Default.SyncFolder, folderName),
                    workingPath = Settings.Default.SyncFolder;
 
@@ -187,7 +190,7 @@ namespace QuickFork.Lib.Model
 
         public override string ToString()
         {
-            return $"{GitUrl.GetFileNameFromUrlWithoutExtension()} ({GitUrl})";
+            return $"{Name} ({GitUrl})";
         }
     }
 }
