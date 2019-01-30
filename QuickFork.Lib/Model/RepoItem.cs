@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using uzLib.Lite;
+using uzLib.Lite.Interoperability;
 using uzLib.Lite.Extensions;
 
 namespace QuickFork.Lib.Model

@@ -26,8 +26,8 @@ namespace QuickFork.Shell.Pages
         {
             List<Option> list = new List<Option>();
 
-            if (Forker.StoredFolders.Count > 0)
-                Forker.StoredFolders.Cast<string>().ForEach((path, i) => list.Add(new Option(Path.GetFileName(path), () => SelectProject(i))));
+            if (Forker.StoredProjects.Count > 0)
+                Forker.StoredProjects.Cast<string>().ForEach((path, i) => list.Add(new Option(Path.GetFileName(path), () => SelectProject(i))));
 
             list.Add(new Option("Add new project", () => SelectProject(-1)));
             list.Add(new Option("Exit", () => Environment.Exit(0)));
@@ -47,7 +47,7 @@ namespace QuickFork.Shell.Pages
                 Console.WriteLine("Project has created succesfully!");
             }
             else
-                projectPath = Forker.StoredFolders[index];
+                projectPath = Forker.StoredProjects[index];
 
             CurrentProgram.AddPage(new ProjectOperation(CurrentProgram, new ProjectItem(projectPath)));
             CurrentProgram.NavigateTo<ProjectOperation>();
@@ -64,7 +64,7 @@ namespace QuickFork.Shell.Pages
                 Forker.SaveSyncFolder();
             }
 
-            bool isNew = Forker.StoredFolders.Count == 0;
+            bool isNew = Forker.StoredProjects.Count == 0;
 
             if (isNew)
             {
@@ -75,7 +75,7 @@ namespace QuickFork.Shell.Pages
             }
             else
             {
-                Console.WriteLine($"This are the {Forker.StoredFolders.Count} local projects available. Which do you wish to use?");
+                Console.WriteLine($"This are the {Forker.StoredProjects.Count} local projects available. Which do you wish to use?");
                 Console.WriteLine();
 
                 base.Display(caption);

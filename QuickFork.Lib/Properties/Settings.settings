@@ -2,13 +2,16 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="QuickFork.Lib.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="Repos" Type="System.String" Scope="User">
+    <Setting Name="RepoMap" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="SyncFolder" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="StoredFolders" Type="System.Collections.Specialized.StringCollection" Scope="User">
+    <Setting Name="StoredProjects" Type="System.Collections.Specialized.StringCollection" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="StoredRepos" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
   </Settings>

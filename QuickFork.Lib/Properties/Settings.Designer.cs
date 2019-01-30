@@ -26,12 +26,12 @@ namespace QuickFork.Lib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string Repos {
+        public string RepoMap {
             get {
-                return ((string)(this["Repos"]));
+                return ((string)(this["RepoMap"]));
             }
             set {
-                this["Repos"] = value;
+                this["RepoMap"] = value;
             }
         }
         
@@ -49,12 +49,24 @@ namespace QuickFork.Lib.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Specialized.StringCollection StoredFolders {
+        public global::System.Collections.Specialized.StringCollection StoredProjects {
             get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["StoredFolders"]));
+                return ((global::System.Collections.Specialized.StringCollection)(this["StoredProjects"]));
             }
             set {
-                this["StoredFolders"] = value;
+                this["StoredProjects"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string StoredRepos {
+            get {
+                return ((string)(this["StoredRepos"]));
+            }
+            set {
+                this["StoredRepos"] = value;
             }
         }
     }

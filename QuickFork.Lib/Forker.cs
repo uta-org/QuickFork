@@ -8,6 +8,7 @@ using System.IO;
 namespace QuickFork.Lib
 {
     using Model;
+    using System.Linq;
 
     //[Serializable]
     /// <summary>
@@ -32,20 +33,38 @@ namespace QuickFork.Lib
         public static string SyncFolder { get; set; }
 
         /// <summary>
+        /// Gets or sets the repo map.
+        /// </summary>
+        /// <value>
+        /// The repo map.
+        /// </value>
+        [JsonProperty]
+        private static Dictionary<string, List<int>> RepoMap { get; set; }
+
+        /// <summary>
         /// Gets the repos.
         /// </summary>
         /// <value>
         /// The repos.
         /// </value>
+        [JsonIgnore]
         public static Dictionary<string, List<RepoItem>> Repos { get; private set; }
 
         /// <summary>
-        /// Gets the stored folders.
+        /// Gets the stored projects.
         /// </summary>
         /// <value>
-        /// The stored folders.
+        /// The stored projects.
         /// </value>
-        public static StringCollection StoredFolders { get; private set; }
+        public static StringCollection StoredProjects { get; private set; }
+
+        /// <summary>
+        /// Gets the stored repos.
+        /// </summary>
+        /// <value>
+        /// The stored repos.
+        /// </value>
+        public static HashSet<RepoItem> StoredRepos { get; private set; }
 
         public static string SerializeProject(string projectPath)
         {
@@ -69,26 +88,43 @@ namespace QuickFork.Lib
         /// </summary>
         public static void LoadSettings()
         {
-            string loadString = MySettings.Repos;
+            DoMapping(true);
 
-            if (!string.IsNullOrEmpty(loadString))
-                Repos = JsonConvert.DeserializeObject<Dictionary<string, List<RepoItem>>>(loadString);
+            if (StoredProjects == null)
+                StoredProjects = new StringCollection();
 
-            if (Repos == null)
-                Repos = new Dictionary<string, List<RepoItem>>();
-
-            if (StoredFolders == null)
-                StoredFolders = new StringCollection();
-
-            if (MySettings.StoredFolders == null)
+            if (MySettings.StoredProjects == null)
             {
-                MySettings.StoredFolders = new StringCollection();
+                MySettings.StoredProjects = new StringCollection();
                 MySettings.Save();
             }
             else
-                StoredFolders = MySettings.StoredFolders;
+                StoredProjects = MySettings.StoredProjects;
 
             SyncFolder = MySettings.SyncFolder;
+        }
+
+        private static void DoMapping(bool isLoading)
+        {
+            if (isLoading)
+            {
+                string loadMapNeedle = MySettings.RepoMap,
+                       loadRepoNeedle = MySettings.StoredRepos;
+
+                if (!string.IsNullOrEmpty(loadMapNeedle))
+                    RepoMap = JsonConvert.DeserializeObject<Dictionary<string, List<int>>>(loadMapNeedle);
+
+                if (!string.IsNullOrEmpty(loadRepoNeedle))
+                    StoredRepos = JsonConvert.DeserializeObject<HashSet<RepoItem>>(loadMapNeedle);
+
+                if (Repos == null)
+                    Repos = RepoMap.ToDictionary(t => t.Key, t => t.Value.Select(x => StoredRepos.ElementAt(x)).ToList());
+            }
+            else
+            {
+                // Mapping is no longer needed it's done in Add method
+                MySettings.Save();
+            }
         }
 
         /// <summary>
@@ -97,10 +133,10 @@ namespace QuickFork.Lib
         /// <param name="projectPath">The project path.</param>
         public static void Add(string projectPath)
         {
-            if (!StoredFolders.Contains(projectPath))
+            if (!StoredProjects.Contains(projectPath))
             {
-                StoredFolders.Add(projectPath);
-                SaveStoredFolders();
+                StoredProjects.Add(projectPath);
+                SaveStoredProjects();
             }
         }
 
@@ -109,14 +145,27 @@ namespace QuickFork.Lib
         /// </summary>
         /// <param name="projectPath">The project path.</param>
         /// <param name="rItem">The repository item.</param>
+        //private static void Add(string projectPath, RepoItem rItem)
+        //{
+        //    Add(projectPath);
+
+        //    if (!Repos.ContainsKey(projectPath))
+        //        Repos.Add(projectPath, new List<RepoItem>());
+
+        //    Repos[projectPath].Add(rItem);
+        //}
+
         public static void Add(string projectPath, RepoItem rItem)
         {
             Add(projectPath);
 
-            if (!Repos.ContainsKey(projectPath))
-                Repos.Add(projectPath, new List<RepoItem>());
+            if (!StoredRepos.Contains(rItem))
+            {
+                StoredRepos.Add(rItem);
+                SaveStoredRepos();
 
-            Repos[projectPath].Add(rItem);
+                RepoMap[projectPath].Add(StoredRepos.Count - 1);
+            }
         }
 
         /// <summary>
@@ -129,8 +178,9 @@ namespace QuickFork.Lib
                 throw new Exception("You deleted exe config file!");
 
             SaveSyncFolder(false);
-            SaveStoredFolders(false);
-            SaveRepos();
+            SaveStoredProjects(false);
+            SaveStoredRepos(false);
+            DoMapping(false);
         }
 
         /// <summary>
@@ -149,21 +199,30 @@ namespace QuickFork.Lib
         /// Saves the stored folders.
         /// </summary>
         /// <param name="fSave">if set to <c>true</c> [f save].</param>
-        public static void SaveStoredFolders(bool fSave = true)
+        public static void SaveStoredProjects(bool fSave = true)
         {
-            MySettings.StoredFolders = StoredFolders;
+            MySettings.StoredProjects = StoredProjects;
 
             if (fSave)
                 MySettings.Save();
         }
 
         /// <summary>
-        /// Saves the repo collection.
+        /// Saves the repo map.
+        /// </summary>
+        public static void SaveRepoMap()
+        {
+            MySettings.RepoMap = JsonConvert.SerializeObject(RepoMap);
+            MySettings.Save();
+        }
+
+        /// <summary>
+        /// Saves the stored repos.
         /// </summary>
         /// <param name="fSave">if set to <c>true</c> [f save].</param>
-        public static void SaveRepos(bool fSave = true)
+        public static void SaveStoredRepos(bool fSave = true)
         {
-            MySettings.Repos = JsonConvert.SerializeObject(Repos);
+            MySettings.StoredRepos = JsonConvert.SerializeObject(StoredRepos);
 
             if (fSave)
                 MySettings.Save();
