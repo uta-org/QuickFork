@@ -145,16 +145,6 @@ namespace QuickFork.Lib
         /// </summary>
         /// <param name="projectPath">The project path.</param>
         /// <param name="rItem">The repository item.</param>
-        //private static void Add(string projectPath, RepoItem rItem)
-        //{
-        //    Add(projectPath);
-
-        //    if (!Repos.ContainsKey(projectPath))
-        //        Repos.Add(projectPath, new List<RepoItem>());
-
-        //    Repos[projectPath].Add(rItem);
-        //}
-
         public static void Add(string projectPath, RepoItem rItem)
         {
             Add(projectPath);
