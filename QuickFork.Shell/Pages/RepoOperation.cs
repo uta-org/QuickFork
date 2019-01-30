@@ -7,7 +7,7 @@ namespace QuickFork.Shell.Pages
     using Lib;
     using Lib.Model;
 
-    internal class RepoOperation : MenuPage
+    internal sealed class RepoOperation : MenuPage
     {
         private RepoOperation()
             : base("", null, null)
@@ -19,7 +19,7 @@ namespace QuickFork.Shell.Pages
                 new Option($"Sync the '{rItem.Name}' repository to the '{pItem.Name}' project (clone + link)", () => Operate(null, rItem, pItem)),
                 new Option($"Only clone the '{rItem.Name}' repository", () => Operate(true, rItem, pItem)),
                 new Option($"Only link '{rItem.Name}' to the '{pItem.Name}' solution", () => Operate(false, rItem, pItem)),
-                new Option("Add another repository", () => program.NavigateBack()))
+                new Option("Add another repository", () => program.NavigateBack(-2)))
         {
         }
 
@@ -31,7 +31,8 @@ namespace QuickFork.Shell.Pages
 
                 rItem?.Execute(pItem.SelectedPath, pItem.Type, doLinking);
 
-                if (!doLinking.HasValue || doLinking.HasValue && !doLinking.Value)
+                if ((!doLinking.HasValue || doLinking.HasValue && !doLinking.Value) &&
+                    !Forker.IsAlreadyOnFile(RepoSelection.PackageFile, pItem.SelectedPath))
                     File.WriteAllText(RepoSelection.PackageFile, Forker.SerializeProject(pItem.SelectedPath));
             }
             catch (Exception ex)

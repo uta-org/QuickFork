@@ -10,7 +10,7 @@ namespace QuickFork.Shell.Pages
     using Lib.Model;
     using System;
 
-    internal class ProjectSelection : MenuPage
+    internal sealed class ProjectSelection : MenuPage
     {
         private ProjectSelection()
             : base("", null, null)
@@ -41,7 +41,6 @@ namespace QuickFork.Shell.Pages
 
             if (index == -1)
             {
-                Console.WriteLine();
                 projectPath = ConsoleHelper.GetValidPath("Write the path to your project: ");
                 Console.WriteLine();
 
@@ -50,11 +49,11 @@ namespace QuickFork.Shell.Pages
             else
                 projectPath = Forker.StoredFolders[index];
 
-            MainProgram.Instance.AddPage(new ProjectOperation(MainProgram.Instance, new ProjectItem(projectPath)));
-            MainProgram.Instance.NavigateTo<ProjectOperation>();
+            CurrentProgram.AddPage(new ProjectOperation(CurrentProgram, new ProjectItem(projectPath)));
+            CurrentProgram.NavigateTo<ProjectOperation>();
         }
 
-        public override void Display()
+        public override void Display(string caption = "Choose an option: ")
         {
             if (string.IsNullOrEmpty(Forker.SyncFolder))
             {
@@ -62,7 +61,7 @@ namespace QuickFork.Shell.Pages
                 Console.WriteLine();
 
                 Forker.SyncFolder = syncPath;
-                Forker.SaveInstance();
+                Forker.SaveSyncFolder();
             }
 
             bool isNew = Forker.StoredFolders.Count == 0;
@@ -79,7 +78,7 @@ namespace QuickFork.Shell.Pages
                 Console.WriteLine($"This are the {Forker.StoredFolders.Count} local projects available. Which do you wish to use?");
                 Console.WriteLine();
 
-                base.Display();
+                base.Display(caption);
             }
         }
     }

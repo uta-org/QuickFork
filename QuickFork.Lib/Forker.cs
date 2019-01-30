@@ -3,6 +3,7 @@ using QuickFork.Lib.Properties;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.IO;
 
 namespace QuickFork.Lib
 {
@@ -46,52 +47,21 @@ namespace QuickFork.Lib
         /// </value>
         public static StringCollection StoredFolders { get; private set; }
 
-        /// <summary>
-        /// Gets the repo collection.
-        /// </summary>
-        /// <value>
-        /// The repo collection.
-        /// </value>
-        //[JsonProperty]
-        //public List<RepoItem> RepoCollection { get; private set; }
-
-        /// <summary>
-        /// Gets the project path.
-        /// </summary>
-        /// <value>
-        /// The project path.
-        /// </value>
-        //[JsonProperty]
-        //public string ProjectPath { get; private set; }
-
-        /*/// <summary>
-        /// Prevents a default instance of the <see cref="Forker"/> class from being created.
-        /// </summary>
-        private Forker()
-        {
-        }*/
-
-        /*/// <summary>
-        /// Initializes a new instance of the <see cref="Forker"/> class.
-        /// </summary>
-        /// <param name="projectPath">The project path.</param>
-        //public Forker(string projectPath)
-        //{
-        //    if (RepoCollection == null)
-        //        RepoCollection = new List<RepoItem>();
-
-        //    ProjectPath = projectPath;
-
-        //    if (!Repos.ContainsKey(ProjectPath))
-        //        Repos.Add(ProjectPath, new List<RepoItem>());
-        //}*/
-
         public static string SerializeProject(string projectPath)
         {
             if (!Repos.ContainsKey(projectPath))
                 throw new Exception("Can't serialize provided path (it's not present on Dictionary)!");
 
             return JsonConvert.SerializeObject(Repos[projectPath], Formatting.Indented);
+        }
+
+        public static bool IsAlreadyOnFile(string filePath, string projectPath)
+        {
+            if (!File.Exists(filePath))
+                return false;
+
+            var obj = JsonConvert.DeserializeObject<Dictionary<string, List<RepoItem>>>(File.ReadAllText(filePath));
+            return obj.ContainsKey(projectPath);
         }
 
         /// <summary>
@@ -122,16 +92,26 @@ namespace QuickFork.Lib
         }
 
         /// <summary>
-        /// Adds the project path.
+        /// Adds the specified project path.
         /// </summary>
         /// <param name="projectPath">The project path.</param>
-        public static void Add(string projectPath, RepoItem rItem)
+        public static void Add(string projectPath)
         {
             if (!StoredFolders.Contains(projectPath))
             {
                 StoredFolders.Add(projectPath);
                 SaveStoredFolders();
             }
+        }
+
+        /// <summary>
+        /// Adds the project path.
+        /// </summary>
+        /// <param name="projectPath">The project path.</param>
+        /// <param name="rItem">The repository item.</param>
+        public static void Add(string projectPath, RepoItem rItem)
+        {
+            Add(projectPath);
 
             if (!Repos.ContainsKey(projectPath))
                 Repos.Add(projectPath, new List<RepoItem>());
@@ -148,10 +128,21 @@ namespace QuickFork.Lib
             if (MySettings == null)
                 throw new Exception("You deleted exe config file!");
 
-            MySettings.SyncFolder = SyncFolder;
-
+            SaveSyncFolder(false);
             SaveStoredFolders(false);
             SaveRepos();
+        }
+
+        /// <summary>
+        /// Saves the synchronize folder.
+        /// </summary>
+        /// <param name="fSave">if set to <c>true</c> [f save].</param>
+        public static void SaveSyncFolder(bool fSave = true)
+        {
+            MySettings.SyncFolder = SyncFolder;
+
+            if (fSave)
+                MySettings.Save();
         }
 
         /// <summary>
@@ -170,7 +161,7 @@ namespace QuickFork.Lib
         /// Saves the repo collection.
         /// </summary>
         /// <param name="fSave">if set to <c>true</c> [f save].</param>
-        internal static void SaveRepos(bool fSave = true)
+        public static void SaveRepos(bool fSave = true)
         {
             MySettings.Repos = JsonConvert.SerializeObject(Repos);
 

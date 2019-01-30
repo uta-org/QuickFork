@@ -8,8 +8,6 @@ namespace QuickFork.Shell
 
     internal class MainProgram : Program
     {
-        public static MainProgram Instance { get; private set; }
-
         public MainProgram()
             : base("QuickFork", breadcrumbHeader: true)
         {

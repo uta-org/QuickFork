@@ -48,6 +48,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainProgram.cs" />
+    <Compile Include="Pages\Common\RepoFunc.cs" />
+    <Compile Include="Pages\ProjectDeletion.cs" />
+    <Compile Include="Pages\RepoDeletion.cs" />
     <Compile Include="Pages\RepoOperation.cs" />
     <Compile Include="Pages\ProjectOperation.cs" />
     <Compile Include="Pages\ProjectSelection.cs" />

@@ -1,7 +1,6 @@
 ﻿using EasyConsole;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
 using uzLib.Lite.Extensions;
 
@@ -10,7 +9,9 @@ namespace QuickFork.Shell.Pages
     using Lib;
     using Lib.Model;
 
-    public class RepoSelection : MenuPage
+    using Common;
+
+    internal sealed class RepoSelection : MenuPage
     {
         public static ProjectItem CurrentItem { get; private set; }
 
@@ -31,16 +32,22 @@ namespace QuickFork.Shell.Pages
         {
             List<Option> list = new List<Option>();
 
-            if (Forker.Repos.Count > 0 && Forker.Repos.ContainsKey(item.SelectedPath))
-                Forker.Repos[item.SelectedPath].AsEnumerable().ForEach((r, i) => list.Add(new Option(r.ToString(), () => SelectRepo(i, item))));
+            list.AddNullableRange(RepoFunc.Get(item, (i, _item) => SelectRepo(i, _item)));
 
-            list.Add(new Option("Create new local clone", () => SelectRepo(-1, item)));
+            list.Add(new Option("Create new local cloned repository", () => SelectRepo(-1, item)));
+            list.Add(new Option("Remove repository from the list", () =>
+            {
+                CurrentProgram.AddPage(new RepoDeletion(CurrentProgram, CurrentItem));
+                CurrentProgram.NavigateTo<RepoDeletion>();
+            }));
 
             return list;
         }
 
         public static void SelectRepo(int index, ProjectItem pItem)
         {
+            Console.WriteLine();
+
             RepoItem rItem;
 
             if (index == -1)
@@ -84,24 +91,24 @@ namespace QuickFork.Shell.Pages
                     rItem = Forker.Repos[pItem.SelectedPath][index];
                     Console.WriteLine($"This repository '{rItem.Name}' was already added!");
                 }
+
+                Console.WriteLine();
             }
             else
                 rItem = Forker.Repos[pItem.SelectedPath][index];
 
-            MainProgram.Instance.AddPage(new RepoOperation(MainProgram.Instance, rItem, pItem));
-            MainProgram.Instance.NavigateTo<RepoOperation>();
+            CurrentProgram.AddPage(new RepoOperation(CurrentProgram, rItem, pItem));
+            CurrentProgram.NavigateTo<RepoOperation>();
         }
 
-        public override void Display()
+        public override void Display(string caption = "Choose an option: ")
         {
-            bool isNew = !Forker.Repos.HasValues(CurrentItem.SelectedPath);
+            bool isNew = Forker.Repos.IsNullOrEmpty(CurrentItem.SelectedPath);
 
             if (isNew)
             {
                 Console.WriteLine("There isn't any available repo to select, please, create a new one.");
-                Console.WriteLine();
                 SelectRepo(-1, CurrentItem);
-                Console.WriteLine();
             }
             else
             {

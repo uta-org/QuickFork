@@ -7,7 +7,7 @@ namespace QuickFork.Shell.Pages
     using Lib;
     using Lib.Model;
 
-    internal class ProjectOperation : MenuPage
+    internal sealed class ProjectOperation : MenuPage
     {
         private static ProjectItem CurrentItem { get; set; }
 
@@ -20,6 +20,9 @@ namespace QuickFork.Shell.Pages
             : base("Project Operation", program, GetOptions().ToArray())
         {
             CurrentItem = item;
+
+            // Save it (in case of exception this will saved before exception occurs)
+            Forker.Add(item.SelectedPath);
         }
 
         public static IEnumerable<Option> GetOptions()
@@ -32,8 +35,8 @@ namespace QuickFork.Shell.Pages
         {
             CurrentItem.Type = type;
 
-            MainProgram.Instance.AddPage(new RepoSelection(MainProgram.Instance, CurrentItem));
-            MainProgram.Instance.NavigateTo<RepoSelection>();
+            CurrentProgram.AddPage(new RepoSelection(CurrentProgram, CurrentItem));
+            CurrentProgram.NavigateTo<RepoSelection>();
         }
     }
 }
