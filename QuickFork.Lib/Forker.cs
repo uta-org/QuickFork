@@ -10,7 +10,6 @@ namespace QuickFork.Lib
     using Model;
     using System.Linq;
 
-    //[Serializable]
     /// <summary>
     /// Forker class
     /// </summary>
@@ -118,7 +117,12 @@ namespace QuickFork.Lib
                     StoredRepos = JsonConvert.DeserializeObject<HashSet<RepoItem>>(loadMapNeedle);
 
                 if (Repos == null)
-                    Repos = RepoMap.ToDictionary(t => t.Key, t => t.Value.Select(x => StoredRepos.ElementAt(x)).ToList());
+                {
+                    if (RepoMap != null)
+                        Repos = RepoMap.ToDictionary(t => t.Key, t => t.Value.Select(x => StoredRepos.ElementAt(x)).ToList());
+                    else
+                        Repos = new Dictionary<string, List<RepoItem>>();
+                }
             }
             else
             {
@@ -153,6 +157,12 @@ namespace QuickFork.Lib
             {
                 StoredRepos.Add(rItem);
                 SaveStoredRepos();
+
+                if (RepoMap == null)
+                    RepoMap = new Dictionary<string, List<int>>();
+
+                if (!RepoMap.ContainsKey(projectPath))
+                    RepoMap.Add(projectPath, new List<int>());
 
                 RepoMap[projectPath].Add(StoredRepos.Count - 1);
             }
@@ -202,6 +212,9 @@ namespace QuickFork.Lib
         /// </summary>
         public static void SaveRepoMap()
         {
+            if (RepoMap == null)
+                return;
+
             MySettings.RepoMap = JsonConvert.SerializeObject(RepoMap);
             MySettings.Save();
         }

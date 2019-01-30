@@ -26,7 +26,7 @@ namespace QuickFork.Shell.Pages
                 throw new ArgumentException("index", "Index cannot be null.");
 
             Forker.Repos[item.SelectedPath].RemoveAt(index);
-            Forker.SaveRepos();
+            Forker.SaveRepoMap();
 
             CurrentProgram.NavigateBack();
         }
