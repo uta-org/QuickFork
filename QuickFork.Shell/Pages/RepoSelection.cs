@@ -31,35 +31,25 @@ namespace QuickFork.Shell.Pages
             CurrentItem = item;
         }
 
-        public static List<Option> GetOptions(ProjectItem item)
+        public static List<Option> GetOptions(ProjectItem pItem)
         {
             List<Option> list = new List<Option>();
 
-            list.AddNullableRange(RepoFunc.Get(item, (i, _item) => SelectRepo(i, _item)));
+            list.AddNullableRange(RepoFunc.Get(pItem, (i, _item) => RepoFunc.RepoAdd(i, _item)));
 
-            list.Add(new Option("Create new local cloned repository", () => SelectRepo(-1, item)));
-            list.Add(new Option("Remove repository from the list", () =>
+            list.AddRange(RepoFunc.CommonRepoOptions(CurrentProgram, (rItem) =>
             {
-                CurrentProgram.AddPage(new RepoDeletion(CurrentProgram, CurrentItem));
-                CurrentProgram.NavigateTo<RepoDeletion>();
+                Console.WriteLine();
+
+                RepoFunc.RepoAdd(-1, pItem);
+
+                CurrentProgram.AddPage(new RepoOperation(CurrentProgram, rItem, pItem));
+                CurrentProgram.NavigateTo<RepoOperation>();
+
+                Console.WriteLine();
             }));
 
             return list;
-        }
-
-        public static void SelectRepo(int index, ProjectItem pItem)
-        {
-            Console.WriteLine();
-
-            RepoItem rItem;
-
-            if (index == -1)
-                rItem = RepoFunc.RepoAdd(index, pItem);
-            else
-                rItem = Forker.Repos[pItem.SelectedPath][index];
-
-            CurrentProgram.AddPage(new RepoOperation(CurrentProgram, rItem, pItem));
-            CurrentProgram.NavigateTo<RepoOperation>();
         }
 
         public override void Display(string caption = "Choose an option: ")
@@ -69,7 +59,7 @@ namespace QuickFork.Shell.Pages
             if (isNew)
             {
                 Console.WriteLine("There isn't any available repo to select, please, create a new one.", Color.LightBlue);
-                SelectRepo(-1, CurrentItem);
+                RepoFunc.RepoAdd(-1, CurrentItem);
             }
             else
             {

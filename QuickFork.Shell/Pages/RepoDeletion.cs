@@ -44,7 +44,7 @@ namespace QuickFork.Shell.Pages
 
             RepoItem rItem = Forker.StoredRepos.ElementAt(index);
 
-            Forker.Repos[item.SelectedPath].RemoveAt(index);
+            Forker.Repos.ForEach(r => r.Value.Remove(rItem));
             Forker.SaveRepoMap();
 
             Forker.StoredRepos.Remove(rItem);

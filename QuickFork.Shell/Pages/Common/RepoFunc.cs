@@ -22,23 +22,6 @@ namespace QuickFork.Shell.Pages.Common
                 return null;
         }
 
-        /*public static List<Option> GetRepoOptions(Program program, Action<int, RepoItem> action)
-        {
-            List<Option> list = new List<Option>();
-
-            // list.AddNullableRange(RepoFunc.Get(item, (i, _item) => SelectRepo(i, _item)));
-            list.AddNullableRange(Forker.StoredRepos.Select((r, i) => new Option(r.Name, () => action?.Invoke(i, Forker.StoredRepos.ElementAt(i)))));
-
-            list.Add(new Option("Create new local cloned repository", () => SelectRepo(-1, item)));
-            list.Add(new Option("Remove repository from the list", () =>
-            {
-                program.AddPage(new RepoDeletion(CurrentProgram, CurrentItem));
-                program.NavigateTo<RepoDeletion>();
-            }));
-
-            return list;
-        }*/
-
         public static IEnumerable<Option> CommonRepoOptions(Program program, Action<RepoItem> addAction)
         {
             yield return new Option("Create new local cloned repository", () => addAction?.Invoke(RepoAdd()));
@@ -61,56 +44,59 @@ namespace QuickFork.Shell.Pages.Common
 
         public static RepoItem RepoAdd(int index = -1, ProjectItem pItem = null)
         {
-            RepoItem rItem;
+            RepoItem rItem = null;
+            bool alreadyAdded = false, showWarning = false;
 
-            string gitUrl = "";
-            bool isValid = false,
-                 alreadyAdded = false;
-
-            do
+            if (index == -1)
             {
-                Console.Write("Project Repo Url < .git extension >: ");
-                gitUrl = Console.ReadLine();
+                string gitUrl = "";
+                bool isValid = false;
 
-                if (Forker.Repos.ContainsKey(gitUrl))
+                do
                 {
-                    alreadyAdded = true;
-                    break;
+                    Console.Write("Project Repo Url < .git extension >: ");
+                    gitUrl = Console.ReadLine();
+
+                    if (Forker.Repos.ContainsKey(gitUrl))
+                    {
+                        alreadyAdded = true;
+                        break;
+                    }
+
+                    isValid = gitUrl.CheckURLValid();
+
+                    if (!isValid)
+                    {
+                        Console.Clear();
+                        Console.WriteLine("Invalid URL provided, please, type again.", Color.Red);
+                    }
+
+                    Console.WriteLine();
                 }
+                while (!isValid);
 
-                isValid = gitUrl.CheckURLValid();
-
-                if (!isValid)
+                if (!alreadyAdded)
                 {
-                    Console.Clear();
-                    Console.WriteLine("Invalid URL provided, please, type again.", Color.Red);
+                    if (pItem == null)
+                        rItem = RepoItem.Update(gitUrl);
+                    else
+                        rItem = RepoItem.Update(pItem.SelectedPath, gitUrl);
+
+                    Console.WriteLine("Repository has created succesfully!", Color.Green);
                 }
-
-                Console.WriteLine();
-            }
-            while (!isValid);
-
-            if (!alreadyAdded)
-            {
-                if (pItem == null)
-                    rItem = RepoItem.Update(gitUrl);
                 else
-                    rItem = RepoItem.Update(pItem.SelectedPath, gitUrl);
-
-                Console.WriteLine("Repository has created succesfully!", Color.Green);
+                    showWarning = true;
             }
             else
+                alreadyAdded = true;
+
+            if (alreadyAdded)
             {
-                if (index > -1)
-                {
-                    rItem = Forker.Repos[pItem.SelectedPath][index];
+                rItem = Forker.Repos[pItem.SelectedPath][index];
+
+                if (showWarning)
                     Console.WriteLine($"This repository '{rItem.Name}' was already added!", Color.Yellow);
-                }
-
-                rItem = null;
             }
-
-            Console.WriteLine();
 
             return rItem;
         }
