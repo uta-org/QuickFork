@@ -202,6 +202,8 @@ namespace QuickFork.Lib.Model
             else
             {
                 Console.WriteLine("The repository you're trying to add is already present on collection.", Color.Yellow);
+                Console.WriteLine();
+
                 return rItem;
             }
 

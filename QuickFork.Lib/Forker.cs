@@ -131,6 +131,8 @@ namespace QuickFork.Lib
             else
             {
                 // Mapping is no longer needed it's done in Add method
+
+                SaveRepoMap();
                 MySettings.Save();
             }
         }
