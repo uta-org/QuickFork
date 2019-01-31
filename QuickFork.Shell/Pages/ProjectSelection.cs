@@ -9,6 +9,9 @@ namespace QuickFork.Shell.Pages
     using Lib;
     using Lib.Model;
     using System;
+    using System.Drawing;
+
+    using Console = Colorful.Console;
 
     internal sealed class ProjectSelection : MenuPage
     {
@@ -44,7 +47,7 @@ namespace QuickFork.Shell.Pages
                 projectPath = ConsoleHelper.GetValidPath("Write the path to your project: ");
                 Console.WriteLine();
 
-                Console.WriteLine("Project has created succesfully!");
+                Console.WriteLine("Project has created succesfully!", Color.Green);
             }
             else
                 projectPath = Forker.StoredProjects[index];
@@ -68,7 +71,7 @@ namespace QuickFork.Shell.Pages
 
             if (isNew)
             {
-                Console.WriteLine("There isn't any available project to select, please, create a new one.");
+                Console.WriteLine("There isn't any available project to select, please, create a new one.", Color.LightBlue);
                 Console.WriteLine();
                 SelectProject(-1);
                 Console.WriteLine();

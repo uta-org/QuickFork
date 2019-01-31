@@ -7,8 +7,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Drawing;
 using uzLib.Lite.Interoperability;
 using uzLib.Lite.Extensions;
+
+using Console = Colorful.Console;
 
 namespace QuickFork.Lib.Model
 {
@@ -180,13 +183,32 @@ namespace QuickFork.Lib.Model
                                             Guid.NewGuid());
         }
 
-        public void Update(string projectPath, bool fSave = true)
+        public static RepoItem Update(string projectPath, string gitUrl, bool fSave = true)
         {
-            bool firstTime;
-            Forker.Repos.Get(projectPath).InsertOrGet(new RepoItem(GitUrl), r => r.GitUrl == GitUrl, out firstTime);
+            RepoItem rItem = null;
+            bool firstTime = true;
+
+            if (!Forker.StoredRepos.IsNullOrEmpty())
+            {
+                rItem = Forker.StoredRepos.FirstOrDefault(r => r.GitUrl == gitUrl);
+                firstTime = rItem == null;
+            }
+
+            if (firstTime)
+            {
+                rItem = new RepoItem(gitUrl);
+                Forker.Add(projectPath, rItem);
+            }
+            else
+            {
+                Console.WriteLine("The repository you're trying to add is already present on collection.", Color.Yellow);
+                return rItem;
+            }
 
             if (fSave && firstTime)
                 Forker.SaveInstance();
+
+            return rItem;
         }
 
         public override string ToString()

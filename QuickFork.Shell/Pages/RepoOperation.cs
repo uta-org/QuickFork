@@ -1,11 +1,15 @@
 ﻿using EasyConsole;
 using System;
 using System.IO;
+using System.Drawing;
+using uzLib.Lite.Extensions;
 
 namespace QuickFork.Shell.Pages
 {
     using Lib;
     using Lib.Model;
+
+    using Console = Colorful.Console;
 
     internal sealed class RepoOperation : MenuPage
     {
@@ -27,8 +31,6 @@ namespace QuickFork.Shell.Pages
         {
             try
             {
-                Forker.Add(pItem.SelectedPath, rItem);
-
                 rItem?.Execute(pItem.SelectedPath, pItem.Type, doLinking);
 
                 if ((!doLinking.HasValue || doLinking.HasValue && !doLinking.Value) &&
@@ -37,7 +39,7 @@ namespace QuickFork.Shell.Pages
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"The following {ex.GetType().Name} occured: {ex.Message}");
+                Console.WriteLine(ex.GetExceptionFootprints(), Color.Red);
             }
         }
     }

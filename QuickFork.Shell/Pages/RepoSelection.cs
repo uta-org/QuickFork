@@ -4,12 +4,15 @@ using System.Collections.Generic;
 using System.IO;
 using uzLib.Lite.Extensions;
 
+using Console = Colorful.Console;
+
 namespace QuickFork.Shell.Pages
 {
     using Lib;
     using Lib.Model;
 
     using Common;
+    using System.Drawing;
 
     internal sealed class RepoSelection : MenuPage
     {
@@ -72,7 +75,7 @@ namespace QuickFork.Shell.Pages
                     if (!isValid)
                     {
                         Console.Clear();
-                        Console.WriteLine("Invalid URL provided, please, type again.");
+                        Console.WriteLine("Invalid URL provided, please, type again.", Color.Red);
                     }
 
                     Console.WriteLine();
@@ -81,15 +84,13 @@ namespace QuickFork.Shell.Pages
 
                 if (!alreadyAdded)
                 {
-                    rItem = new RepoItem(gitUrl);
-                    rItem.Update(pItem.SelectedPath);
-
-                    Console.WriteLine("Repository has created succesfully!");
+                    rItem = RepoItem.Update(pItem.SelectedPath, gitUrl);
+                    Console.WriteLine("Repository has created succesfully!", Color.Green);
                 }
                 else
                 {
                     rItem = Forker.Repos[pItem.SelectedPath][index];
-                    Console.WriteLine($"This repository '{rItem.Name}' was already added!");
+                    Console.WriteLine($"This repository '{rItem.Name}' was already added!", Color.Yellow);
                 }
 
                 Console.WriteLine();
@@ -107,7 +108,7 @@ namespace QuickFork.Shell.Pages
 
             if (isNew)
             {
-                Console.WriteLine("There isn't any available repo to select, please, create a new one.");
+                Console.WriteLine("There isn't any available repo to select, please, create a new one.", Color.LightBlue);
                 SelectRepo(-1, CurrentItem);
             }
             else

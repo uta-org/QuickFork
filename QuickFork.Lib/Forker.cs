@@ -110,11 +110,13 @@ namespace QuickFork.Lib
                 string loadMapNeedle = MySettings.RepoMap,
                        loadRepoNeedle = MySettings.StoredRepos;
 
-                if (!string.IsNullOrEmpty(loadMapNeedle))
+                if (!string.IsNullOrEmpty(loadMapNeedle) && loadMapNeedle != "null")
                     RepoMap = JsonConvert.DeserializeObject<Dictionary<string, List<int>>>(loadMapNeedle);
 
-                if (!string.IsNullOrEmpty(loadRepoNeedle))
-                    StoredRepos = JsonConvert.DeserializeObject<HashSet<RepoItem>>(loadMapNeedle);
+                if (!string.IsNullOrEmpty(loadRepoNeedle) && loadRepoNeedle != "null")
+                    StoredRepos = JsonConvert.DeserializeObject<HashSet<RepoItem>>(loadRepoNeedle);
+                else
+                    StoredRepos = new HashSet<RepoItem>();
 
                 if (Repos == null)
                 {
