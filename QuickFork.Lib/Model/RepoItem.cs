@@ -56,7 +56,7 @@ namespace QuickFork.Lib.Model
                 else
                 {
                     Console.WriteLine();
-                    Console.WriteLine("Folder already exists, skipping...");
+                    Console.WriteLine("Folder already exists, skipping...", Color.Yellow);
                     Console.WriteLine();
                 }
             }
@@ -134,7 +134,7 @@ namespace QuickFork.Lib.Model
 
                 if (!alreadyExists)
                 {
-                    Console.WriteLine($"Execution of '{operationType}' has been done succesfully!");
+                    Console.WriteLine($"Execution of '{operationType}' has been done succesfully!", Color.Green);
                     Console.WriteLine();
                 }
             }
@@ -168,7 +168,7 @@ namespace QuickFork.Lib.Model
             if (projects.Any(p => p.Name == _projectName))
             {
                 Console.WriteLine();
-                Console.WriteLine("The project you are trying to add to solution already exists on solution.");
+                Console.WriteLine("The project you are trying to add to solution already exists on solution.", Color.Yellow);
                 Console.WriteLine();
 
                 alreadyExists = true;

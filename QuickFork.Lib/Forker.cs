@@ -73,13 +73,15 @@ namespace QuickFork.Lib
             return JsonConvert.SerializeObject(Repos[projectPath], Formatting.Indented);
         }
 
-        public static bool IsAlreadyOnFile(string filePath, string projectPath)
+        public static bool IsAlreadyOnFile(string filePath, string gitUrl)
         {
             if (!File.Exists(filePath))
                 return false;
 
-            var obj = JsonConvert.DeserializeObject<Dictionary<string, List<RepoItem>>>(File.ReadAllText(filePath));
-            return obj.ContainsKey(projectPath);
+            string contents = File.ReadAllText(filePath);
+            var obj = JsonConvert.DeserializeObject<List<RepoItem>>(contents);
+
+            return obj.Any(r => r.GitUrl == gitUrl);
         }
 
         /// <summary>

@@ -2,7 +2,6 @@
 using System;
 using System.IO;
 using System.Drawing;
-using uzLib.Lite.Extensions;
 
 namespace QuickFork.Shell.Pages
 {
@@ -34,12 +33,14 @@ namespace QuickFork.Shell.Pages
                 rItem?.Execute(pItem.SelectedPath, pItem.Type, doLinking);
 
                 if ((!doLinking.HasValue || doLinking.HasValue && !doLinking.Value) &&
-                    !Forker.IsAlreadyOnFile(RepoSelection.PackageFile, pItem.SelectedPath))
+                    !Forker.IsAlreadyOnFile(RepoSelection.PackageFile, rItem.GitUrl))
                     File.WriteAllText(RepoSelection.PackageFile, Forker.SerializeProject(pItem.SelectedPath));
+                else
+                    Console.WriteLine($"The dependency you are trying to add to the '{pItem.Name}' project is already added!", Color.Yellow);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.GetExceptionFootprints(), Color.Red);
+                Console.WriteLine(ex, Color.Red);
             }
         }
     }
