@@ -183,6 +183,11 @@ namespace QuickFork.Lib.Model
                                             Guid.NewGuid());
         }
 
+        public static RepoItem Update(string gitUrl, bool fSave = true)
+        {
+            return Update(string.Empty, gitUrl, fSave);
+        }
+
         public static RepoItem Update(string projectPath, string gitUrl, bool fSave = true)
         {
             RepoItem rItem = null;

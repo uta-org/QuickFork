@@ -3,12 +3,13 @@ using QuickFork.Lib.Properties;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.IO;
+using uzLib.Lite.Extensions;
 
 namespace QuickFork.Lib
 {
     using Model;
-    using System.Linq;
 
     /// <summary>
     /// Forker class
@@ -105,6 +106,10 @@ namespace QuickFork.Lib
             SyncFolder = MySettings.SyncFolder;
         }
 
+        /// <summary>
+        /// Does the mapping.
+        /// </summary>
+        /// <param name="isLoading">if set to <c>true</c> [is loading].</param>
         private static void DoMapping(bool isLoading)
         {
             if (isLoading)
@@ -123,7 +128,7 @@ namespace QuickFork.Lib
                 if (Repos == null)
                 {
                     if (RepoMap != null)
-                        Repos = RepoMap.ToDictionary(t => t.Key, t => t.Value.Select(x => StoredRepos.ElementAt(x)).ToList());
+                        DoRemapping(false);
                     else
                         Repos = new Dictionary<string, List<RepoItem>>();
                 }
@@ -135,6 +140,14 @@ namespace QuickFork.Lib
                 SaveRepoMap();
                 MySettings.Save();
             }
+        }
+
+        public static void DoRemapping(bool fromValuesToMap = true)
+        {
+            if (fromValuesToMap)
+                RepoMap = Repos.ToDictionary(t => t.Key, t => t.Value.Select(x => StoredRepos.IndexOf(x)).ToList());
+            else
+                Repos = RepoMap.ToDictionary(t => t.Key, t => t.Value.Select(x => StoredRepos.ElementAt(x)).ToList());
         }
 
         /// <summary>
@@ -157,7 +170,10 @@ namespace QuickFork.Lib
         /// <param name="rItem">The repository item.</param>
         public static void Add(string projectPath, RepoItem rItem)
         {
-            Add(projectPath);
+            // projectPath == string.Empty, this means that the project will not be linked
+
+            if (!string.IsNullOrEmpty(projectPath))
+                Add(projectPath);
 
             if (!StoredRepos.Contains(rItem))
             {
@@ -167,10 +183,13 @@ namespace QuickFork.Lib
                 if (RepoMap == null)
                     RepoMap = new Dictionary<string, List<int>>();
 
-                if (!RepoMap.ContainsKey(projectPath))
-                    RepoMap.Add(projectPath, new List<int>());
+                if (!string.IsNullOrEmpty(projectPath))
+                {
+                    if (!RepoMap.ContainsKey(projectPath))
+                        RepoMap.Add(projectPath, new List<int>());
 
-                RepoMap[projectPath].Add(StoredRepos.Count - 1);
+                    RepoMap[projectPath].Add(StoredRepos.Count - 1);
+                }
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿using EasyConsole;
 using System;
 using System.Linq;
+using uzLib.Lite.Extensions;
 
 namespace QuickFork.Shell.Pages
 {
@@ -16,7 +17,12 @@ namespace QuickFork.Shell.Pages
         }
 
         public RepoDeletion(Program program, ProjectItem item)
-            : base("Repository Selection", program, RepoFunc.Get(item, (i, _item) => DeleteRepo(i, _item)).ToArray())
+            : base("Repository Deletion", program, RepoFunc.Get(item, (i, _item) => DeleteRepo(i, _item)).ToArray())
+        {
+        }
+
+        public RepoDeletion(Program program)
+            : base("Repository Deletion", program, RepoFunc.GetRepoList(DeleteRepo).ToArray())
         {
         }
 
@@ -27,6 +33,21 @@ namespace QuickFork.Shell.Pages
 
             Forker.Repos[item.SelectedPath].RemoveAt(index);
             Forker.SaveRepoMap();
+
+            CurrentProgram.NavigateBack();
+        }
+
+        private static void DeleteRepo(int index)
+        {
+            if (index < 0)
+                throw new ArgumentException("index", "Index cannot be null.");
+
+            RepoItem rItem = Forker.StoredRepos.ElementAt(index);
+
+            Forker.Repos[item.SelectedPath].RemoveAt(index);
+            Forker.SaveRepoMap();
+
+            Forker.StoredRepos.Remove(rItem);
 
             CurrentProgram.NavigateBack();
         }

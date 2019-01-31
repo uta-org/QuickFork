@@ -15,9 +15,12 @@ namespace QuickFork.Shell
 
             Forker.LoadSettings();
 
+            AddPage(new MainPage(this));
+            AddPage(new ProjectList(this));
+            AddPage(new ProjectList(this));
             AddPage(new ProjectSelection(this));
 
-            SetPage<ProjectSelection>();
+            SetPage<MainPage>();
         }
     }
 }

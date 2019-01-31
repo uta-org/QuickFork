@@ -54,47 +54,7 @@ namespace QuickFork.Shell.Pages
             RepoItem rItem;
 
             if (index == -1)
-            {
-                string gitUrl = "";
-                bool isValid = false,
-                     alreadyAdded = false;
-
-                do
-                {
-                    Console.Write("Project Repo Url < .git extension >: ");
-                    gitUrl = Console.ReadLine();
-
-                    if (Forker.Repos.ContainsKey(gitUrl))
-                    {
-                        alreadyAdded = true;
-                        break;
-                    }
-
-                    isValid = gitUrl.CheckURLValid();
-
-                    if (!isValid)
-                    {
-                        Console.Clear();
-                        Console.WriteLine("Invalid URL provided, please, type again.", Color.Red);
-                    }
-
-                    Console.WriteLine();
-                }
-                while (!isValid);
-
-                if (!alreadyAdded)
-                {
-                    rItem = RepoItem.Update(pItem.SelectedPath, gitUrl);
-                    Console.WriteLine("Repository has created succesfully!", Color.Green);
-                }
-                else
-                {
-                    rItem = Forker.Repos[pItem.SelectedPath][index];
-                    Console.WriteLine($"This repository '{rItem.Name}' was already added!", Color.Yellow);
-                }
-
-                Console.WriteLine();
-            }
+                rItem = RepoFunc.RepoAdd(index, pItem);
             else
                 rItem = Forker.Repos[pItem.SelectedPath][index];
 

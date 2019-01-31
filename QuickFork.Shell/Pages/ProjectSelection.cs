@@ -58,15 +58,6 @@ namespace QuickFork.Shell.Pages
 
         public override void Display(string caption = "Choose an option: ")
         {
-            if (string.IsNullOrEmpty(Forker.SyncFolder))
-            {
-                string syncPath = ConsoleHelper.GetValidPath("First of all, please, set the base folder where new repositories will be cloned: ");
-                Console.WriteLine();
-
-                Forker.SyncFolder = syncPath;
-                Forker.SaveSyncFolder();
-            }
-
             bool isNew = Forker.StoredProjects.Count == 0;
 
             if (isNew)
