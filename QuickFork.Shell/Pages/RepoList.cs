@@ -8,10 +8,11 @@ namespace QuickFork.Shell.Pages
     using Lib;
     using Lib.Model;
     using Common;
+    using Interfaces;
 
-    internal class RepoList : MenuPage
+    internal sealed class RepoList : MenuPage, IPageList<RepoItem>
     {
-        private RepoItem NewRepoItem { get; set; }
+        public RepoItem NewItem { get; set; }
 
         private RepoList()
             : base("", null)
@@ -23,7 +24,7 @@ namespace QuickFork.Shell.Pages
         {
             Instance = this;
 
-            EmptyAction = () => NewRepoItem = RepoFunc.Add();
+            EmptyAction = () => NewItem = RepoFunc.Add();
         }
 
         private static List<Option> GetOptions(Program program)
@@ -35,7 +36,7 @@ namespace QuickFork.Shell.Pages
 
             list.AddRange(CommonFunc.CommonOptions<RepoItem>(program, (newRepo) =>
             {
-                (Instance as RepoList).NewRepoItem = newRepo;
+                (Instance as RepoList).NewItem = newRepo;
                 CurrentProgram.NavigateBack(true, false);
             }));
 

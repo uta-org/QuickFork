@@ -38,7 +38,7 @@ namespace QuickFork.Shell.Pages
             return list;
         }
 
-        private static void SelectProject(int index)
+        /*private static void SelectProject(int index)
         {
             string projectPath;
 
@@ -54,7 +54,7 @@ namespace QuickFork.Shell.Pages
 
             CurrentProgram.AddPage(new ProjectOperation(CurrentProgram, new ProjectItem(projectPath)));
             CurrentProgram.NavigateTo<ProjectOperation>();
-        }
+        }*/
 
         public override void Display(string caption = "Choose an option: ")
         {
