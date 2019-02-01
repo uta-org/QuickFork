@@ -22,27 +22,17 @@ namespace QuickFork.Shell.Pages.Common
                 return null;
         }
 
-        public static IEnumerable<Option> CommonRepoOptions(Program program, Action<RepoItem> addAction)
-        {
-            yield return new Option("Create new local cloned repository", () => addAction?.Invoke(RepoAdd()));
-            yield return new Option("Remove repository from the list", () =>
-            {
-                program.AddPage(new RepoDeletion(program));
-                program.NavigateTo<RepoDeletion>();
-            });
-        }
-
-        public static IEnumerable<Option> GetRepoList(Action<int> selectedRepo)
+        public static IEnumerable<Option> Get(Action<int> selectedRepo)
         {
             return Forker.StoredRepos?.Select((r, i) => new Option(r.Name, () => selectedRepo?.Invoke(i)));
         }
 
-        public static RepoItem RepoAdd()
+        public static RepoItem Add()
         {
-            return RepoAdd(-1, null);
+            return Add(-1, null);
         }
 
-        public static RepoItem RepoAdd(int index = -1, ProjectItem pItem = null)
+        public static RepoItem Add(int index = -1, ProjectItem pItem = null)
         {
             RepoItem rItem = null;
             bool alreadyAdded = false, showWarning = false;

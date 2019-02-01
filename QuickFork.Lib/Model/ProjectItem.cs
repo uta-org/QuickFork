@@ -2,7 +2,9 @@
 
 namespace QuickFork.Lib.Model
 {
-    public class ProjectItem
+    using Interfaces;
+
+    public class ProjectItem : IModel
     {
         public string SelectedPath { get; private set; }
 

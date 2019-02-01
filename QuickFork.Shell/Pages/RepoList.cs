@@ -23,7 +23,7 @@ namespace QuickFork.Shell.Pages
         {
             Instance = this;
 
-            EmptyAction = () => NewRepoItem = RepoFunc.RepoAdd();
+            EmptyAction = () => NewRepoItem = RepoFunc.Add();
         }
 
         private static List<Option> GetOptions(Program program)
@@ -31,9 +31,9 @@ namespace QuickFork.Shell.Pages
             if (Forker.StoredRepos.IsNullOrEmpty())
                 return null;
 
-            var list = RepoFunc.GetRepoList(null).ToList();
+            var list = RepoFunc.Get(null).ToList();
 
-            list.AddRange(RepoFunc.CommonRepoOptions(program, (newRepo) =>
+            list.AddRange(CommonFunc.CommonOptions<RepoItem>(program, (newRepo) =>
             {
                 (Instance as RepoList).NewRepoItem = newRepo;
                 CurrentProgram.NavigateBack(true, false);

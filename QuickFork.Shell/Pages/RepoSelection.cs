@@ -34,13 +34,13 @@ namespace QuickFork.Shell.Pages
         {
             List<Option> list = new List<Option>();
 
-            list.AddNullableRange(RepoFunc.Get(pItem, (i, _item) => RepoFunc.RepoAdd(i, _item)));
+            list.AddNullableRange(RepoFunc.Get(pItem, (i, _item) => RepoFunc.Add(i, _item)));
 
-            list.AddRange(RepoFunc.CommonRepoOptions(CurrentProgram, (rItem) =>
+            list.AddRange(CommonFunc.CommonOptions<RepoItem>(CurrentProgram, (rItem) =>
             {
                 Console.WriteLine();
 
-                RepoFunc.RepoAdd(-1, pItem);
+                RepoFunc.Add(-1, pItem);
 
                 CurrentProgram.AddPage(new RepoOperation(CurrentProgram, rItem, pItem));
                 CurrentProgram.NavigateTo<RepoOperation>();
@@ -58,7 +58,7 @@ namespace QuickFork.Shell.Pages
             if (isNew)
             {
                 Console.WriteLine("There isn't any available repo to select, please, create a new one.", Color.LightBlue);
-                RepoFunc.RepoAdd(-1, CurrentItem);
+                RepoFunc.Add(-1, CurrentItem);
             }
             else
             {

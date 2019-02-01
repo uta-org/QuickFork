@@ -15,7 +15,7 @@ namespace QuickFork.Shell.Pages
         }
 
         public ProjectDeletion(Program program)
-            : base("Project Deletion", program, RepoFunc.GetRepoList(DeleteRepo).ToArray())
+            : base("Project Deletion", program, RepoFunc.Get(DeleteRepo).ToArray())
         {
         }
 
@@ -24,8 +24,13 @@ namespace QuickFork.Shell.Pages
             if (index < 0)
                 throw new ArgumentException("index", "Index cannot be null.");
 
+            string projectPath = Forker.StoredProjects[index];
+
             Forker.StoredProjects.RemoveAt(index);
             Forker.SaveStoredProjects();
+
+            Forker.Repos.Remove(projectPath);
+            Forker.SaveRepoMap();
 
             CurrentProgram.NavigateBack(true);
         }

@@ -22,7 +22,7 @@ namespace QuickFork.Shell.Pages
         }
 
         public RepoDeletion(Program program)
-            : base("Repository Deletion", program, () => RepoFunc.GetRepoList(DeleteRepo).ToArray())
+            : base("Repository Deletion", program, () => RepoFunc.Get(DeleteRepo).ToArray())
         {
         }
 
@@ -47,7 +47,6 @@ namespace QuickFork.Shell.Pages
             Forker.Repos.ForEach(r => r.Value.Remove(rItem));
             Forker.SaveRepoMap();
 
-            //Forker.StoredRepos.RemoveWhere((item) => item.GitUrl == rItem.GitUrl);
             Forker.StoredRepos.Remove(rItem);
             Forker.SaveStoredRepos();
 

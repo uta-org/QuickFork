@@ -15,8 +15,10 @@ using Console = Colorful.Console;
 
 namespace QuickFork.Lib.Model
 {
+    using Interfaces;
+
     [Serializable]
-    public class RepoItem
+    public class RepoItem : IModel
     {
         public static GitShell MyShell { get; private set; }
 
