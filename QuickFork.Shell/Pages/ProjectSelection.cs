@@ -45,29 +45,8 @@ namespace QuickFork.Shell.Pages
                 Console.WriteLine();
             }));
 
-            /*list.Add(new Option("Add new project", () => SelectProject(-1)));
-            list.Add(new Option("Exit", () => Environment.Exit(0)));*/
-
             return list;
         }
-
-        /*private static void SelectProject(int index)
-        {
-            string projectPath;
-
-            if (index == -1)
-            {
-                projectPath = ConsoleHelper.GetValidPath("Write the path to your project: ");
-                Console.WriteLine();
-
-                Console.WriteLine("Project has created succesfully!", Color.Green);
-            }
-            else
-                projectPath = Forker.StoredProjects[index];
-
-            CurrentProgram.AddPage(new ProjectOperation(CurrentProgram, new ProjectItem(projectPath)));
-            CurrentProgram.NavigateTo<ProjectOperation>();
-        }*/
 
         public override void Display(string caption = "Choose an option: ")
         {
