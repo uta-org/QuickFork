@@ -1,5 +1,4 @@
 ﻿using EasyConsole;
-using System;
 using System.Drawing;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +29,7 @@ namespace QuickFork.Shell.Pages
         {
             List<Option> list = new List<Option>();
 
-            if (Forker.StoredProjects.Count > 0)
+            if (!Forker.StoredProjects.IsNullOrEmpty())
                 Forker.StoredProjects.Cast<string>().ForEach((path, i) => list.Add(new Option(Path.GetFileName(path), () => ProjectFunc.Add(i))));
 
             list.AddRange(CommonFunc.CommonOptions<ProjectItem>(CurrentProgram, (pItem) =>

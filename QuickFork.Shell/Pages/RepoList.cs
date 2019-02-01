@@ -1,4 +1,5 @@
-﻿using EasyConsole;
+﻿using System;
+using EasyConsole;
 using System.Collections.Generic;
 using System.Linq;
 using uzLib.Lite.Extensions;
@@ -20,14 +21,14 @@ namespace QuickFork.Shell.Pages
         }
 
         public RepoList(Program program)
-            : base("Repository List", program, () => GetOptions(program).ToArray())
+            : base("Repository List", program, GetOptions(program))
         {
             Instance = this;
 
             EmptyAction = () => NewItem = RepoFunc.Add();
         }
 
-        private static List<Option> GetOptions(Program program)
+        private static Func<IEnumerable<Option>> GetOptions(Program program)
         {
             if (Forker.StoredRepos.IsNullOrEmpty())
                 return null;
@@ -40,7 +41,7 @@ namespace QuickFork.Shell.Pages
                 CurrentProgram.NavigateBack(true, false);
             }));
 
-            return list;
+            return () => list;
         }
     }
 }
