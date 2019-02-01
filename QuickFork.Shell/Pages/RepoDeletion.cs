@@ -12,17 +12,17 @@ namespace QuickFork.Shell.Pages
     internal sealed class RepoDeletion : MenuPage
     {
         private RepoDeletion()
-            : base("", null, null)
+            : base("", null)
         {
         }
 
         public RepoDeletion(Program program, ProjectItem item)
-            : base("Repository Deletion", program, RepoFunc.Get(item, (i, _item) => DeleteRepo(i, _item)).ToArray())
+            : base("Repository Deletion", program, () => RepoFunc.Get(item, (i, _item) => DeleteRepo(i, _item)).ToArray())
         {
         }
 
         public RepoDeletion(Program program)
-            : base("Repository Deletion", program, RepoFunc.GetRepoList(DeleteRepo).ToArray())
+            : base("Repository Deletion", program, () => RepoFunc.GetRepoList(DeleteRepo).ToArray())
         {
         }
 
@@ -47,9 +47,11 @@ namespace QuickFork.Shell.Pages
             Forker.Repos.ForEach(r => r.Value.Remove(rItem));
             Forker.SaveRepoMap();
 
+            //Forker.StoredRepos.RemoveWhere((item) => item.GitUrl == rItem.GitUrl);
             Forker.StoredRepos.Remove(rItem);
+            Forker.SaveStoredRepos();
 
-            CurrentProgram.NavigateBack();
+            CurrentProgram.NavigateBack(true);
         }
     }
 }

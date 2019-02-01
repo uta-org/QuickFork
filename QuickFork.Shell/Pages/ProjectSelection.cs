@@ -16,7 +16,7 @@ namespace QuickFork.Shell.Pages
     internal sealed class ProjectSelection : MenuPage
     {
         private ProjectSelection()
-            : base("", null, null)
+            : base("", null)
         {
         }
 

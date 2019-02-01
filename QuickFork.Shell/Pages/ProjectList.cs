@@ -10,12 +10,12 @@ namespace QuickFork.Shell.Pages
     internal class ProjectList : MenuPage
     {
         private ProjectList()
-            : base("", null, null)
+            : base("", null)
         {
         }
 
         public ProjectList(Program program)
-            : base("Project List", program, GetOptions().ToArray())
+            : base("Project List", program)
         {
         }
     }

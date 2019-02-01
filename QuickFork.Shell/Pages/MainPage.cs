@@ -1,9 +1,5 @@
 ﻿using EasyConsole;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using uzLib.Lite.Extensions;
 
 namespace QuickFork.Shell.Pages
@@ -13,7 +9,7 @@ namespace QuickFork.Shell.Pages
     internal class MainPage : MenuPage
     {
         private MainPage()
-            : base("", null, null)
+            : base("", null)
         {
         }
 

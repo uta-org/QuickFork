@@ -14,13 +14,15 @@ namespace QuickFork.Shell.Pages
         private RepoItem NewRepoItem { get; set; }
 
         private RepoList()
-            : base("", null, null)
+            : base("", null)
         {
         }
 
         public RepoList(Program program)
-            : base("Repository List", program, GetOptions(program).ToArray())
+            : base("Repository List", program, () => GetOptions(program).ToArray())
         {
+            Instance = this;
+
             EmptyAction = () => NewRepoItem = RepoFunc.RepoAdd();
         }
 
@@ -31,7 +33,11 @@ namespace QuickFork.Shell.Pages
 
             var list = RepoFunc.GetRepoList(null).ToList();
 
-            list.AddRange(RepoFunc.CommonRepoOptions(program, (newRepo) => (Instance as RepoList).NewRepoItem = newRepo));
+            list.AddRange(RepoFunc.CommonRepoOptions(program, (newRepo) =>
+            {
+                (Instance as RepoList).NewRepoItem = newRepo;
+                CurrentProgram.NavigateBack(true, false);
+            }));
 
             return list;
         }

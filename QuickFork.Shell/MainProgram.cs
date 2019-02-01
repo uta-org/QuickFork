@@ -17,7 +17,7 @@ namespace QuickFork.Shell
 
             AddPage(new MainPage(this));
             AddPage(new ProjectList(this));
-            AddPage(new ProjectList(this));
+            AddPage(new RepoList(this));
             AddPage(new ProjectSelection(this));
 
             SetPage<MainPage>();

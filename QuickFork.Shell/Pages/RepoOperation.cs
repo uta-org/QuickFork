@@ -13,7 +13,7 @@ namespace QuickFork.Shell.Pages
     internal sealed class RepoOperation : MenuPage
     {
         private RepoOperation()
-            : base("", null, null)
+            : base("", null)
         {
         }
 

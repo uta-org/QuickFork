@@ -1,5 +1,4 @@
 ﻿using EasyConsole;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using uzLib.Lite.Extensions;
@@ -21,7 +20,7 @@ namespace QuickFork.Shell.Pages
         public static string PackageFile => Path.Combine(CurrentItem.SelectedPath, "dependencies.json");
 
         private RepoSelection()
-            : base("", null, null)
+            : base("", null)
         {
         }
 

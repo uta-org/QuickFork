@@ -12,7 +12,7 @@ namespace QuickFork.Shell.Pages
         private static ProjectItem CurrentItem { get; set; }
 
         private ProjectOperation()
-            : base("", null, null)
+            : base("", null)
         {
         }
 
