@@ -187,10 +187,10 @@ namespace QuickFork.Lib.Model
 
         public static RepoItem Update(string gitUrl, bool fSave = true)
         {
-            return Update(string.Empty, gitUrl, fSave);
+            return Update(null, gitUrl, fSave);
         }
 
-        public static RepoItem Update(string projectPath, string gitUrl, bool fSave = true)
+        public static RepoItem Update(ProjectItem pItem, string gitUrl, bool fSave = true)
         {
             RepoItem rItem = null;
             bool firstTime = true;
@@ -204,7 +204,7 @@ namespace QuickFork.Lib.Model
             if (firstTime)
             {
                 rItem = new RepoItem(gitUrl);
-                Forker.Add(projectPath, rItem);
+                Forker.Add(pItem, rItem);
             }
             else
             {

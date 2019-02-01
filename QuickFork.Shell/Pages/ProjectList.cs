@@ -43,4 +43,3 @@ namespace QuickFork.Shell.Pages
         }
     }
 }
-}

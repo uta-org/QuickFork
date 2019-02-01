@@ -70,7 +70,7 @@ namespace QuickFork.Shell.Pages.Common
                     if (pItem == null)
                         rItem = RepoItem.Update(gitUrl);
                     else
-                        rItem = RepoItem.Update(pItem.SelectedPath, gitUrl);
+                        rItem = RepoItem.Update(pItem, gitUrl);
 
                     Console.WriteLine("Repository has created succesfully!", Color.Green);
                 }

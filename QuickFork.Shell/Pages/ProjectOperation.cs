@@ -20,9 +20,6 @@ namespace QuickFork.Shell.Pages
             : base("Project Operation", program, GetOptions().ToArray())
         {
             CurrentItem = item;
-
-            // Save it (in case of exception this will saved before exception occurs)
-            Forker.Add(item.SelectedPath);
         }
 
         public static IEnumerable<Option> GetOptions()

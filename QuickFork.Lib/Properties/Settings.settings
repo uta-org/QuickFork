@@ -8,7 +8,7 @@
     <Setting Name="SyncFolder" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="StoredProjects" Type="System.Collections.Specialized.StringCollection" Scope="User">
+    <Setting Name="StoredProjects" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="StoredRepos" Type="System.String" Scope="User">

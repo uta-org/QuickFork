@@ -49,9 +49,10 @@ namespace QuickFork.Lib.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Specialized.StringCollection StoredProjects {
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string StoredProjects {
             get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["StoredProjects"]));
+                return ((string)(this["StoredProjects"]));
             }
             set {
                 this["StoredProjects"] = value;

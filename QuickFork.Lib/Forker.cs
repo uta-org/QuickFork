@@ -56,7 +56,7 @@ namespace QuickFork.Lib
         /// <value>
         /// The stored projects.
         /// </value>
-        public static StringCollection StoredProjects { get; private set; }
+        public static HashSet<ProjectItem> StoredProjects { get; private set; }
 
         /// <summary>
         /// Gets the stored repos.
@@ -93,15 +93,10 @@ namespace QuickFork.Lib
             DoMapping(true);
 
             if (StoredProjects == null)
-                StoredProjects = new StringCollection();
+                StoredProjects = new HashSet<ProjectItem>();
 
-            if (MySettings.StoredProjects == null)
-            {
-                MySettings.StoredProjects = new StringCollection();
-                MySettings.Save();
-            }
-            else
-                StoredProjects = MySettings.StoredProjects;
+            if (MySettings.StoredProjects != null)
+                StoredProjects = JsonConvert.DeserializeObject<HashSet<ProjectItem>>(MySettings.StoredProjects);
 
             SyncFolder = MySettings.SyncFolder;
         }
@@ -154,11 +149,11 @@ namespace QuickFork.Lib
         /// Adds the specified project path.
         /// </summary>
         /// <param name="projectPath">The project path.</param>
-        public static void Add(string projectPath)
+        public static void Add(ProjectItem pItem)
         {
-            if (!StoredProjects.Contains(projectPath))
+            if (!StoredProjects.Contains(pItem))
             {
-                StoredProjects.Add(projectPath);
+                StoredProjects.Add(pItem);
                 SaveStoredProjects();
             }
         }
@@ -168,12 +163,13 @@ namespace QuickFork.Lib
         /// </summary>
         /// <param name="projectPath">The project path.</param>
         /// <param name="rItem">The repository item.</param>
-        public static void Add(string projectPath, RepoItem rItem)
+        public static void Add(ProjectItem pItem, RepoItem rItem)
         {
             // projectPath == string.Empty, this means that the project will not be linked
+            string projectPath = pItem == null ? string.Empty : pItem.SelectedPath;
 
             if (!string.IsNullOrEmpty(projectPath))
-                Add(projectPath);
+                Add(pItem);
 
             if (!StoredRepos.Contains(rItem))
             {
@@ -226,7 +222,7 @@ namespace QuickFork.Lib
         /// <param name="fSave">if set to <c>true</c> [f save].</param>
         public static void SaveStoredProjects(bool fSave = true)
         {
-            MySettings.StoredProjects = StoredProjects;
+            MySettings.StoredProjects = JsonConvert.SerializeObject(StoredProjects);
 
             if (fSave)
                 MySettings.Save();

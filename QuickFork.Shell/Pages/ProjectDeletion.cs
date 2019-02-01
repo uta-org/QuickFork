@@ -5,6 +5,7 @@ using System.Linq;
 namespace QuickFork.Shell.Pages
 {
     using Lib;
+    using Lib.Model;
     using Common;
 
     internal class ProjectDeletion : MenuPage
@@ -24,13 +25,13 @@ namespace QuickFork.Shell.Pages
             if (index < 0)
                 throw new ArgumentException("index", "Index cannot be null.");
 
-            string projectPath = Forker.StoredProjects[index];
+            ProjectItem pItem = Forker.StoredProjects.ElementAt(index);
 
-            Forker.StoredProjects.RemoveAt(index);
-            Forker.SaveStoredProjects();
-
-            Forker.Repos.Remove(projectPath);
+            Forker.Repos.Remove(pItem.SelectedPath);
             Forker.SaveRepoMap();
+
+            Forker.StoredProjects.Remove(pItem);
+            Forker.SaveStoredProjects();
 
             CurrentProgram.NavigateBack(true);
         }

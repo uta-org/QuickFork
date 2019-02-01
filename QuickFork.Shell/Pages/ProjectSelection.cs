@@ -1,4 +1,6 @@
 ﻿using EasyConsole;
+using System;
+using System.Drawing;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
@@ -8,8 +10,7 @@ namespace QuickFork.Shell.Pages
 {
     using Lib;
     using Lib.Model;
-    using System;
-    using System.Drawing;
+    using Common;
 
     using Console = Colorful.Console;
 
@@ -30,10 +31,22 @@ namespace QuickFork.Shell.Pages
             List<Option> list = new List<Option>();
 
             if (Forker.StoredProjects.Count > 0)
-                Forker.StoredProjects.Cast<string>().ForEach((path, i) => list.Add(new Option(Path.GetFileName(path), () => SelectProject(i))));
+                Forker.StoredProjects.Cast<string>().ForEach((path, i) => list.Add(new Option(Path.GetFileName(path), () => ProjectFunc.Add(i))));
 
-            list.Add(new Option("Add new project", () => SelectProject(-1)));
-            list.Add(new Option("Exit", () => Environment.Exit(0)));
+            list.AddRange(CommonFunc.CommonOptions<ProjectItem>(CurrentProgram, (pItem) =>
+            {
+                Console.WriteLine();
+
+                ProjectFunc.Add();
+
+                CurrentProgram.AddPage(new ProjectOperation(CurrentProgram, pItem));
+                CurrentProgram.NavigateTo<ProjectOperation>();
+
+                Console.WriteLine();
+            }));
+
+            /*list.Add(new Option("Add new project", () => SelectProject(-1)));
+            list.Add(new Option("Exit", () => Environment.Exit(0)));*/
 
             return list;
         }
@@ -64,7 +77,7 @@ namespace QuickFork.Shell.Pages
             {
                 Console.WriteLine("There isn't any available project to select, please, create a new one.", Color.LightBlue);
                 Console.WriteLine();
-                SelectProject(-1);
+                ProjectFunc.Add(-1);
                 Console.WriteLine();
             }
             else
