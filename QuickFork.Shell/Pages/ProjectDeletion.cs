@@ -16,11 +16,11 @@ namespace QuickFork.Shell.Pages
         }
 
         public ProjectDeletion(Program program)
-            : base("Project Deletion", program, RepoFunc.Get(DeleteRepo).ToArray())
+            : base("Project Deletion", program, () => ProjectFunc.Get(DeleteProject).ToArray())
         {
         }
 
-        private static void DeleteRepo(int index)
+        private static void DeleteProject(int index)
         {
             if (index < 0)
                 throw new ArgumentException("index", "Index cannot be null.");
