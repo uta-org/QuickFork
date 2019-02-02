@@ -16,7 +16,7 @@ namespace QuickFork.Shell.Pages
         }
 
         public ProjectDeletion(Program program)
-            : base("Project Deletion", program, () => ProjectFunc.Get(DeleteProject).ToArray())
+            : base("Project Deletion", program, (_p) => ProjectFunc.Get(_p, DeleteProject))
         {
         }
 

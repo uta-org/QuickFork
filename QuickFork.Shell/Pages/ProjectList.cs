@@ -1,5 +1,4 @@
 ﻿using EasyConsole;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -20,7 +19,7 @@ namespace QuickFork.Shell.Pages
         }
 
         public ProjectList(Program program)
-            : base("Project List", program, GetOptions(program))
+            : base("Project List", program, (_p) => GetOptions(_p))
         {
             Instance = this;
 
@@ -31,7 +30,7 @@ namespace QuickFork.Shell.Pages
             };
         }
 
-        private static Func<IEnumerable<Option>> GetOptions(Program program)
+        private static GetOptionsDelegate GetOptions(Program program)
         {
             var list = Forker.StoredProjects == null ? new List<Option>() : ProjectFunc.Get().ToList();
 

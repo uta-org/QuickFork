@@ -30,7 +30,7 @@ namespace QuickFork.Shell.Pages
             CurrentItem = item;
         }
 
-        public static List<Option> GetOptions(ProjectItem pItem)
+        public new static List<Option> GetOptions(ProjectItem pItem)
         {
             List<Option> list = new List<Option>();
 

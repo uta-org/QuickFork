@@ -6,6 +6,7 @@ using EasyConsole;
 using uzLib.Lite.Extensions;
 
 using Console = Colorful.Console;
+using static EasyConsole.MenuPage;
 
 namespace QuickFork.Shell.Pages.Common
 {
@@ -14,8 +15,14 @@ namespace QuickFork.Shell.Pages.Common
 
     internal static class ProjectFunc
     {
+        public static GetOptionsDelegate Get(Program program, Action<int> selectedProject)
+        {
+            return () => Get(selectedProject);
+        }
+
         public static IEnumerable<Option> Get(Action<int> selectedProject = null)
         {
+            if (selectedProject.Equals(default(Action<int>))) selectedProject = null;
             return Forker.StoredProjects?.Cast<string>().Select((r, i) => new Option(r, selectedProject == null ? (Action)(() => { }) : () => selectedProject(i)));
         }
 

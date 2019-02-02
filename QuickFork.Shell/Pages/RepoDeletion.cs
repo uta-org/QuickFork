@@ -17,12 +17,12 @@ namespace QuickFork.Shell.Pages
         }
 
         public RepoDeletion(Program program, ProjectItem item)
-            : base("Repository Deletion", program, () => RepoFunc.Get(item, (i, _item) => DeleteRepo(i, _item)).ToArray())
+            : base("Repository Deletion", program, (_p) => RepoFunc.Get(_p, item, (i, _item) => DeleteRepo(i, _item)))
         {
         }
 
         public RepoDeletion(Program program)
-            : base("Repository Deletion", program, () => RepoFunc.Get(DeleteRepo).ToArray())
+            : base("Repository Deletion", program, (_p) => RepoFunc.Get(_p, DeleteRepo))
         {
         }
 
