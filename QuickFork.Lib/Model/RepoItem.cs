@@ -103,7 +103,7 @@ namespace QuickFork.Lib.Model
                             projs.ForEach((proj, i) => csprojMenu.Add(Path.GetFileNameWithoutExtension(proj), () => selectedProj = i));
                             csprojMenu.Add("Add all projects", () => selectedProj = -1);
 
-                            csprojMenu.Display();
+                            csprojMenu.Display(true);
 
                             GetProjects(solution, out typeGuid, out projects);
 

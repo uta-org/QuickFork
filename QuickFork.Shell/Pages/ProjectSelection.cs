@@ -21,16 +21,22 @@ namespace QuickFork.Shell.Pages
         }
 
         public ProjectSelection(Program program)
-            : base("Project Selection", program, GetOptions().ToArray())
+            : base("Project Selection", program, (_p) => GetOptions())
         {
         }
 
-        private static List<Option> GetOptions()
+        private static GetOptionsDelegate GetOptions()
         {
             List<Option> list = new List<Option>();
 
             if (!Forker.StoredProjects.IsNullOrEmpty())
-                Forker.StoredProjects.ForEach((pItem, i) => list.Add(new Option(pItem.Name, () => ProjectFunc.Add(i))));
+                Forker.StoredProjects.ForEach((pItem, i) => list.Add(new Option(pItem.Name, () =>
+                {
+                    var _pItem = ProjectFunc.Add(i);
+
+                    CurrentProgram.AddPage(new ProjectOperation(CurrentProgram, _pItem));
+                    CurrentProgram.NavigateTo<ProjectOperation>();
+                })));
 
             list.AddRange(CommonFunc.CommonOptions<ProjectItem>(CurrentProgram, (pItem) =>
             {
@@ -40,11 +46,9 @@ namespace QuickFork.Shell.Pages
 
                 CurrentProgram.AddPage(new ProjectOperation(CurrentProgram, pItem));
                 CurrentProgram.NavigateTo<ProjectOperation>();
-
-                Console.WriteLine();
             }));
 
-            return list;
+            return () => list;
         }
 
         public override void Display(string caption = "Choose an option: ")
@@ -55,7 +59,7 @@ namespace QuickFork.Shell.Pages
             {
                 Console.WriteLine("There isn't any available project to select, please, create a new one.", Color.LightBlue);
                 Console.WriteLine();
-                ProjectFunc.Add(-1);
+                ProjectFunc.Add();
                 Console.WriteLine();
             }
             else

@@ -12,6 +12,7 @@ namespace QuickFork.Shell.Pages
 
     internal sealed class RepoList : MenuPage, IPageList<RepoItem>
     {
+        // Not used
         public RepoItem NewItem { get; set; }
 
         private RepoList()
@@ -35,8 +36,8 @@ namespace QuickFork.Shell.Pages
 
             list.AddRange(CommonFunc.CommonOptions<RepoItem>(program, (newRepo) =>
             {
-                (Instance as RepoList).NewItem = newRepo;
                 CurrentProgram.NavigateBack(true, PopAction.NoPop);
+                (Instance as RepoList).NewItem = newRepo;
             }));
 
             return () => list;

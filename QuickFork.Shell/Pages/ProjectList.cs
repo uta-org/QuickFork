@@ -11,6 +11,7 @@ namespace QuickFork.Shell.Pages
 
     internal class ProjectList : MenuPage, IPageList<ProjectItem>
     {
+        // Not used
         public ProjectItem NewItem { get; set; }
 
         private ProjectList()
@@ -34,8 +35,8 @@ namespace QuickFork.Shell.Pages
 
             list.AddRange(CommonFunc.CommonOptions<ProjectItem>(program, (newProject) =>
             {
-                (Instance as ProjectList).NewItem = newProject;
                 CurrentProgram.NavigateBack(true, PopAction.NoPop);
+                (Instance as ProjectList).NewItem = newProject;
             }));
 
             return () => list;

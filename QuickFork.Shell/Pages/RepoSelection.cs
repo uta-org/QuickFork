@@ -25,12 +25,12 @@ namespace QuickFork.Shell.Pages
         }
 
         public RepoSelection(Program program, ProjectItem item)
-            : base("Repository Selection", program, GetOptions(item).ToArray())
+            : base("Repository Selection", program, (_p) => GetOptions(item))
         {
             CurrentItem = item;
         }
 
-        public static List<Option> GetOptions(ProjectItem pItem)
+        public static GetOptionsDelegate GetOptions(ProjectItem pItem)
         {
             List<Option> list = new List<Option>();
 
@@ -48,7 +48,7 @@ namespace QuickFork.Shell.Pages
                 Console.WriteLine();
             }));
 
-            return list;
+            return () => list;
         }
 
         public override void Display(string caption = "Choose an option: ")
