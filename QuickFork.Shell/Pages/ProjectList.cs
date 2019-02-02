@@ -1,4 +1,5 @@
 ﻿using EasyConsole;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,27 +20,28 @@ namespace QuickFork.Shell.Pages
         }
 
         public ProjectList(Program program)
-            : base("Project List", program)
+            : base("Project List", program, GetOptions(program))
         {
             Instance = this;
 
-            EmptyAction = () => NewItem = ProjectFunc.Add();
+            EmptyAction = () =>
+            {
+                NewItem = ProjectFunc.Add();
+                CurrentProgram.NavigateBack(true, PopAction.PopAfter);
+            };
         }
 
-        private static List<Option> GetOptions(Program program)
+        private static Func<IEnumerable<Option>> GetOptions(Program program)
         {
-            if (Forker.StoredProjects == null)
-                return null;
-
-            var list = ProjectFunc.Get(null).ToList();
+            var list = Forker.StoredProjects == null ? new List<Option>() : ProjectFunc.Get().ToList();
 
             list.AddRange(CommonFunc.CommonOptions<ProjectItem>(program, (newProject) =>
             {
                 (Instance as ProjectList).NewItem = newProject;
-                CurrentProgram.NavigateBack(true, false);
+                CurrentProgram.NavigateBack(true, PopAction.NoPop);
             }));
 
-            return list;
+            return () => list;
         }
     }
 }

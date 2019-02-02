@@ -22,9 +22,9 @@ namespace QuickFork.Shell.Pages.Common
                 return null;
         }
 
-        public static IEnumerable<Option> Get(Action<int> selectedRepo)
+        public static IEnumerable<Option> Get(Action<int> selectedRepo = null)
         {
-            return Forker.StoredRepos?.Select((r, i) => new Option(r.Name, () => selectedRepo?.Invoke(i)));
+            return Forker.StoredRepos?.Select((r, i) => new Option(r.Name, selectedRepo == null ? (Action)(() => { }) : () => selectedRepo(i)));
         }
 
         public static RepoItem Add()

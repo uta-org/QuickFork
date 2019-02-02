@@ -14,9 +14,9 @@ namespace QuickFork.Shell.Pages.Common
 
     internal static class ProjectFunc
     {
-        public static IEnumerable<Option> Get(Action<int> selectedProject)
+        public static IEnumerable<Option> Get(Action<int> selectedProject = null)
         {
-            return Forker.StoredProjects?.Cast<string>().Select((r, i) => new Option(r, () => selectedProject?.Invoke(i)));
+            return Forker.StoredProjects?.Cast<string>().Select((r, i) => new Option(r, selectedProject == null ? (Action)(() => { }) : () => selectedProject(i)));
         }
 
         public static ProjectItem Add(int index = -1)
