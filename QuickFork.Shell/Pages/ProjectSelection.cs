@@ -30,7 +30,7 @@ namespace QuickFork.Shell.Pages
             List<Option> list = new List<Option>();
 
             if (!Forker.StoredProjects.IsNullOrEmpty())
-                Forker.StoredProjects.Cast<string>().ForEach((path, i) => list.Add(new Option(Path.GetFileName(path), () => ProjectFunc.Add(i))));
+                Forker.StoredProjects.ForEach((pItem, i) => list.Add(new Option(pItem.Name, () => ProjectFunc.Add(i))));
 
             list.AddRange(CommonFunc.CommonOptions<ProjectItem>(CurrentProgram, (pItem) =>
             {

@@ -21,8 +21,6 @@ namespace QuickFork.Shell.Pages
         public ProjectList(Program program)
             : base("Project List", program, (_p) => GetOptions(_p))
         {
-            Instance = this;
-
             EmptyAction = () =>
             {
                 NewItem = ProjectFunc.Add();

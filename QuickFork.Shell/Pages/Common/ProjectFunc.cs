@@ -22,8 +22,8 @@ namespace QuickFork.Shell.Pages.Common
 
         public static IEnumerable<Option> Get(Action<int> selectedProject = null)
         {
-            if (selectedProject.Equals(default(Action<int>))) selectedProject = null;
-            return Forker.StoredProjects?.Cast<string>().Select((r, i) => new Option(r, selectedProject == null ? (Action)(() => { }) : () => selectedProject(i)));
+            if (selectedProject != null && selectedProject.Equals(default(Action<int>))) selectedProject = null;
+            return Forker.StoredProjects.Select((r, i) => new Option(r.Name, selectedProject == null ? (Action)null : () => selectedProject(i)));
         }
 
         public static ProjectItem Add(int index = -1)

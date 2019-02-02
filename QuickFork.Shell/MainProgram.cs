@@ -11,8 +11,6 @@ namespace QuickFork.Shell
         public MainProgram()
             : base("QuickFork", breadcrumbHeader: true)
         {
-            Instance = this;
-
             Forker.LoadSettings();
 
             AddPage(new MainPage(this));

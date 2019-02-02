@@ -22,8 +22,6 @@ namespace QuickFork.Shell.Pages
         public RepoList(Program program)
             : base("Repository List", program, (_p) => GetOptions(_p))
         {
-            Instance = this;
-
             EmptyAction = () =>
             {
                 NewItem = RepoFunc.Add();

@@ -95,7 +95,7 @@ namespace QuickFork.Lib
             if (StoredProjects == null)
                 StoredProjects = new HashSet<ProjectItem>();
 
-            if (MySettings.StoredProjects != null)
+            if (!string.IsNullOrEmpty(MySettings.StoredProjects) && MySettings.StoredProjects != "null")
                 StoredProjects = JsonConvert.DeserializeObject<HashSet<ProjectItem>>(MySettings.StoredProjects);
 
             SyncFolder = MySettings.SyncFolder;
