@@ -17,12 +17,12 @@ namespace QuickFork.Shell.Pages
         }
 
         public RepoDeletion(Program program, ProjectItem item)
-            : base("Repository Deletion", program, (_p) => RepoFunc.Get(_p, item, (i, _item) => DeleteRepo(i, _item)))
+            : base("Repository Deletion", program, () => RepoFunc.GetDelegate(item, (i, _item) => DeleteRepo(i, _item)))
         {
         }
 
         public RepoDeletion(Program program)
-            : base("Repository Deletion", program, (_p) => RepoFunc.Get(_p, DeleteRepo))
+            : base("Repository Deletion", program, () => RepoFunc.GetDelegate(DeleteRepo))
         {
         }
 
@@ -34,7 +34,7 @@ namespace QuickFork.Shell.Pages
             Forker.Repos[item.SelectedPath].RemoveAt(index);
             Forker.SaveRepoMap();
 
-            CurrentProgram.NavigateBack();
+            CurrentProgram.NavigateBack(true);
         }
 
         private static void DeleteRepo(int index)

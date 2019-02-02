@@ -9,7 +9,7 @@ namespace QuickFork.Shell.Pages.Common
 
     internal static class CommonFunc
     {
-        public static IEnumerable<Option> CommonOptions<T>(Program program, Action<T> addAction)
+        public static IEnumerable<Option> CommonOptions<T>(Program program, Action<T> addAction, ProjectItem pItem = null)
             where T : IModel
         {
             bool isRepo = typeof(RepoItem) == typeof(T);
@@ -17,7 +17,7 @@ namespace QuickFork.Shell.Pages.Common
             yield return new Option(isRepo ? "Create new local cloned repository" : "Add new project", () => addAction?.Invoke((T)Add(isRepo)));
             yield return new Option($"Remove {(isRepo ? "repository" : "project")} from the list", () =>
             {
-                program.AddPage(isRepo ? (Page)new RepoDeletion(program) : new ProjectDeletion(program));
+                program.AddPage(isRepo ? (pItem == null ? (Page)new RepoDeletion(program) : new RepoDeletion(program, pItem)) : new ProjectDeletion(program));
 
                 if (isRepo)
                     program.NavigateTo<RepoDeletion>();

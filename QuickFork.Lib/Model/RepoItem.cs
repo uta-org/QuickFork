@@ -90,7 +90,6 @@ namespace QuickFork.Lib.Model
                         else if (projCount == 1)
                         {
                             GetProjects(solution, out typeGuid, out projects);
-
                             solution.Projects = projects.ToList().AddAndGet(GetProject(projects, projectPath, projs.First(), typeGuid, out alreadyExists));
                         }
                         else
@@ -156,22 +155,25 @@ namespace QuickFork.Lib.Model
             }
         }
 
-        private static Project GetProject(IEnumerable<Project> projects, string projectPath, string proj, Guid typeGuid, out bool alreadyExists)
+        private static Project GetProject(IEnumerable<Project> projects, string projectPath, string proj, Guid typeGuid, out bool alreadyExists, bool promptWarning = true)
         {
             string projectName;
-            return GetProject(projects, projectPath, proj, typeGuid, out alreadyExists, out projectName);
+            return GetProject(projects, projectPath, proj, typeGuid, out alreadyExists, out projectName, promptWarning);
         }
 
-        private static Project GetProject(IEnumerable<Project> projects, string projectPath, string proj, Guid typeGuid, out bool alreadyExists, out string projectName)
+        private static Project GetProject(IEnumerable<Project> projects, string projectPath, string proj, Guid typeGuid, out bool alreadyExists, out string projectName, bool promptWarning = true)
         {
             string _projectName = Path.GetFileName(projectPath).Replace("\\", "").Replace("/", "");
             projectName = _projectName;
 
             if (projects.Any(p => p.Name == _projectName))
             {
-                Console.WriteLine();
-                Console.WriteLine("The project you are trying to add to solution already exists on solution.", Color.Yellow);
-                Console.WriteLine();
+                if (promptWarning)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("The project you are trying to add to solution already exists on solution. Skipping...", Color.Yellow);
+                    Console.WriteLine();
+                }
 
                 alreadyExists = true;
                 return null;
@@ -208,7 +210,7 @@ namespace QuickFork.Lib.Model
             }
             else
             {
-                Console.WriteLine("The repository you're trying to add is already present on collection.", Color.Yellow);
+                Console.WriteLine("The repository you're trying to add is already present on collection. Skipping...", Color.Yellow);
                 Console.WriteLine();
 
                 return rItem;

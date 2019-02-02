@@ -1,8 +1,6 @@
 ﻿using EasyConsole;
 using System.Drawing;
 using System.Collections.Generic;
-using System.Linq;
-using System.IO;
 using uzLib.Lite.Extensions;
 
 namespace QuickFork.Shell.Pages
@@ -21,7 +19,7 @@ namespace QuickFork.Shell.Pages
         }
 
         public ProjectSelection(Program program)
-            : base("Project Selection", program, (_p) => GetOptions())
+            : base("Project Selection", program, () => GetOptions())
         {
         }
 

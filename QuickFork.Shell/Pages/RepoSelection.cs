@@ -1,6 +1,8 @@
 ﻿using EasyConsole;
 using System.Collections.Generic;
 using System.IO;
+using System.Drawing;
+using System.Linq;
 using uzLib.Lite.Extensions;
 
 using Console = Colorful.Console;
@@ -9,12 +11,12 @@ namespace QuickFork.Shell.Pages
 {
     using Lib;
     using Lib.Model;
-
     using Common;
-    using System.Drawing;
 
     internal sealed class RepoSelection : MenuPage
     {
+        private const int DashLength = 30;
+
         public static ProjectItem CurrentItem { get; private set; }
 
         public static string PackageFile => Path.Combine(CurrentItem.SelectedPath, "dependencies.json");
@@ -25,47 +27,55 @@ namespace QuickFork.Shell.Pages
         }
 
         public RepoSelection(Program program, ProjectItem item)
-            : base("Repository Selection", program, (_p) => GetOptions(item))
+            : base("Repository Selection", program)
         {
             CurrentItem = item;
         }
 
-        public static GetOptionsDelegate GetOptions(ProjectItem pItem)
+        private static IEnumerable<Option> GetOptions(ProjectItem pItem)
         {
-            List<Option> list = new List<Option>();
-
-            list.AddNullableRange(RepoFunc.Get(pItem, (i, _item) => RepoFunc.Add(i, _item)));
-
-            list.AddRange(CommonFunc.CommonOptions<RepoItem>(CurrentProgram, (rItem) =>
-            {
-                Console.WriteLine();
-
-                RepoFunc.Add(-1, pItem);
-
-                CurrentProgram.AddPage(new RepoOperation(CurrentProgram, rItem, pItem));
-                CurrentProgram.NavigateTo<RepoOperation>();
-
-                Console.WriteLine();
-            }));
-
-            return () => list;
+            return RepoFunc.Get(pItem, null);
         }
 
         public override void Display(string caption = "Choose an option: ")
         {
             bool isNew = Forker.Repos.IsNullOrEmpty(CurrentItem.SelectedPath);
 
+            Console.WriteLine("Linked repositories to this project:", Color.White);
+            Console.WriteLine(new string('-', DashLength), Color.Gray);
+
             if (isNew)
-            {
-                Console.WriteLine("There isn't any available repo to select, please, create a new one.", Color.LightBlue);
-                RepoFunc.Add(-1, CurrentItem);
-            }
+                Console.WriteLine("This project doesn't have any linked repository. Please, select one from the list below.", Color.LightBlue);
             else
             {
-                Console.WriteLine($"This are the {Forker.Repos[CurrentItem.SelectedPath].Count} local repo available. Which do you wish to use?");
+                int count = Forker.Repos[CurrentItem.SelectedPath].Count;
+
+                Console.WriteLine($"This project {(count == 1 ? "has" : "have")} {count} repository linked.", Color.LightBlue);
                 Console.WriteLine();
 
-                base.Display();
+                var repoMenus = new Menu();
+
+                repoMenus.AddRange(Forker.Repos[CurrentItem.SelectedPath].Select(r => new Option(r.Name, null)));
+                repoMenus.DisplayOptions();
+            }
+
+            Console.WriteLine(new string('-', DashLength), Color.Gray);
+
+            Console.WriteLine("All available repository:", Color.White);
+
+            {
+                Console.WriteLine(new string('-', DashLength), Color.Gray);
+
+                var repoMenus = new Menu(() => RepoList.GetOptions(CurrentProgram, (rItem) =>
+                {
+                    CurrentProgram.AddPage(new RepoOperation(CurrentProgram, rItem, CurrentItem));
+                    CurrentProgram.NavigateTo<RepoOperation>();
+                }));
+                repoMenus.DisplayOptions();
+
+                Console.WriteLine(new string('-', DashLength), Color.Gray);
+
+                repoMenus.DisplayCaption(true);
             }
         }
     }

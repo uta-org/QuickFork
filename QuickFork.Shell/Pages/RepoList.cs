@@ -1,4 +1,5 @@
 ﻿using EasyConsole;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using uzLib.Lite.Extensions;
@@ -21,7 +22,7 @@ namespace QuickFork.Shell.Pages
         }
 
         public RepoList(Program program)
-            : base("Repository List", program, (_p) => GetOptions(_p))
+            : base("Repository List", program, () => GetOptions(program))
         {
             EmptyAction = () =>
             {
@@ -30,9 +31,9 @@ namespace QuickFork.Shell.Pages
             };
         }
 
-        private static GetOptionsDelegate GetOptions(Program program)
+        public static GetOptionsDelegate GetOptions(Program program, Action<RepoItem> selectedRepo = null)
         {
-            var list = Forker.StoredRepos.IsNullOrEmpty() ? new List<Option>() : RepoFunc.Get().ToList();
+            var list = Forker.StoredRepos.IsNullOrEmpty() ? new List<Option>() : RepoFunc.Get((i) => selectedRepo(Forker.StoredRepos.ElementAt(i))).ToList();
 
             list.AddRange(CommonFunc.CommonOptions<RepoItem>(program, (newRepo) =>
             {

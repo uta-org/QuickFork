@@ -15,7 +15,7 @@ namespace QuickFork.Shell.Pages.Common
 
     internal static class ProjectFunc
     {
-        public static GetOptionsDelegate Get(Program program, Action<int> selectedProject)
+        public static GetOptionsDelegate GetDelegate(Action<int> selectedProject = null)
         {
             return () => Get(selectedProject);
         }

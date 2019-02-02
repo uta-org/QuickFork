@@ -20,7 +20,7 @@ namespace QuickFork.Shell.Pages
         }
 
         public ProjectList(Program program)
-            : base("Project List", program, (_p) => GetOptions(_p))
+            : base("Project List", program, () => GetOptions(program))
         {
             EmptyAction = () =>
             {

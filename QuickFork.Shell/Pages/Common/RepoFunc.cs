@@ -15,7 +15,7 @@ namespace QuickFork.Shell.Pages.Common
 
     internal static class RepoFunc
     {
-        public static GetOptionsDelegate Get(Program program, ProjectItem item, Action<int, ProjectItem> action)
+        public static GetOptionsDelegate GetDelegate(ProjectItem item, Action<int, ProjectItem> action)
         {
             return () => Get(item, action);
         }
@@ -28,7 +28,7 @@ namespace QuickFork.Shell.Pages.Common
                 return null;
         }
 
-        public static GetOptionsDelegate Get(Program program, Action<int> selectedRepo)
+        public static GetOptionsDelegate GetDelegate(Action<int> selectedRepo)
         {
             return () => Get(selectedRepo);
         }
