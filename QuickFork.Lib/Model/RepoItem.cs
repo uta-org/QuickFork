@@ -79,7 +79,7 @@ namespace QuickFork.Lib.Model
 
                         var solution = SolutionParser.Parse(solutions[0]) as Solution;
                         var projs = Directory.GetFiles(FolderPath, "*.csproj", SearchOption.AllDirectories);
-                        // .Where(p => !p.Contains("Demo") && !p.Contains("Test")); // <== No longer needed
+
                         int projCount = projs.Count();
 
                         Guid typeGuid;
@@ -99,7 +99,7 @@ namespace QuickFork.Lib.Model
                             int selectedProj = -1;
                             var csprojMenu = new Menu();
 
-                            projs.ForEach((proj, i) => csprojMenu.Add(Path.GetFileNameWithoutExtension(proj), () => selectedProj = i));
+                            csprojMenu.AddRange(projs.Select((proj, i) => new Option(Path.GetFileNameWithoutExtension(proj), () => selectedProj = i)));
                             csprojMenu.Add("Add all projects", () => selectedProj = -1);
 
                             csprojMenu.Display(true);
