@@ -96,17 +96,20 @@ namespace QuickFork.Lib.Model
                         {
                             // Let user choose one, several or all csprojs.
 
-                            int selectedProj = -1;
+                            List<int> selectedProjs = new List<int>();
                             var csprojMenu = new Menu();
 
-                            csprojMenu.AddRange(projs.Select((proj, i) => new Option(Path.GetFileNameWithoutExtension(proj), () => selectedProj = i)));
-                            csprojMenu.Add("Add all projects", () => selectedProj = -1);
+                            csprojMenu.AddRange(projs.Select((proj, i) => new Option(Path.GetFileNameWithoutExtension(proj), () => selectedProjs.Add(i))));
+                            csprojMenu.Add("Add all projects", () => selectedProj = null);
 
                             csprojMenu.Display(true);
 
+                            if (selectedProjs.Contains(csprojMenu.Count - 1))
+                                selectedProjs = null;
+
                             GetProjects(solution, out typeGuid, out projects);
 
-                            if (selectedProj == -1)
+                            if (selectedProjs == null)
                             {
                                 List<string> projectNames = new List<string>();
 
@@ -122,7 +125,11 @@ namespace QuickFork.Lib.Model
                                 .Where(p => !projectNames.Contains(p.Name)));
                             }
                             else
-                                solution.Projects = projects.ToList().AddAndGet(GetProject(projects, projectPath, projs[selectedProj], typeGuid, out alreadyExists));
+                            {
+                                solution.Projects = projects
+                                    .ToList()
+                                    .AddRangeAndGet(selectedProjs.Select(selectedProj => GetProject(projects, projectPath, projs[selectedProj], typeGuid, out alreadyExists)));
+                            }
                         }
 
                         File.WriteAllText(solutions[0], SolutionRenderer.Render(solution));

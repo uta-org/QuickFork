@@ -175,17 +175,18 @@ namespace QuickFork.Lib
             {
                 StoredRepos.Add(rItem);
                 SaveStoredRepos();
+            }
 
-                if (RepoMap == null)
-                    RepoMap = new Dictionary<string, List<int>>();
+            if (RepoMap == null)
+                RepoMap = new Dictionary<string, List<int>>();
 
-                if (!string.IsNullOrEmpty(projectPath))
-                {
-                    if (!RepoMap.ContainsKey(projectPath))
-                        RepoMap.Add(projectPath, new List<int>());
+            if (!string.IsNullOrEmpty(projectPath))
+            {
+                if (!RepoMap.ContainsKey(projectPath))
+                    RepoMap.Add(projectPath, new List<int>());
 
-                    RepoMap[projectPath].Add(StoredRepos.Count - 1);
-                }
+                RepoMap[projectPath].Add(StoredRepos.Count - 1);
+                SaveRepoMap();
             }
         }
 

@@ -68,6 +68,8 @@ namespace QuickFork.Shell.Pages
 
                 var repoMenus = new Menu(() => RepoList.GetOptions(CurrentProgram, (rItem) =>
                 {
+                    Forker.Add(CurrentItem, rItem);
+
                     CurrentProgram.AddPage(new RepoOperation(CurrentProgram, rItem, CurrentItem));
                     CurrentProgram.NavigateTo<RepoOperation>();
                 }));
