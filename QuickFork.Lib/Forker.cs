@@ -66,6 +66,14 @@ namespace QuickFork.Lib
         /// </value>
         public static HashSet<RepoItem> StoredRepos { get; private set; }
 
+        /// <summary>
+        /// Gets or sets the repo proj linking.
+        /// </summary>
+        /// <value>
+        /// The repo proj linking.
+        /// </value>
+        public static Dictionary<int, string[]> RepoProjLinking { get; private set; }
+
         public static string SerializeProject(string projectPath)
         {
             if (!Repos.ContainsKey(projectPath))
@@ -95,8 +103,14 @@ namespace QuickFork.Lib
             if (StoredProjects == null)
                 StoredProjects = new HashSet<ProjectItem>();
 
+            if (RepoProjLinking == null)
+                RepoProjLinking = new Dictionary<int, string[]>();
+
             if (!string.IsNullOrEmpty(MySettings.StoredProjects) && MySettings.StoredProjects != "null")
                 StoredProjects = JsonConvert.DeserializeObject<HashSet<ProjectItem>>(MySettings.StoredProjects);
+
+            if (!string.IsNullOrEmpty(MySettings.RepoProjLinking) && MySettings.RepoProjLinking != "null")
+                RepoProjLinking = JsonConvert.DeserializeObject<Dictionary<int, string[]>>(MySettings.RepoProjLinking);
 
             SyncFolder = MySettings.SyncFolder;
         }
@@ -116,7 +130,25 @@ namespace QuickFork.Lib
                     RepoMap = JsonConvert.DeserializeObject<Dictionary<string, List<int>>>(loadMapNeedle);
 
                 if (!string.IsNullOrEmpty(loadRepoNeedle) && loadRepoNeedle != "null")
+                {
                     StoredRepos = JsonConvert.DeserializeObject<HashSet<RepoItem>>(loadRepoNeedle);
+
+                    int i = 0;
+                    bool needsToSave = false;
+                    foreach (var repo in StoredRepos)
+                    {
+                        if (repo.Index == -1)
+                        {
+                            repo.Index = i;
+                            if (!needsToSave) needsToSave = true;
+                        }
+
+                        ++i;
+                    }
+
+                    if (needsToSave)
+                        SaveStoredRepos();
+                }
                 else
                     StoredRepos = new HashSet<RepoItem>();
 
@@ -146,6 +178,30 @@ namespace QuickFork.Lib
         }
 
         /// <summary>
+        /// Adds the linking.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <param name="projects">The projects.</param>
+        public static void AddLinking(int index, IEnumerable<string> projects)
+        {
+            AddLinking(index, projects.ToArray());
+        }
+
+        /// <summary>
+        /// Adds the linking.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <param name="projects">The projects.</param>
+        public static void AddLinking(int index, params string[] projects)
+        {
+            if (RepoProjLinking.ContainsKey(index))
+                return;
+
+            RepoProjLinking.Add(index, projects);
+            SaveRepoProjLinking();
+        }
+
+        /// <summary>
         /// Adds the specified project path.
         /// </summary>
         /// <param name="projectPath">The project path.</param>
@@ -161,9 +217,10 @@ namespace QuickFork.Lib
         /// <summary>
         /// Adds the project path.
         /// </summary>
-        /// <param name="projectPath">The project path.</param>
+        /// <param name="pItem">The p item.</param>
         /// <param name="rItem">The repository item.</param>
-        public static void Add(ProjectItem pItem, RepoItem rItem)
+        /// <returns>The index of the last added repository.</returns>
+        public static int Add(ProjectItem pItem, RepoItem rItem)
         {
             // projectPath == string.Empty, this means that the project will not be linked
             string projectPath = pItem == null ? string.Empty : pItem.SelectedPath;
@@ -174,6 +231,8 @@ namespace QuickFork.Lib
             if (!StoredRepos.Contains(rItem))
             {
                 StoredRepos.Add(rItem);
+                rItem.Index = StoredRepos.Count - 1;
+
                 SaveStoredRepos();
             }
 
@@ -188,6 +247,8 @@ namespace QuickFork.Lib
                 RepoMap[projectPath].Add(StoredRepos.Count - 1);
                 SaveRepoMap();
             }
+
+            return rItem.Index;
         }
 
         /// <summary>
@@ -202,6 +263,7 @@ namespace QuickFork.Lib
             SaveSyncFolder(false);
             SaveStoredProjects(false);
             SaveStoredRepos(false);
+            SaveRepoProjLinking(false);
             DoMapping(false);
         }
 
@@ -248,6 +310,18 @@ namespace QuickFork.Lib
         public static void SaveStoredRepos(bool fSave = true)
         {
             MySettings.StoredRepos = JsonConvert.SerializeObject(StoredRepos);
+
+            if (fSave)
+                MySettings.Save();
+        }
+
+        /// <summary>
+        /// Saves the repo proj linking.
+        /// </summary>
+        /// <param name="fSave">if set to <c>true</c> [f save].</param>
+        public static void SaveRepoProjLinking(bool fSave = true)
+        {
+            MySettings.RepoProjLinking = JsonConvert.SerializeObject(RepoProjLinking);
 
             if (fSave)
                 MySettings.Save();

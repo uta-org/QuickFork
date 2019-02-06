@@ -31,7 +31,7 @@ namespace QuickFork.Shell.Pages
             };
         }
 
-        public static GetOptionsDelegate GetOptions(Program program, Action<RepoItem> selectedRepo = null)
+        public static GetOptionsDelegate GetOptions(Program program, Action<RepoItem> selectedRepo = null, params OptionAction[] captions)
         {
             var list = Forker.StoredRepos.IsNullOrEmpty() ? new List<Option>() : RepoFunc.Get((i) => selectedRepo(Forker.StoredRepos.ElementAt(i))).ToList();
 
@@ -39,7 +39,7 @@ namespace QuickFork.Shell.Pages
             {
                 CurrentProgram.NavigateBack(true, PopAction.NoPop);
                 (Instance as RepoList).NewItem = newRepo;
-            }));
+            }, null, captions));
 
             return () => list;
         }

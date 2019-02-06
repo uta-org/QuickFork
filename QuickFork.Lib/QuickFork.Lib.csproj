@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="Enums.cs" />
     <Compile Include="Model\Interfaces\IModel.cs" />
+    <Compile Include="Model\OptionAction.cs" />
     <Compile Include="Model\ProjectItem.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -60,6 +61,7 @@
     <Compile Include="Model\RepoItem.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>PublicSettingsSingleFileGenerator</Generator>

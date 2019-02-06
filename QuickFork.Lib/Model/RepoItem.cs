@@ -23,6 +23,9 @@ namespace QuickFork.Lib.Model
         public static GitShell MyShell { get; private set; }
 
         [JsonProperty]
+        public int Index { get; internal set; }
+
+        [JsonProperty]
         public string GitUrl { get; set; }
 
         [JsonIgnore]
@@ -31,6 +34,7 @@ namespace QuickFork.Lib.Model
         private RepoItem()
         {
             MyShell = new GitShell();
+            Index = -1;
         }
 
         public RepoItem(string gitUrl, bool fSave = true)
@@ -42,8 +46,16 @@ namespace QuickFork.Lib.Model
             GitUrl = gitUrl;
         }
 
-        public async void Execute(string projectPath, OperationType operationType = OperationType.AddProjToSLN, bool? doLinking = null)
+        public RepoItem(int index, string gitUrl, bool fSave = true)
+            : this(gitUrl, fSave)
         {
+            Index = index;
+        }
+
+        public async void Execute(ProjectItem pItem, OperationType operationType = OperationType.AddProjToSLN, bool? doLinking = null)
+        {
+            string projectPath = pItem.SelectedPath;
+
             string folderName = Name,
                    FolderPath = Path.Combine(Settings.Default.SyncFolder, folderName),
                    workingPath = Settings.Default.SyncFolder;
@@ -91,6 +103,8 @@ namespace QuickFork.Lib.Model
                         {
                             GetProjects(solution, out typeGuid, out projects);
                             solution.Projects = projects.ToList().AddAndGet(GetProject(projects, projectPath, projs.First(), typeGuid, out alreadyExists));
+
+                            Forker.AddLinking(Index, Path.GetFileName(projs.First()));
                         }
                         else
                         {
@@ -100,7 +114,7 @@ namespace QuickFork.Lib.Model
                             var csprojMenu = new Menu();
 
                             csprojMenu.AddRange(projs.Select((proj, i) => new Option(Path.GetFileNameWithoutExtension(proj), () => selectedProjs.Add(i))));
-                            csprojMenu.Add("Add all projects", () => selectedProj = null);
+                            csprojMenu.Add("Add all projects", () => selectedProjs = null);
 
                             csprojMenu.Display(true);
 
@@ -123,12 +137,16 @@ namespace QuickFork.Lib.Model
                                     return _proj;
                                 })
                                 .Where(p => !projectNames.Contains(p.Name)));
+
+                                Forker.AddLinking(Index, projs.Select(proj => Path.GetFileName(proj)));
                             }
                             else
                             {
                                 solution.Projects = projects
                                     .ToList()
                                     .AddRangeAndGet(selectedProjs.Select(selectedProj => GetProject(projects, projectPath, projs[selectedProj], typeGuid, out alreadyExists)));
+
+                                Forker.AddLinking(Index, selectedProjs.Select(sp => Path.GetFileName(projs[sp])));
                             }
                         }
 
@@ -213,7 +231,7 @@ namespace QuickFork.Lib.Model
             if (firstTime)
             {
                 rItem = new RepoItem(gitUrl);
-                Forker.Add(pItem, rItem);
+                rItem.Index = Forker.Add(pItem, rItem);
             }
             else
             {

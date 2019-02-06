@@ -32,11 +32,6 @@ namespace QuickFork.Shell.Pages
             CurrentItem = item;
         }
 
-        private static IEnumerable<Option> GetOptions(ProjectItem pItem)
-        {
-            return RepoFunc.Get(pItem, null);
-        }
-
         public override void Display(string caption = "Choose an option: ")
         {
             bool isNew = Forker.Repos.IsNullOrEmpty(CurrentItem.SelectedPath);
@@ -55,7 +50,7 @@ namespace QuickFork.Shell.Pages
 
                 var repoMenus = new Menu();
 
-                repoMenus.AddRange(Forker.Repos[CurrentItem.SelectedPath].Select(r => new Option(r.Name, null)));
+                repoMenus.AddRange(Forker.Repos[CurrentItem.SelectedPath].Select(r => new Option($"{r.Name} ({(Forker.RepoProjLinking.ContainsKey(r.Index) && !Forker.RepoProjLinking[r.Index].IsNullOrEmpty() ? string.Join(", ", Forker.RepoProjLinking[r.Index].Select(cs => cs)) : "This repo hasn't any CSProj linked.")})")));
                 repoMenus.DisplayOptions();
             }
 
@@ -68,11 +63,15 @@ namespace QuickFork.Shell.Pages
 
                 var repoMenus = new Menu(() => RepoList.GetOptions(CurrentProgram, (rItem) =>
                 {
-                    Forker.Add(CurrentItem, rItem);
+                    // Solved bug, this shouldn't be called on selection
+                    // Forker.Add(CurrentItem, rItem);
 
                     CurrentProgram.AddPage(new RepoOperation(CurrentProgram, rItem, CurrentItem));
                     CurrentProgram.NavigateTo<RepoOperation>();
-                }));
+                }, null, new OptionAction("Remove linked csproj from solution", (index) =>
+                {
+                    Console.WriteLine("Not implemented!", Color.Red);
+                })));
                 repoMenus.DisplayOptions();
 
                 Console.WriteLine(new string('-', DashLength), Color.Gray);

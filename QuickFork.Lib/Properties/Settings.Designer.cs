@@ -70,5 +70,17 @@ namespace QuickFork.Lib.Properties {
                 this["StoredRepos"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string RepoProjLinking {
+            get {
+                return ((string)(this["RepoProjLinking"]));
+            }
+            set {
+                this["RepoProjLinking"] = value;
+            }
+        }
     }
 }

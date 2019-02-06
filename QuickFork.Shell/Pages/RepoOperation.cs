@@ -30,7 +30,7 @@ namespace QuickFork.Shell.Pages
         {
             try
             {
-                rItem?.Execute(pItem.SelectedPath, pItem.Type, doLinking);
+                rItem?.Execute(pItem, pItem.Type, doLinking);
 
                 if ((!doLinking.HasValue || doLinking.HasValue && !doLinking.Value) &&
                     !Forker.IsAlreadyOnFile(RepoSelection.PackageFile, rItem.GitUrl))
