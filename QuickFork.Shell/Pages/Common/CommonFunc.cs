@@ -19,7 +19,7 @@ namespace QuickFork.Shell.Pages.Common
             yield return new Option(isActionReady && captions[0] != null ? captions[0].Caption : (isRepo ? "Create new local cloned repository" : "Add new project"),
                 () => addAction?.Invoke((T)Add(isRepo)));
             yield return new Option(isActionReady && captions[1] != null ? captions[1].Caption : $"Remove {(isRepo ? "repository" : "project")} from the list",
-                isActionReady && captions[1] != null ? captions[1].Action : (index) =>
+                isActionReady && captions[1] != null ? captions[1].Action : () =>
             {
                 program.AddPage(isRepo ? (pItem == null ? (Page)new RepoDeletion(program) : new RepoDeletion(program, pItem)) : new ProjectDeletion(program));
 

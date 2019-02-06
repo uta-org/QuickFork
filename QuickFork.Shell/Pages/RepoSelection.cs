@@ -34,50 +34,72 @@ namespace QuickFork.Shell.Pages
 
         public override void Display(string caption = "Choose an option: ")
         {
-            bool isNew = Forker.Repos.IsNullOrEmpty(CurrentItem.SelectedPath);
+            bool isNew = Forker.Repos.IsNullOrEmpty(CurrentItem.SelectedPath),
+                 hasLinkedProjs;
 
             Console.WriteLine("Linked repositories to this project:", Color.White);
             Console.WriteLine(new string('-', DashLength), Color.Gray);
 
             if (isNew)
+            {
                 Console.WriteLine("This project doesn't have any linked repository. Please, select one from the list below.", Color.LightBlue);
+                hasLinkedProjs = false;
+            }
             else
             {
-                int count = Forker.Repos[CurrentItem.SelectedPath].Count;
+                var repos = Forker.Repos[CurrentItem.SelectedPath];
+                int count = repos.Count;
 
                 Console.WriteLine($"This project {(count == 1 ? "has" : "have")} {count} repository linked.", Color.LightBlue);
                 Console.WriteLine();
 
-                var repoMenus = new Menu();
+                {
+                    var repoMenus = new Menu();
 
-                repoMenus.AddRange(Forker.Repos[CurrentItem.SelectedPath].Select(r => new Option($"{r.Name} ({(Forker.RepoProjLinking.ContainsKey(r.Index) && !Forker.RepoProjLinking[r.Index].IsNullOrEmpty() ? string.Join(", ", Forker.RepoProjLinking[r.Index].Select(cs => cs)) : "This repo hasn't any CSProj linked.")})")));
-                repoMenus.DisplayOptions();
+                    hasLinkedProjs = repos.Any(r => Forker.RepoProjLinking.ContainsKey(r.Index) && !Forker.RepoProjLinking[r.Index].IsNullOrEmpty());
+                    repoMenus.AddRange(repos.Select(r => new Option($"{r.Name} ({(hasLinkedProjs ? string.Join(", ", Forker.RepoProjLinking[r.Index]) : "This repo hasn't any CSProj linked.")})")));
+                    repoMenus.DisplayOptions();
+
+                    Console.WriteLine(new string('-', DashLength), Color.Gray);
+                }
+
+                {
+                    var repoMenus = new Menu(() => RepoList.GetOptions(CurrentProgram, (rItem) =>
+                    {
+                        // Solved bug, this shouldn't be called on selection
+                        // Forker.Add(CurrentItem, rItem);
+
+                        CurrentProgram.AddPage(new RepoOperation(CurrentProgram, rItem, CurrentItem));
+                        CurrentProgram.NavigateTo<RepoOperation>();
+                    }, null, hasLinkedProjs ? new OptionAction("Remove linked csproj from solution", () =>
+                    {
+                        int selectedRepo = -1;
+
+                        var displayRepos = new Menu();
+                        displayRepos.AddRange(repos.Select((r, i) => new Option(r.Name, () => selectedRepo = i)));
+                        displayRepos.Display(false);
+
+                        List<int> selectedLinks = new List<int>();
+                        var remLinkedProj = new Menu();
+                        remLinkedProj.AddRange(Forker.RepoProjLinking[selectedRepo].Select((link, i) => new Option(link, () => selectedLinks.Add(i))));
+                        remLinkedProj.Display(true);
+
+                        foreach (int link in selectedLinks)
+                            Forker.RemoveLinking(selectedRepo, link);
+
+                        CurrentProgram.NavigateBack();
+                    }) : null));
+                    repoMenus.DisplayOptions();
+
+                    Console.WriteLine(new string('-', DashLength), Color.Gray);
+
+                    repoMenus.DisplayCaption(true);
+                }
             }
 
             Console.WriteLine(new string('-', DashLength), Color.Gray);
 
             Console.WriteLine("All available repository:", Color.White);
-
-            {
-                Console.WriteLine(new string('-', DashLength), Color.Gray);
-
-                var repoMenus = new Menu(() => RepoList.GetOptions(CurrentProgram, (rItem) =>
-                {
-                    // Solved bug, this shouldn't be called on selection
-                    // Forker.Add(CurrentItem, rItem);
-
-                    CurrentProgram.AddPage(new RepoOperation(CurrentProgram, rItem, CurrentItem));
-                    CurrentProgram.NavigateTo<RepoOperation>();
-                }, null, new OptionAction("Remove linked csproj from solution", (index) =>
-                {
-                    Console.WriteLine("Not implemented!", Color.Red);
-                })));
-                repoMenus.DisplayOptions();
-
-                Console.WriteLine(new string('-', DashLength), Color.Gray);
-
-                repoMenus.DisplayCaption(true);
-            }
         }
     }
 }

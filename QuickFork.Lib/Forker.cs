@@ -79,7 +79,7 @@ namespace QuickFork.Lib
             if (!Repos.ContainsKey(projectPath))
                 throw new Exception("Can't serialize provided path (it's not present on Dictionary)!");
 
-            return JsonConvert.SerializeObject(Repos[projectPath], Formatting.Indented);
+            return JsonConvert.SerializeObject(Repos[projectPath].ToDictionary(t => t, t => RepoProjLinking[t.Index]), Formatting.Indented);
         }
 
         public static bool IsAlreadyOnFile(string filePath, string gitUrl)
@@ -194,11 +194,42 @@ namespace QuickFork.Lib
         /// <param name="projects">The projects.</param>
         public static void AddLinking(int index, params string[] projects)
         {
-            if (RepoProjLinking.ContainsKey(index))
+            if (RepoProjLinking.ContainsKey(index) && RepoProjLinking[index] == projects)
                 return;
 
-            RepoProjLinking.Add(index, projects);
+            if (RepoProjLinking[index] != projects)
+                RepoProjLinking.Add(index, projects);
+            else
+                RepoProjLinking[index] = projects;
+
             SaveRepoProjLinking();
+        }
+
+        /// <summary>
+        /// Removes the linking.
+        /// </summary>
+        /// <param name="repoIndex">Index of the repo.</param>
+        /// <param name="projectIndex">Index of the project.</param>
+        public static void RemoveLinking(int repoIndex, int projectIndex)
+        {
+            if (!RepoProjLinking.ContainsKey(repoIndex))
+                return;
+
+            RepoProjLinking[repoIndex] = RepoProjLinking[repoIndex].Where((val, index) => index != projectIndex).ToArray();
+        }
+
+        /// <summary>
+        /// Removes the linking.
+        /// </summary>
+        /// <param name="project">The project.</param>
+        public static void RemoveLinking(string project)
+        {
+            if (!RepoProjLinking.Any(kv => kv.Value.Contains(project)))
+                return;
+
+            int key = RepoProjLinking.FirstOrDefault(kv => kv.Value.Contains(project)).Key;
+
+            RepoProjLinking[key] = RepoProjLinking[key].Where(arr => !arr.Contains(project)).ToArray();
         }
 
         /// <summary>
