@@ -79,16 +79,21 @@ namespace QuickFork.Shell.Pages
                         displayRepos.AddRange(repos.Select((r, i) => new Option(r.Name, () => selectedRepo = i)));
                         displayRepos.Display(false);
 
+                        Console.WriteLine();
+
                         List<int> selectedLinks = new List<int>();
                         var remLinkedProj = new Menu();
                         remLinkedProj.AddRange(Forker.RepoProjLinking[selectedRepo].Select((link, i) => new Option(link, () => selectedLinks.Add(i))));
                         remLinkedProj.Display(true);
+
+                        Console.WriteLine();
 
                         foreach (int link in selectedLinks)
                             Forker.RemoveLinking(selectedRepo, link);
 
                         CurrentProgram.NavigateBack();
                     }) : null));
+
                     repoMenus.DisplayOptions();
 
                     Console.WriteLine(new string('-', DashLength), Color.Gray);

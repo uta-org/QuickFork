@@ -88,9 +88,9 @@ namespace QuickFork.Lib
                 return false;
 
             string contents = File.ReadAllText(filePath);
-            var obj = JsonConvert.DeserializeObject<List<RepoItem>>(contents);
+            var obj = JsonConvert.DeserializeObject<Dictionary<RepoItem, string[]>>(contents);
 
-            return obj.Any(r => r.GitUrl == gitUrl);
+            return obj.Keys.Any(r => r.GitUrl == gitUrl);
         }
 
         /// <summary>
@@ -216,6 +216,8 @@ namespace QuickFork.Lib
                 return;
 
             RepoProjLinking[repoIndex] = RepoProjLinking[repoIndex].Where((val, index) => index != projectIndex).ToArray();
+
+            SaveRepoProjLinking();
         }
 
         /// <summary>

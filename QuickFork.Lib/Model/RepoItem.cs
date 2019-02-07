@@ -54,7 +54,7 @@ namespace QuickFork.Lib.Model
 
         public async void Execute(ProjectItem pItem, OperationType operationType = OperationType.AddProjToSLN, bool? doLinking = null)
         {
-            string projectPath = pItem.SelectedPath;
+            //string projectPath = pItem.SelectedPath);
 
             string folderName = Name,
                    FolderPath = Path.Combine(Settings.Default.SyncFolder, folderName),
@@ -82,7 +82,7 @@ namespace QuickFork.Lib.Model
                 switch (operationType)
                 {
                     case OperationType.AddProjToSLN:
-                        string[] solutions = Directory.GetFiles(projectPath, "*.sln", SearchOption.AllDirectories);
+                        string[] solutions = Directory.GetFiles(pItem.SelectedPath, "*.sln", SearchOption.AllDirectories);
 
                         if (solutions.Length == 0)
                             throw new Exception("There is any solution available yet!");
@@ -102,7 +102,7 @@ namespace QuickFork.Lib.Model
                         else if (projCount == 1)
                         {
                             GetProjects(solution, out typeGuid, out projects);
-                            solution.Projects = projects.ToList().AddAndGet(GetProject(projects, projectPath, projs.First(), typeGuid, out alreadyExists));
+                            solution.Projects = projects.ToList().AddAndGet(GetProject(projects, pItem.SelectedPath, Path.GetFileName(projs.First()), projs.First(), typeGuid, out alreadyExists));
 
                             Forker.AddLinking(Index, Path.GetFileName(projs.First()));
                         }
@@ -127,11 +127,11 @@ namespace QuickFork.Lib.Model
                             {
                                 List<string> projectNames = new List<string>();
 
-                                solution.Projects = projects.ToList().AddRangeAndGet(projs.Select(proj =>
+                                solution.Projects = projects.ToList().AddRangeAndGet(projs.Select(projectPath =>
                                 {
-                                    string projectName;
+                                    string projectName = Path.GetFileName(projectPath);
 
-                                    var _proj = GetProject(projects, projectPath, proj, typeGuid, out alreadyExists, out projectName);
+                                    var _proj = GetProject(projects, pItem.SelectedPath, projectName, projectPath, typeGuid, out alreadyExists);
                                     projectNames.Add(projectName);
 
                                     return _proj;
@@ -144,7 +144,7 @@ namespace QuickFork.Lib.Model
                             {
                                 solution.Projects = projects
                                     .ToList()
-                                    .AddRangeAndGet(selectedProjs.Select(selectedProj => GetProject(projects, projectPath, projs[selectedProj], typeGuid, out alreadyExists)));
+                                    .AddRangeAndGet(selectedProjs.Select(selectedProj => GetProject(projects, pItem.SelectedPath, Path.GetFileName(projs[selectedProj]), projs[selectedProj], typeGuid, out alreadyExists)));
 
                                 Forker.AddLinking(Index, selectedProjs.Select(sp => Path.GetFileName(projs[sp])));
                             }
@@ -180,18 +180,9 @@ namespace QuickFork.Lib.Model
             }
         }
 
-        private static Project GetProject(IEnumerable<Project> projects, string projectPath, string proj, Guid typeGuid, out bool alreadyExists, bool promptWarning = true)
+        private static Project GetProject(IEnumerable<Project> projects, string workingPath, string projectName, string projectPath, Guid typeGuid, out bool alreadyExists, bool promptWarning = true)
         {
-            string projectName;
-            return GetProject(projects, projectPath, proj, typeGuid, out alreadyExists, out projectName, promptWarning);
-        }
-
-        private static Project GetProject(IEnumerable<Project> projects, string projectPath, string proj, Guid typeGuid, out bool alreadyExists, out string projectName, bool promptWarning = true)
-        {
-            string _projectName = Path.GetFileName(projectPath).Replace("\\", "").Replace("/", "");
-            projectName = _projectName;
-
-            if (projects.Any(p => p.Name == _projectName))
+            if (projects.Any(p => p.Name == projectName))
             {
                 if (promptWarning)
                 {
@@ -208,7 +199,7 @@ namespace QuickFork.Lib.Model
             return new Project(
                                             typeGuid,
                                             projectName,
-                                            !IOHelper.IsRelative(projectPath, proj) ? proj : IOHelper.MakeRelativePath(projectPath, proj),
+                                            !IOHelper.IsRelative(workingPath, projectPath) ? projectPath : IOHelper.MakeRelativePath(workingPath, projectPath),
                                             Guid.NewGuid());
         }
 
