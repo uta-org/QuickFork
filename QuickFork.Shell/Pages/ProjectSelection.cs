@@ -57,8 +57,11 @@ namespace QuickFork.Shell.Pages
             {
                 Console.WriteLine("There isn't any available project to select, please, create a new one.", Color.LightBlue);
                 Console.WriteLine();
-                ProjectFunc.Add();
-                Console.WriteLine();
+
+                ProjectItem pItem = ProjectFunc.Add();
+
+                CurrentProgram.AddPage(new ProjectOperation(CurrentProgram, pItem));
+                CurrentProgram.NavigateTo<ProjectOperation>();
             }
             else
             {

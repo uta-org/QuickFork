@@ -16,6 +16,7 @@ using Console = Colorful.Console;
 namespace QuickFork.Lib.Model
 {
     using Interfaces;
+    using System.Threading.Tasks;
 
     [Serializable]
     public class RepoItem : IModel
@@ -52,7 +53,7 @@ namespace QuickFork.Lib.Model
             Index = index;
         }
 
-        public async void Execute(ProjectItem pItem, OperationType operationType = OperationType.AddProjToSLN, bool? doLinking = null)
+        public async Task Execute(ProjectItem pItem, OperationType operationType = OperationType.AddProjToSLN, bool? doLinking = null)
         {
             //string projectPath = pItem.SelectedPath);
 

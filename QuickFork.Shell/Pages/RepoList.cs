@@ -38,7 +38,9 @@ namespace QuickFork.Shell.Pages
             list.AddRange(CommonFunc.CommonOptions<RepoItem>(program, (newRepo) =>
             {
                 CurrentProgram.NavigateBack(true, PopAction.NoPop);
-                (Instance as RepoList).NewItem = newRepo;
+
+                if (Instance != null)
+                    (Instance as RepoList).NewItem = newRepo;
             }, null, captions));
 
             return () => list;

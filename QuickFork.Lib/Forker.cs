@@ -74,12 +74,21 @@ namespace QuickFork.Lib
         /// </value>
         public static Dictionary<int, string[]> RepoProjLinking { get; private set; }
 
+        //private static bool IsPresent(string projectPath)
+        //{
+        //    var proj = StoredProjects.Select((p, i) => new { Project = p, Index = i }).FirstOrDefault(e => e.Project.SelectedPath == projectPath);
+        //    int index = proj == null ? -1 : proj.Index;
+
+        //    return RepoMap.ContainsKey();
+        //}
+
         public static string SerializeProject(string projectPath)
         {
-            if (!Repos.ContainsKey(projectPath))
+            if (!RepoMap.ContainsKey(projectPath))
                 throw new Exception("Can't serialize provided path (it's not present on Dictionary)!");
 
-            return JsonConvert.SerializeObject(Repos[projectPath].ToDictionary(t => t, t => RepoProjLinking[t.Index]), Formatting.Indented);
+            var obj = RepoMap[projectPath].ToDictionary(i => StoredProjects.ElementAt(i).SelectedPath, i => RepoProjLinking[i]);
+            return JsonConvert.SerializeObject(obj, Formatting.Indented);
         }
 
         public static bool IsAlreadyOnFile(string filePath, string gitUrl)
@@ -197,7 +206,7 @@ namespace QuickFork.Lib
             if (RepoProjLinking.ContainsKey(index) && RepoProjLinking[index] == projects)
                 return;
 
-            if (RepoProjLinking[index] != projects)
+            if (!RepoProjLinking.ContainsKey(index))
                 RepoProjLinking.Add(index, projects);
             else
                 RepoProjLinking[index] = projects;
@@ -272,16 +281,24 @@ namespace QuickFork.Lib
             if (RepoMap == null)
                 RepoMap = new Dictionary<string, List<int>>();
 
+            UpdateMap(projectPath);
+
+            return rItem.Index;
+        }
+
+        public static void UpdateMap(string projectPath, int? index = null)
+        {
             if (!string.IsNullOrEmpty(projectPath))
             {
                 if (!RepoMap.ContainsKey(projectPath))
                     RepoMap.Add(projectPath, new List<int>());
 
-                RepoMap[projectPath].Add(StoredRepos.Count - 1);
-                SaveRepoMap();
+                if (index.HasValue && !RepoMap[projectPath].Contains(index.Value) || !index.HasValue)
+                {
+                    RepoMap[projectPath].Add(index.HasValue ? index.Value : StoredRepos.Count - 1);
+                    SaveRepoMap();
+                }
             }
-
-            return rItem.Index;
         }
 
         /// <summary>
