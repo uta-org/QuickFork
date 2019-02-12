@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums.cs" />
+    <Compile Include="F.cs" />
     <Compile Include="Model\Interfaces\IModel.cs" />
     <Compile Include="Model\OptionAction.cs" />
     <Compile Include="Model\ProjectItem.cs" />

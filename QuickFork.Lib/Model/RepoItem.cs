@@ -97,19 +97,13 @@ namespace QuickFork.Lib.Model
                 switch (operationType)
                 {
                     case OperationType.AddProjToSLN:
-                        string[] solutions = Directory.GetFiles(pItem.SelectedPath, "*.sln", SearchOption.AllDirectories);
-
-                        if (solutions.Length == 0)
-                            throw new Exception("There is any solution available yet!");
-                        else if (solutions.Length > 1)
-                            throw new Exception("Multiple solutions isn't supported yet!");
-
-                        // This project will only read the first solution that is found.
-                        string solutionPath = solutions[0];
-                        var solution = SolutionParser.Parse(solutionPath) as Solution;
-
                         // Patch unresolved projects
-                        await PatchSolution(pItem, solutionPath, solution);
+                        var patchTask = PatchSolution(pItem);
+
+                        await patchTask;
+
+                        string solutionPath = patchTask.Result.Item1;
+                        Solution solution = patchTask.Result.Item2;
 
                         // Continue linking csprojs (from repo) to desired solution
 
@@ -191,27 +185,96 @@ namespace QuickFork.Lib.Model
             return CsProjs.ToArray();
         }
 
+        private static string GetSolutionPath(ProjectItem pItem)
+        {
+            string[] solutions = Directory.GetFiles(pItem.SelectedPath, "*.sln", SearchOption.AllDirectories);
+
+            if (solutions.Length == 0)
+                throw new Exception("There is any solution available yet!");
+            else if (solutions.Length > 1)
+                throw new Exception("Multiple solutions isn't supported yet!");
+
+            // This project will only read the first solution that is found.
+            return solutions[0];
+        }
+
+        /// <summary>
+        /// Creates the dependencies.json file
+        /// </summary>
+        /// <param name="pItem">The p item.</param>
+        /// <returns></returns>
+        public static async Task CreateDependencies(ProjectItem pItem)
+        {
+            string solutionPath = GetSolutionPath(pItem);
+
+            var solution = SolutionParser.Parse(solutionPath) as Solution;
+            CsProjLinking map = new CsProjLinking();
+
+            foreach (Project project in solution.Projects)
+            {
+                string gitPath;
+                if (FindGitFolder(project.Path, out gitPath))
+                {
+                    Task<string> commandTask = MyShell.ReadCommand($@"--git-dir=""{Path.Combine(gitPath, ".git")}"" --work-tree=""{gitPath}"" config --get remote.origin.url");
+                    await commandTask;
+
+                    string remoteUrl = commandTask.Result;
+                    map.AddLink(remoteUrl, Path.GetFileName(project.Path));
+                }
+            }
+
+            Forker.SerializeProject(pItem.GetPackageFile(), map);
+        }
+
         /// <summary>
         /// Patches the solution. (Detect if the solution has any unresolved nested project, by unresolved we mean projects that aren't available on the dependencies.json and has a git repo)
         /// </summary>
         /// <param name="solution">The solution.</param>
-        private async Task PatchSolution(ProjectItem pItem, string solutionPath, Solution solution)
+        private async Task<Tuple<string, Solution>> PatchSolution(ProjectItem pItem)
         {
+            string solutionPath = GetSolutionPath(pItem);
+            Solution solution = SolutionParser.Parse(solutionPath) as Solution;
+
+            CsProjLinking map = new CsProjLinking();
+
             foreach (Project project in solution.Projects)
                 if (Forker.Repos.ContainsKey(pItem.SelectedPath) && !Forker.Repos[pItem.SelectedPath].Any(r => r.GitUrl == GitUrl))
                 {
                     // This is not the real path, we need to find the sln file or the root folder for this project
-                    string path = !Path.IsPathRooted(project.Path) ? Path.Combine(solutionPath, project.Path) : project.Path;
+                    string path = !Path.IsPathRooted(project.Path) ? Path.Combine(solutionPath, project.Path) : project.Path,
+                           gitPath;
 
-                    if (Directory.Exists(Path.Combine(path, ".git")))
+                    if (FindGitFolder(path, out gitPath))
                     {
-                        Task<string> commandTask = MyShell.ReadCommand($@"--git-dir=""{Path.Combine(path, ".git")}"" --work-tree=""{path}"" config --get remote.origin.url");
+                        Task<string> commandTask = MyShell.ReadCommand($@"--git-dir=""{Path.Combine(gitPath, ".git")}"" --work-tree=""{gitPath}"" config --get remote.origin.url");
                         await commandTask;
 
                         string remoteUrl = commandTask.Result;
-                        Forker.SerializeProject(pItem.GetPackageFile(), pItem, this, Path.GetFileName(project.Path));
+                        map.AddLink(remoteUrl, Path.GetFileName(project.Path));
+
+                        //Forker.SerializeProject(pItem.GetPackageFile(), pItem, this, Path.GetFileName(project.Path));
                     }
                 }
+
+            return new Tuple<string, Solution>(solutionPath, solution);
+        }
+
+        private static bool FindGitFolder(string startingFolder, out string folderPath)
+        {
+            do
+            {
+                if (Directory.Exists(Path.Combine(startingFolder, ".git")))
+                {
+                    folderPath = startingFolder;
+                    return true;
+                }
+
+                startingFolder = Path.GetDirectoryName(startingFolder);
+            }
+            while (!string.IsNullOrEmpty(startingFolder));
+
+            folderPath = "";
+            return false;
         }
 
         private static void GetProjects(Solution solution, out Guid typeGuid, out IEnumerable<Project> projects)

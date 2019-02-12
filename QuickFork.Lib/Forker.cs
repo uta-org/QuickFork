@@ -81,7 +81,7 @@ namespace QuickFork.Lib
             if (!RepoMap.ContainsKey(pItem.SelectedPath))
                 throw new Exception("Can't serialize provided path (it's not present on Dictionary)!");
 
-            Dictionary<string, string[]> map = new Dictionary<string, string[]>();
+            CsProjLinking map = new CsProjLinking();
 
             if (!SerializationHelper.TryDeserialize(path, out map))
             {
@@ -89,21 +89,32 @@ namespace QuickFork.Lib
                 return;
             }
 
-            //var obj = RepoMap[projectPath].ToDictionary(i => projectPath, i => RepoProjLinking[i]);
+            map.AddLink(rItem.GitUrl, selectedProjects);
+            SerializeProject(path, map);
+        }
 
-            map.AddOrSet(rItem.GitUrl, selectedProjects);
+        public static void SerializeProject(string path, CsProjLinking map)
+        {
             File.WriteAllText(path, JsonConvert.SerializeObject(map, Formatting.Indented));
         }
 
-        public static bool IsAlreadyOnFile(string filePath, string projectPath)
+        /// <summary>
+        /// Determines whether [is already on file] [the specified file path].
+        /// </summary>
+        /// <param name="filePath">The file path.</param>
+        /// <param name="gitUrl">The git URL.</param>
+        /// <returns>
+        ///   <c>true</c> if [is already on file] [the specified file path]; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsAlreadyOnFile(string filePath, string gitUrl)
         {
             if (!File.Exists(filePath))
                 return false;
 
             string contents = File.ReadAllText(filePath);
-            var obj = JsonConvert.DeserializeObject<Dictionary<string, string[]>>(contents);
+            var obj = JsonConvert.DeserializeObject<CsProjLinking>(contents);
 
-            return obj.Keys.Any(projPath => projPath == projectPath);
+            return obj.HasKey(gitUrl);
         }
 
         /// <summary>

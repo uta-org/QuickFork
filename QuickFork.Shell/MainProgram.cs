@@ -14,6 +14,7 @@ namespace QuickFork.Shell
             Forker.LoadSettings();
 
             AddPage(new MainPage(this));
+            AddPage(new DependenceCreator(this));
             AddPage(new ProjectList(this));
             AddPage(new RepoList(this));
             AddPage(new ProjectSelection(this));

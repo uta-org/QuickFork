@@ -32,7 +32,7 @@ namespace QuickFork.Shell.Pages
                 var csProjs = rItem?.Execute(pItem, pItem.Type, doLinking).GetAwaiter().GetResult();
 
                 if ((!doLinking.HasValue || doLinking.HasValue && !doLinking.Value) &&
-                    !Forker.IsAlreadyOnFile(RepoSelection.PackageFile, pItem.SelectedPath))
+                    !Forker.IsAlreadyOnFile(RepoSelection.PackageFile, rItem.GitUrl))
                     Forker.SerializeProject(RepoSelection.PackageFile, pItem, rItem, csProjs);
                 else
                     Console.WriteLine($"The dependency you are trying to add to the '{pItem.Name}' project is already added!", Color.Yellow);
