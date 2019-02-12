@@ -1,6 +1,7 @@
 ﻿using EasyConsole;
 using System;
-using System.IO;
+
+using Console = Colorful.Console;
 using System.Drawing;
 
 namespace QuickFork.Shell.Pages
@@ -30,11 +31,11 @@ namespace QuickFork.Shell.Pages
         {
             try
             {
-                rItem?.Execute(pItem, pItem.Type, doLinking).GetAwaiter().GetResult();
+                var csProjs = rItem?.Execute(pItem, pItem.Type, doLinking).GetAwaiter().GetResult();
 
                 if ((!doLinking.HasValue || doLinking.HasValue && !doLinking.Value) &&
-                    !Forker.IsAlreadyOnFile(RepoSelection.PackageFile, rItem.GitUrl))
-                    File.WriteAllText(RepoSelection.PackageFile, Forker.SerializeProject(pItem.SelectedPath));
+                    !Forker.IsAlreadyOnFile(RepoSelection.PackageFile, pItem.SelectedPath))
+                    Forker.SerializeProject(RepoSelection.PackageFile, pItem, rItem, csProjs);
                 else
                     Console.WriteLine($"The dependency you are trying to add to the '{pItem.Name}' project is already added!", Color.Yellow);
             }

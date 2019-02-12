@@ -2,10 +2,12 @@
 using QuickFork.Lib.Properties;
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
 using System.IO;
 using uzLib.Lite.Extensions;
+
+using System.Drawing;
+using Console = Colorful.Console;
 
 namespace QuickFork.Lib
 {
@@ -74,32 +76,34 @@ namespace QuickFork.Lib
         /// </value>
         public static Dictionary<int, string[]> RepoProjLinking { get; private set; }
 
-        //private static bool IsPresent(string projectPath)
-        //{
-        //    var proj = StoredProjects.Select((p, i) => new { Project = p, Index = i }).FirstOrDefault(e => e.Project.SelectedPath == projectPath);
-        //    int index = proj == null ? -1 : proj.Index;
-
-        //    return RepoMap.ContainsKey();
-        //}
-
-        public static string SerializeProject(string projectPath)
+        public static void SerializeProject(string path, ProjectItem pItem, RepoItem rItem, string[] selectedProjects)
         {
-            if (!RepoMap.ContainsKey(projectPath))
+            if (!RepoMap.ContainsKey(pItem.SelectedPath))
                 throw new Exception("Can't serialize provided path (it's not present on Dictionary)!");
 
-            var obj = RepoMap[projectPath].ToDictionary(i => StoredProjects.ElementAt(i).SelectedPath, i => RepoProjLinking[i]);
-            return JsonConvert.SerializeObject(obj, Formatting.Indented);
+            Dictionary<string, string[]> map = new Dictionary<string, string[]>();
+
+            if (!SerializationHelper.TryDeserialize(path, out map))
+            {
+                Console.WriteLine($"Can't deserialize content from '{path}'", Color.Red);
+                return;
+            }
+
+            //var obj = RepoMap[projectPath].ToDictionary(i => projectPath, i => RepoProjLinking[i]);
+
+            map.AddOrSet(rItem.GitUrl, selectedProjects);
+            File.WriteAllText(path, JsonConvert.SerializeObject(map, Formatting.Indented));
         }
 
-        public static bool IsAlreadyOnFile(string filePath, string gitUrl)
+        public static bool IsAlreadyOnFile(string filePath, string projectPath)
         {
             if (!File.Exists(filePath))
                 return false;
 
             string contents = File.ReadAllText(filePath);
-            var obj = JsonConvert.DeserializeObject<Dictionary<RepoItem, string[]>>(contents);
+            var obj = JsonConvert.DeserializeObject<Dictionary<string, string[]>>(contents);
 
-            return obj.Keys.Any(r => r.GitUrl == gitUrl);
+            return obj.Keys.Any(projPath => projPath == projectPath);
         }
 
         /// <summary>
@@ -206,10 +210,7 @@ namespace QuickFork.Lib
             if (RepoProjLinking.ContainsKey(index) && RepoProjLinking[index] == projects)
                 return;
 
-            if (!RepoProjLinking.ContainsKey(index))
-                RepoProjLinking.Add(index, projects);
-            else
-                RepoProjLinking[index] = projects;
+            RepoProjLinking.AddOrSet(index, projects);
 
             SaveRepoProjLinking();
         }

@@ -11,7 +11,6 @@ namespace QuickFork.Shell.Pages
 {
     using Lib;
     using Lib.Model;
-    using Common;
 
     internal sealed class RepoSelection : MenuPage
     {
@@ -76,7 +75,7 @@ namespace QuickFork.Shell.Pages
 
                     CurrentProgram.AddPage(new RepoOperation(CurrentProgram, rItem, CurrentItem));
                     CurrentProgram.NavigateTo<RepoOperation>();
-                }, null, hasLinkedProjs ? new OptionAction("Remove linked csproj from solution", () =>
+                }, true, null, hasLinkedProjs ? new OptionAction("Remove linked csproj from solution", () =>
                 {
                     int selectedRepo = -1;
 
@@ -101,10 +100,12 @@ namespace QuickFork.Shell.Pages
                     CurrentProgram.NavigateBack();
                 }) : null));
 
+                // Display available options...
                 repoMenus.DisplayOptions();
 
                 Console.WriteLine(new string('-', DashLength), Color.Gray);
 
+                // Then, display caption to choose multiple options
                 repoMenus.DisplayCaption(true);
             }
         }

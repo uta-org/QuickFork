@@ -32,6 +32,13 @@ namespace QuickFork.Lib.Model
         [JsonIgnore]
         public string Name => GitUrl.GetFileNameFromUrlWithoutExtension();
 
+        private static List<string> CsProjs { get; set; }
+
+        static RepoItem()
+        {
+            CsProjs = new List<string>();
+        }
+
         private RepoItem()
         {
             MyShell = new GitShell();
@@ -53,9 +60,10 @@ namespace QuickFork.Lib.Model
             Index = index;
         }
 
-        public async Task Execute(ProjectItem pItem, OperationType operationType = OperationType.AddProjToSLN, bool? doLinking = null)
+        public async Task<string[]> Execute(ProjectItem pItem, OperationType operationType = OperationType.AddProjToSLN, bool? doLinking = null)
         {
-            //string projectPath = pItem.SelectedPath);
+            // Clear the project list
+            CsProjs.Clear();
 
             string folderName = Name,
                    FolderPath = Path.Combine(Settings.Default.SyncFolder, folderName),
@@ -165,6 +173,8 @@ namespace QuickFork.Lib.Model
                     Console.WriteLine();
                 }
             }
+
+            return CsProjs.ToArray();
         }
 
         private static void GetProjects(Solution solution, out Guid typeGuid, out IEnumerable<Project> projects)
@@ -195,6 +205,8 @@ namespace QuickFork.Lib.Model
                 alreadyExists = true;
                 return null;
             }
+
+            CsProjs.Add(projectName);
 
             alreadyExists = false;
             return new Project(
