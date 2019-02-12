@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Onion.SolutionParser.Parser;
 using Onion.SolutionParser.Parser.Model;
 
-using uzLib.Lite.Interoperability;
 using uzLib.Lite.Extensions;
 
 using Console = Colorful.Console;
@@ -40,7 +39,7 @@ namespace QuickFork.Lib
         /// </summary>
         /// <param name="pItem">The p item.</param>
         /// <returns></returns>
-        public static async Task CreateDependencies(this GitShell MyShell, ProjectItem pItem)
+        public static void CreateDependencies(this ProjectItem pItem)
         {
             string solutionPath = GetSolutionPath(pItem),
                    packageFile = pItem.GetPackageFile();
@@ -59,13 +58,10 @@ namespace QuickFork.Lib
                 if (project == null)
                     continue;
 
-                string gitPath;
-                if (FindGitFolder(project.Path, out gitPath, solutionPath))
+                string repoPath;
+                if (FindGitFolder(project.Path, out repoPath, solutionPath))
                 {
-                    Task<string> commandTask = MyShell.ReadCommand($@"--git-dir=""{Path.Combine(gitPath, ".git")}"" --work-tree=""{gitPath}"" config --get remote.origin.url");
-                    await commandTask;
-
-                    string remoteUrl = commandTask.Result;
+                    string remoteUrl = GitHelper.GetRemoteUrl(Path.Combine(repoPath, ".git"));
                     map.AddLink(remoteUrl, Path.GetFileName(project.Path));
                 }
             }

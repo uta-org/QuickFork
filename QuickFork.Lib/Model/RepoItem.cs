@@ -10,7 +10,7 @@ using System.Linq;
 using System.Drawing;
 using System.Threading.Tasks;
 
-using uzLib.Lite.Interoperability;
+using uzLib.Lite.Plugins.SymLinker;
 using uzLib.Lite.Extensions;
 
 using Console = Colorful.Console;
@@ -95,12 +95,10 @@ namespace QuickFork.Lib.Model
                 {
                     case OperationType.AddProjToSLN:
                         // Patch unresolved projects
-                        var patchTask = PatchSolution(pItem);
+                        var tuple = PatchSolution(pItem);
 
-                        await patchTask;
-
-                        string solutionPath = patchTask.Result.Item1;
-                        Solution solution = patchTask.Result.Item2;
+                        string solutionPath = tuple.Item1;
+                        Solution solution = tuple.Item2;
 
                         // Continue linking csprojs (from repo) to desired solution
 
@@ -168,7 +166,8 @@ namespace QuickFork.Lib.Model
                         break;
 
                     case OperationType.CreateSymlink:
-                        NativeMethods.CreateSymbolicLink(FolderPath, folderName, NativeEnums.SymbolicLinkFlags.Directory);
+                        var linker = new Linker();
+                        linker.CreateLink(FolderPath, folderName);
                         break;
                 }
 
@@ -186,7 +185,7 @@ namespace QuickFork.Lib.Model
         /// Patches the solution. (Detect if the solution has any unresolved nested project, by unresolved we mean projects that aren't available on the dependencies.json and has a git repo)
         /// </summary>
         /// <param name="solution">The solution.</param>
-        private async Task<Tuple<string, Solution>> PatchSolution(ProjectItem pItem)
+        private Tuple<string, Solution> PatchSolution(ProjectItem pItem)
         {
             string solutionPath = F.GetSolutionPath(pItem);
             Solution solution = SolutionParser.Parse(solutionPath) as Solution;
@@ -206,10 +205,7 @@ namespace QuickFork.Lib.Model
 
                     if (F.FindGitFolder(path, out gitPath, solutionPath))
                     {
-                        Task<string> commandTask = StaticShell.MyShell.ReadCommand($@"--git-dir=""{Path.Combine(gitPath, ".git")}"" --work-tree=""{gitPath}"" config --get remote.origin.url");
-                        await commandTask;
-
-                        string remoteUrl = commandTask.Result;
+                        string remoteUrl = GitHelper.GetRemoteUrl(Path.Combine(gitPath, ".git"));
                         map.AddLink(remoteUrl, Path.GetFileName(project.Path));
 
                         //Forker.SerializeProject(pItem.GetPackageFile(), pItem, this, Path.GetFileName(project.Path));
