@@ -30,7 +30,6 @@ namespace QuickFork.Shell.Pages
             list.AddRange(CommonFunc.CommonOptions<ProjectItem>(program, (newProject) =>
             {
                 CurrentProgram.NavigateBack(true, PopAction.NoPop);
-                (Instance as ProjectList).NewItem = newProject;
             }));
 
             return () => list;

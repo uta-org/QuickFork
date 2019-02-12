@@ -194,13 +194,17 @@ namespace QuickFork.Lib.Model
             CsProjLinking map = new CsProjLinking();
 
             foreach (Project project in solution.Projects)
+            {
+                if (project == null)
+                    continue;
+
                 if (Forker.Repos.ContainsKey(pItem.SelectedPath) && !Forker.Repos[pItem.SelectedPath].Any(r => r.GitUrl == GitUrl))
                 {
                     // This is not the real path, we need to find the sln file or the root folder for this project
-                    string path = !Path.IsPathRooted(project.Path) ? Path.Combine(solutionPath, project.Path) : project.Path,
+                    string path = project.Path,
                            gitPath;
 
-                    if (F.FindGitFolder(path, out gitPath))
+                    if (F.FindGitFolder(path, out gitPath, solutionPath))
                     {
                         Task<string> commandTask = StaticShell.MyShell.ReadCommand($@"--git-dir=""{Path.Combine(gitPath, ".git")}"" --work-tree=""{gitPath}"" config --get remote.origin.url");
                         await commandTask;
@@ -211,6 +215,7 @@ namespace QuickFork.Lib.Model
                         //Forker.SerializeProject(pItem.GetPackageFile(), pItem, this, Path.GetFileName(project.Path));
                     }
                 }
+            }
 
             return new Tuple<string, Solution>(solutionPath, solution);
         }

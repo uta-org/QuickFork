@@ -1,11 +1,15 @@
 ﻿using System;
 using System.IO;
+using System.Drawing;
 using System.Threading.Tasks;
 
 using Onion.SolutionParser.Parser;
 using Onion.SolutionParser.Parser.Model;
 
 using uzLib.Lite.Interoperability;
+using uzLib.Lite.Extensions;
+
+using Console = Colorful.Console;
 
 namespace QuickFork.Lib
 {
@@ -38,15 +42,25 @@ namespace QuickFork.Lib
         /// <returns></returns>
         public static async Task CreateDependencies(this GitShell MyShell, ProjectItem pItem)
         {
-            string solutionPath = GetSolutionPath(pItem);
+            string solutionPath = GetSolutionPath(pItem),
+                   packageFile = pItem.GetPackageFile();
+
+            if (File.Exists(packageFile))
+            {
+                Console.WriteLine("The 'dependencies.json' file already exists for this solution.", Color.Red);
+                return;
+            }
 
             var solution = SolutionParser.Parse(solutionPath) as Solution;
             CsProjLinking map = new CsProjLinking();
 
             foreach (Project project in solution.Projects)
             {
+                if (project == null)
+                    continue;
+
                 string gitPath;
-                if (FindGitFolder(project.Path, out gitPath))
+                if (FindGitFolder(project.Path, out gitPath, solutionPath))
                 {
                     Task<string> commandTask = MyShell.ReadCommand($@"--git-dir=""{Path.Combine(gitPath, ".git")}"" --work-tree=""{gitPath}"" config --get remote.origin.url");
                     await commandTask;
@@ -56,11 +70,17 @@ namespace QuickFork.Lib
                 }
             }
 
-            Forker.SerializeProject(pItem.GetPackageFile(), map);
+            Forker.SerializeProject(packageFile, map);
         }
 
-        public static bool FindGitFolder(string startingFolder, out string folderPath)
+        public static bool FindGitFolder(string startingFolder, out string folderPath, string rootFolder = "")
         {
+            if (!rootFolder.IsDirectory())
+                rootFolder = Path.GetDirectoryName(rootFolder);
+
+            if (!Path.IsPathRooted(startingFolder) && !string.IsNullOrEmpty(rootFolder))
+                startingFolder = Path.Combine(rootFolder, startingFolder);
+
             do
             {
                 if (Directory.Exists(Path.Combine(startingFolder, ".git")))
