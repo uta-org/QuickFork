@@ -18,7 +18,7 @@ namespace QuickFork.Shell.Pages
 
         public static ProjectItem CurrentItem { get; private set; }
 
-        public static string PackageFile => Path.Combine(CurrentItem.SelectedPath, "dependencies.json");
+        public static string PackageFile => CurrentItem.GetPackageFile();
 
         private RepoSelection()
             : base("", null)

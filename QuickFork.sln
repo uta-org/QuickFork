@@ -16,9 +16,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickFork.Lib", "QuickFork.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "uzLib.Lite", "..\uzLib.Lite\uzLib.Lite\uzLib.Lite.csproj", "{D4DA84F9-521F-438B-9C70-7FE8F4D1F32A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyConsole", "E:\VISUAL STUDIO\Visual Studio Projects\SyncFolder\EasyConsole\EasyConsole\EasyConsole.csproj", "{DA79BA94-FAD6-462F-89C7-774FE822D594}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyConsole", "..\SyncFolder\EasyConsole\EasyConsole\EasyConsole.csproj", "{DA79BA94-FAD6-462F-89C7-774FE822D594}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Onion.SolutionParser.Parser", "E:\VISUAL STUDIO\Visual Studio Projects\SyncFolder\SolutionParser\src\Onion.SolutionParser.Parser\Onion.SolutionParser.Parser.csproj", "{91FEF9D7-5376-4EA4-BE09-CFB0EBB083FD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Onion.SolutionParser.Parser", "..\SyncFolder\SolutionParser\src\Onion.SolutionParser.Parser\Onion.SolutionParser.Parser.csproj", "{91FEF9D7-5376-4EA4-BE09-CFB0EBB083FD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

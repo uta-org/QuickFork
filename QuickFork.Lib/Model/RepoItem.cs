@@ -2,12 +2,14 @@
 using Newtonsoft.Json;
 using Onion.SolutionParser.Parser;
 using Onion.SolutionParser.Parser.Model;
-using QuickFork.Lib.Properties;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Drawing;
+using System.Threading.Tasks;
+
 using uzLib.Lite.Interoperability;
 using uzLib.Lite.Extensions;
 
@@ -15,8 +17,8 @@ using Console = Colorful.Console;
 
 namespace QuickFork.Lib.Model
 {
+    using Properties;
     using Interfaces;
-    using System.Threading.Tasks;
 
     [Serializable]
     public class RepoItem : IModel
@@ -69,6 +71,8 @@ namespace QuickFork.Lib.Model
                    FolderPath = Path.Combine(Settings.Default.SyncFolder, folderName),
                    workingPath = Settings.Default.SyncFolder;
 
+            // Clone repo
+
             if (!doLinking.HasValue || doLinking.HasValue && !doLinking.Value)
             {
                 if (!Directory.Exists(FolderPath))
@@ -84,6 +88,8 @@ namespace QuickFork.Lib.Model
                 }
             }
 
+            // Link repository to solution
+
             if (!doLinking.HasValue || doLinking.HasValue && doLinking.Value)
             {
                 bool alreadyExists = false;
@@ -98,7 +104,15 @@ namespace QuickFork.Lib.Model
                         else if (solutions.Length > 1)
                             throw new Exception("Multiple solutions isn't supported yet!");
 
-                        var solution = SolutionParser.Parse(solutions[0]) as Solution;
+                        // This project will only read the first solution that is found.
+                        string solutionPath = solutions[0];
+                        var solution = SolutionParser.Parse(solutionPath) as Solution;
+
+                        // Patch unresolved projects
+                        await PatchSolution(pItem, solutionPath, solution);
+
+                        // Continue linking csprojs (from repo) to desired solution
+
                         var projs = Directory.GetFiles(FolderPath, "*.csproj", SearchOption.AllDirectories);
 
                         int projCount = projs.Count();
@@ -159,7 +173,7 @@ namespace QuickFork.Lib.Model
                             }
                         }
 
-                        File.WriteAllText(solutions[0], SolutionRenderer.Render(solution));
+                        File.WriteAllText(solutionPath, SolutionRenderer.Render(solution));
                         break;
 
                     case OperationType.CreateSymlink:
@@ -175,6 +189,29 @@ namespace QuickFork.Lib.Model
             }
 
             return CsProjs.ToArray();
+        }
+
+        /// <summary>
+        /// Patches the solution. (Detect if the solution has any unresolved nested project, by unresolved we mean projects that aren't available on the dependencies.json and has a git repo)
+        /// </summary>
+        /// <param name="solution">The solution.</param>
+        private async Task PatchSolution(ProjectItem pItem, string solutionPath, Solution solution)
+        {
+            foreach (Project project in solution.Projects)
+                if (Forker.Repos.ContainsKey(pItem.SelectedPath) && !Forker.Repos[pItem.SelectedPath].Any(r => r.GitUrl == GitUrl))
+                {
+                    // This is not the real path, we need to find the sln file or the root folder for this project
+                    string path = !Path.IsPathRooted(project.Path) ? Path.Combine(solutionPath, project.Path) : project.Path;
+
+                    if (Directory.Exists(Path.Combine(path, ".git")))
+                    {
+                        Task<string> commandTask = MyShell.ReadCommand($@"--git-dir=""{Path.Combine(path, ".git")}"" --work-tree=""{path}"" config --get remote.origin.url");
+                        await commandTask;
+
+                        string remoteUrl = commandTask.Result;
+                        Forker.SerializeProject(pItem.GetPackageFile(), pItem, this, Path.GetFileName(project.Path));
+                    }
+                }
         }
 
         private static void GetProjects(Solution solution, out Guid typeGuid, out IEnumerable<Project> projects)

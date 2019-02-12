@@ -76,7 +76,7 @@ namespace QuickFork.Lib
         /// </value>
         public static Dictionary<int, string[]> RepoProjLinking { get; private set; }
 
-        public static void SerializeProject(string path, ProjectItem pItem, RepoItem rItem, string[] selectedProjects)
+        public static void SerializeProject(string path, ProjectItem pItem, RepoItem rItem, params string[] selectedProjects)
         {
             if (!RepoMap.ContainsKey(pItem.SelectedPath))
                 throw new Exception("Can't serialize provided path (it's not present on Dictionary)!");
@@ -182,12 +182,31 @@ namespace QuickFork.Lib
             }
         }
 
+        /// <summary>
+        /// Does the remapping.
+        /// </summary>
+        /// <param name="fromValuesToMap">if set to <c>true</c> [from values to map].</param>
         public static void DoRemapping(bool fromValuesToMap = true)
         {
             if (fromValuesToMap)
                 RepoMap = Repos.ToDictionary(t => t.Key, t => t.Value.Select(x => StoredRepos.IndexOf(x)).ToList());
             else
                 Repos = RepoMap.ToDictionary(t => t.Key, t => t.Value.Select(x => StoredRepos.ElementAt(x)).ToList());
+        }
+
+        /// <summary>
+        /// Adds the linking.
+        /// </summary>
+        /// <param name="projectPath">The project path.</param>
+        /// <param name="projects">The projects.</param>
+        public static void AddLinking(string projectPath, params string[] projects)
+        {
+            int? index = RepoMap?.Keys?.Select((k, i) => new { Index = i, ProjectPath = k })?.FirstOrDefault(a => a.ProjectPath == projectPath)?.Index;
+
+            if (!index.HasValue)
+                return;
+
+            AddLinking(index.Value, projects);
         }
 
         /// <summary>
