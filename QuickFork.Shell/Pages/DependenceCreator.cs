@@ -3,11 +3,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace QuickFork.Shell.Pages
 {
+    using Lib;
+    using Lib.Model;
+    using Common;
+
     internal class DependenceCreator : MenuPage
     {
         private DependenceCreator()
@@ -20,15 +22,18 @@ namespace QuickFork.Shell.Pages
         {
         }
 
-        public override void Display(string caption = "Choose an option: ")
-        {
-            // Implement here a list of projects (like ProjectList) + add/remove, and then, when you select any project, then you only get ProjectItem and call with this to RepoItem.CreateDependencies(pItem)
-            base.Display(caption);
-        }
-
+        // Implement here a list of projects (like ProjectList) + add/remove, and then, when you select any project, then you only get ProjectItem and call with this to RepoItem.CreateDependencies(pItem)
         private static GetOptionsDelegate GetOptions(Program program)
         {
-            return () => null;
+            var list = Forker.StoredProjects == null ? new List<Option>() : ProjectFunc.Get((index) => StaticShell.MyShell.CreateDependencies(Forker.StoredProjects.ElementAt(index)).GetAwaiter().GetResult()).ToList();
+
+            list.AddRange(CommonFunc.CommonOptions<ProjectItem>(program, (newProject) =>
+            {
+                CurrentProgram.NavigateBack(true, PopAction.NoPop);
+                (Instance as ProjectList).NewItem = newProject;
+            }));
+
+            return () => list;
         }
     }
 }

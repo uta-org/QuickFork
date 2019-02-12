@@ -23,8 +23,6 @@ namespace QuickFork.Lib.Model
     [Serializable]
     public class RepoItem : IModel
     {
-        public static GitShell MyShell { get; private set; }
-
         [JsonProperty]
         public int Index { get; internal set; }
 
@@ -43,7 +41,6 @@ namespace QuickFork.Lib.Model
 
         private RepoItem()
         {
-            MyShell = new GitShell();
             Index = -1;
         }
 
@@ -77,8 +74,8 @@ namespace QuickFork.Lib.Model
             {
                 if (!Directory.Exists(FolderPath))
                 {
-                    MyShell.CurrentInfo.WorkingDirectory = workingPath;
-                    await MyShell.SendCommand($"clone {GitUrl} {folderName}");
+                    StaticShell.MyShell.CurrentInfo.WorkingDirectory = workingPath;
+                    await StaticShell.MyShell.SendCommand($"clone {GitUrl} {folderName}");
                 }
                 else
                 {
@@ -185,54 +182,13 @@ namespace QuickFork.Lib.Model
             return CsProjs.ToArray();
         }
 
-        private static string GetSolutionPath(ProjectItem pItem)
-        {
-            string[] solutions = Directory.GetFiles(pItem.SelectedPath, "*.sln", SearchOption.AllDirectories);
-
-            if (solutions.Length == 0)
-                throw new Exception("There is any solution available yet!");
-            else if (solutions.Length > 1)
-                throw new Exception("Multiple solutions isn't supported yet!");
-
-            // This project will only read the first solution that is found.
-            return solutions[0];
-        }
-
-        /// <summary>
-        /// Creates the dependencies.json file
-        /// </summary>
-        /// <param name="pItem">The p item.</param>
-        /// <returns></returns>
-        public static async Task CreateDependencies(ProjectItem pItem)
-        {
-            string solutionPath = GetSolutionPath(pItem);
-
-            var solution = SolutionParser.Parse(solutionPath) as Solution;
-            CsProjLinking map = new CsProjLinking();
-
-            foreach (Project project in solution.Projects)
-            {
-                string gitPath;
-                if (FindGitFolder(project.Path, out gitPath))
-                {
-                    Task<string> commandTask = MyShell.ReadCommand($@"--git-dir=""{Path.Combine(gitPath, ".git")}"" --work-tree=""{gitPath}"" config --get remote.origin.url");
-                    await commandTask;
-
-                    string remoteUrl = commandTask.Result;
-                    map.AddLink(remoteUrl, Path.GetFileName(project.Path));
-                }
-            }
-
-            Forker.SerializeProject(pItem.GetPackageFile(), map);
-        }
-
         /// <summary>
         /// Patches the solution. (Detect if the solution has any unresolved nested project, by unresolved we mean projects that aren't available on the dependencies.json and has a git repo)
         /// </summary>
         /// <param name="solution">The solution.</param>
         private async Task<Tuple<string, Solution>> PatchSolution(ProjectItem pItem)
         {
-            string solutionPath = GetSolutionPath(pItem);
+            string solutionPath = F.GetSolutionPath(pItem);
             Solution solution = SolutionParser.Parse(solutionPath) as Solution;
 
             CsProjLinking map = new CsProjLinking();
@@ -244,9 +200,9 @@ namespace QuickFork.Lib.Model
                     string path = !Path.IsPathRooted(project.Path) ? Path.Combine(solutionPath, project.Path) : project.Path,
                            gitPath;
 
-                    if (FindGitFolder(path, out gitPath))
+                    if (F.FindGitFolder(path, out gitPath))
                     {
-                        Task<string> commandTask = MyShell.ReadCommand($@"--git-dir=""{Path.Combine(gitPath, ".git")}"" --work-tree=""{gitPath}"" config --get remote.origin.url");
+                        Task<string> commandTask = StaticShell.MyShell.ReadCommand($@"--git-dir=""{Path.Combine(gitPath, ".git")}"" --work-tree=""{gitPath}"" config --get remote.origin.url");
                         await commandTask;
 
                         string remoteUrl = commandTask.Result;
@@ -257,24 +213,6 @@ namespace QuickFork.Lib.Model
                 }
 
             return new Tuple<string, Solution>(solutionPath, solution);
-        }
-
-        private static bool FindGitFolder(string startingFolder, out string folderPath)
-        {
-            do
-            {
-                if (Directory.Exists(Path.Combine(startingFolder, ".git")))
-                {
-                    folderPath = startingFolder;
-                    return true;
-                }
-
-                startingFolder = Path.GetDirectoryName(startingFolder);
-            }
-            while (!string.IsNullOrEmpty(startingFolder));
-
-            folderPath = "";
-            return false;
         }
 
         private static void GetProjects(Solution solution, out Guid typeGuid, out IEnumerable<Project> projects)
