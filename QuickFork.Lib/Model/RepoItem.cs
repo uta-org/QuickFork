@@ -193,6 +193,8 @@ namespace QuickFork.Lib.Model
 
         private static Project GetProject(IEnumerable<Project> projects, string workingPath, string projectName, string projectPath, Guid typeGuid, out bool alreadyExists, bool promptWarning = true)
         {
+            CsProjs.Add(projectName);
+
             if (projects.Any(p => p.Name == projectName))
             {
                 if (promptWarning)
@@ -205,8 +207,6 @@ namespace QuickFork.Lib.Model
                 alreadyExists = true;
                 return null;
             }
-
-            CsProjs.Add(projectName);
 
             alreadyExists = false;
             return new Project(
