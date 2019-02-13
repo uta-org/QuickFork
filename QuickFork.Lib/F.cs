@@ -6,7 +6,6 @@ using Onion.SolutionParser.Parser;
 using Onion.SolutionParser.Parser.Model;
 
 using uzLib.Lite.Extensions;
-
 using Newtonsoft.Json;
 
 using Console = Colorful.Console;
@@ -17,11 +16,36 @@ namespace QuickFork.Lib
 
     public static class F
     {
+        /// <summary>
+        /// Gets the package file.
+        /// </summary>
+        /// <param name="pItem">The p item.</param>
+        /// <returns></returns>
         public static string GetPackageFile(this ProjectItem pItem)
         {
-            return Path.Combine(pItem.SelectedPath, "dependencies.json");
+            return GetPackageFile(pItem.SelectedPath);
         }
 
+        /// <summary>
+        /// Gets the package file.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <returns></returns>
+        public static string GetPackageFile(string path)
+        {
+            return Path.Combine(path, "dependencies.json");
+        }
+
+        /// <summary>
+        /// Gets the solution path.
+        /// </summary>
+        /// <param name="pItem">The p item.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">
+        /// There is any solution available yet!
+        /// or
+        /// Multiple solutions isn't supported yet!
+        /// </exception>
         public static string GetSolutionPath(this ProjectItem pItem)
         {
             string[] solutions = Directory.GetFiles(pItem.SelectedPath, "*.sln", SearchOption.AllDirectories);
@@ -39,10 +63,35 @@ namespace QuickFork.Lib
         /// Retrieves the dependencies.
         /// </summary>
         /// <param name="pItem">The p item.</param>
+        /// <param name="throwEx">if set to <c>true</c> [throw ex].</param>
         /// <returns></returns>
-        public static CsProjLinking RetrieveDependencies(this ProjectItem pItem)
+        public static CsProjLinking RetrieveDependencies(this ProjectItem pItem, bool throwEx = false)
         {
-            string packageFile = pItem.GetPackageFile();
+            return RetrieveDependencies(pItem.SelectedPath, pItem.Name, throwEx);
+        }
+
+        /// <summary>
+        /// Retrieves the dependencies.
+        /// </summary>
+        /// <param name="projectPath">The project path.</param>
+        /// <param name="throwEx">if set to <c>true</c> [throw ex].</param>
+        /// <returns></returns>
+        public static CsProjLinking RetrieveDependencies(string projectPath, bool throwEx = false)
+        {
+            return RetrieveDependencies(projectPath, Path.GetFileName(projectPath), throwEx);
+        }
+
+        /// <summary>
+        /// Retrieves the dependencies.
+        /// </summary>
+        /// <param name="projectPath">The project path.</param>
+        /// <param name="projName">Name of the proj.</param>
+        /// <param name="throwEx">if set to <c>true</c> [throw ex].</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        private static CsProjLinking RetrieveDependencies(string projectPath, string projName, bool throwEx = false)
+        {
+            string packageFile = GetPackageFile(projectPath);
 
             if (File.Exists(packageFile))
             {
@@ -50,7 +99,13 @@ namespace QuickFork.Lib
 
                 if (!contents.IsValidJSON())
                 {
-                    Console.WriteLine($"The {pItem.Name} project doesn't have a valid dependencies.json file.", Color.Yellow);
+                    string msg = $"The {projName} project doesn't have a valid dependencies.json file.";
+
+                    if (throwEx)
+                        throw new Exception(msg);
+                    else
+                        Console.WriteLine(msg, Color.Yellow);
+
                     return new CsProjLinking();
                 }
 
@@ -88,13 +143,21 @@ namespace QuickFork.Lib
                 if (FindGitFolder(project.Path, out repoPath, solutionPath))
                 {
                     string remoteUrl = GitHelper.GetRemoteUrl(Path.Combine(repoPath, ".git"));
-                    map.AddLink(remoteUrl, Path.GetFileName(project.Path));
+                    map.AddLink(remoteUrl, project.Path);
                 }
             }
 
             map.SaveDependencies(packageFile);
         }
 
+        /// <summary>
+        /// Finds the git folder.
+        /// </summary>
+        /// <param name="startingFolder">The starting folder.</param>
+        /// <param name="folderPath">The folder path.</param>
+        /// <param name="rootFolder">The root folder.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">rootFolder - The startingFolder provided isn't rooted. This is obligatory due to the method logic.</exception>
         public static bool FindGitFolder(string startingFolder, out string folderPath, string rootFolder = "")
         {
             if (!rootFolder.IsDirectory())

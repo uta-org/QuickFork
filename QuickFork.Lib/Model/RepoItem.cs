@@ -49,12 +49,6 @@ namespace QuickFork.Lib.Model
             GitUrl = gitUrl;
         }
 
-        //public RepoItem(int index, string gitUrl, bool fSave = true)
-        //    : this(gitUrl, fSave)
-        //{
-        //    Index = index;
-        //}
-
         public async Task<string[]> Execute(ProjectItem pItem, OperationType operationType = OperationType.AddProjToSLN, bool? doLinking = null)
         {
             // Clear the project list
@@ -69,10 +63,7 @@ namespace QuickFork.Lib.Model
             if (!doLinking.HasValue || doLinking.HasValue && !doLinking.Value)
             {
                 if (!Directory.Exists(FolderPath))
-                {
-                    StaticShell.MyShell.CurrentInfo.WorkingDirectory = workingPath;
-                    await StaticShell.MyShell.SendCommand($"clone {GitUrl} {folderName}");
-                }
+                    await GitHelper.CloneRepo(workingPath, GitUrl, folderName);
                 else
                 {
                     Console.WriteLine();
@@ -210,7 +201,7 @@ namespace QuickFork.Lib.Model
 
         private static Project GetProject(IEnumerable<Project> projects, string workingPath, string projectName, string projectPath, Guid typeGuid, out bool alreadyExists, bool promptWarning = true)
         {
-            CsProjs.Add(projectName);
+            CsProjs.Add(projectPath);
 
             if (projects.Any(p => p.Name == projectName))
             {
