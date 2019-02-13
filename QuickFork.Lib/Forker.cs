@@ -80,10 +80,7 @@ namespace QuickFork.Lib
         {
             string packageFile = pItem.GetPackageFile();
 
-            if (!RepoMap.ContainsKey(pItem.SelectedPath))
-                throw new Exception("Can't serialize provided path (it's not present on Dictionary)!");
-
-            CsProjLinking map = new CsProjLinking();
+            CsProjLinking map = pItem.RetrieveDependencies();
 
             if (!SerializationHelper.TryDeserialize(packageFile, out map))
             {
@@ -261,6 +258,7 @@ namespace QuickFork.Lib
         /// Removes the linking.
         /// </summary>
         /// <param name="project">The project.</param>
+        [Obsolete]
         public static void RemoveLinking(string project)
         {
             if (!RepoProjLinking.Any(kv => kv.Value.Contains(project)))
@@ -372,10 +370,13 @@ namespace QuickFork.Lib
         /// <summary>
         /// Saves the repo map.
         /// </summary>
-        public static void SaveRepoMap()
+        public static void SaveRepoMap(bool forceRemapping = true)
         {
             if (RepoMap == null)
                 return;
+
+            if (forceRemapping)
+                DoRemapping();
 
             MySettings.RepoMap = JsonConvert.SerializeObject(RepoMap);
             MySettings.Save();

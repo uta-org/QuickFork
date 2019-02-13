@@ -18,7 +18,8 @@ namespace QuickFork.Shell.Pages
                   new Option("See project list", () => program.NavigateTo<ProjectList>()),
                   new Option("See repository list", () => program.NavigateTo<RepoList>()),
                   new Option("Do the project linking", () => program.NavigateTo<ProjectSelection>()),
-                  new Option("Generate dependencies.json file from solution path", () => program.NavigateTo<DependenceCreator>()))
+                  new Option("Generate dependencies.json file from solution path", () => program.NavigateTo<DependenceCreator>()),
+                  new Option("Exit application", () => Runner.SafeExit()))
         {
         }
 
