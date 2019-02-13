@@ -34,12 +34,6 @@ namespace QuickFork.Shell.Pages
             yield return new Option("Add another repository", () => program.NavigateBack(-2));
         }
 
-        //public void UpdateOptions(Program program, RepoItem rItem, ProjectItem pItem)
-        //{
-        //    if (rItem.Name != CurrentRepoName)
-        //        ResetOptions(GetOptions(program, rItem, pItem));
-        //}
-
         private static void Operate(bool? doLinking, RepoItem rItem, ProjectItem pItem)
         {
             try
