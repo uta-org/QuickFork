@@ -68,34 +68,57 @@ namespace QuickFork.Shell.Pages
             {
                 var repoMenus = new Menu(() => RepoList.GetOptions(CurrentProgram, (rItem) =>
                 {
-                    // Solved bug, this shouldn't be called on selection
-                    // Forker.Add(CurrentItem, rItem);
-
+                    // This will update the RepoMap without adding new entries
                     Forker.UpdateMap(CurrentItem.SelectedPath, rItem.Index);
 
                     CurrentProgram.AddPage(new RepoOperation(CurrentProgram, rItem, CurrentItem));
                     CurrentProgram.NavigateTo<RepoOperation>();
                 }, true, null, hasLinkedProjs ? new OptionAction("Remove linked csproj from solution", () =>
                 {
+                    Console.WriteLine();
+                    Console.WriteLineFormatted("{0} To remove the entire linked repository you must select '{1}' or go to '{2}' and remove from there.", Color.Yellow, Color.White, new[] { "Note:", "Delete the entire repository", "Repository List" });
+                    Console.WriteLine();
+
                     int selectedRepo = -1;
+                    bool goBack = false;
 
-                    var displayRepos = new Menu();
+                    do
+                    {
+                        if (goBack)
+                            goBack = false;
 
-                    displayRepos.AddRange(repos.Select((r, i) => new Option(r.Name, () => selectedRepo = i)));
-                    displayRepos.Display(false);
+                        var displayRepos = new Menu();
 
-                    Console.WriteLine();
+                        displayRepos.AddRange(repos.Select((r, i) => new Option(r.Name, () => selectedRepo = i)));
+                        displayRepos.Display(false);
 
-                    var selectedLinks = new List<int>();
-                    var remLinkedProj = new Menu();
+                        Console.WriteLine();
 
-                    remLinkedProj.AddRange(Forker.RepoProjLinking[selectedRepo].Select((link, i) => new Option(link, () => selectedLinks.Add(i))));
-                    remLinkedProj.Display(true);
+                        var selectedLinks = new List<int>();
+                        var remLinkedProj = new Menu();
 
-                    Console.WriteLine();
+                        bool allProjects = false;
 
-                    foreach (int link in selectedLinks)
-                        Forker.RemoveLinking(selectedRepo, link);
+                        if (Forker.RepoProjLinking[selectedRepo].Length > 1)
+                            remLinkedProj.Add(new Option($"Delete the entire repository from '{CurrentItem.Name}'", () => allProjects = true));
+
+                        remLinkedProj.AddRange(Forker.RepoProjLinking[selectedRepo].Select((link, i) => new Option(link, () => selectedLinks.Add(i))));
+                        remLinkedProj.Add("Go back", () => goBack = true);
+
+                        remLinkedProj.Display(true);
+
+                        Console.WriteLine();
+
+                        if (!goBack)
+                        {
+                            if (allProjects)
+                                Forker.RemoveAllLinkings(CurrentItem, selectedRepo);
+                            else
+                                foreach (int link in selectedLinks)
+                                    Forker.RemoveLinking(CurrentItem, selectedRepo, link);
+                        }
+                    }
+                    while (goBack);
 
                     CurrentProgram.NavigateBack();
                 }) : null));

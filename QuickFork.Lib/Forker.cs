@@ -181,9 +181,7 @@ namespace QuickFork.Lib
             else
             {
                 // Mapping is no longer needed it's done in Add method
-
-                SaveRepoMap();
-                MySettings.Save();
+                SaveRepoMap(); // Not sure if there I need a true flag
             }
         }
 
@@ -240,18 +238,51 @@ namespace QuickFork.Lib
         }
 
         /// <summary>
+        /// Removes all linkings.
+        /// </summary>
+        /// <param name="repoIndex">Index of the repo.</param>
+        public static void RemoveAllLinkings(ProjectItem pItem, int repoIndex)
+        {
+            if (!RepoProjLinking.ContainsKey(repoIndex))
+                return;
+
+            RepoProjLinking[repoIndex] = null;
+
+            CheckIfEmptyLinking(pItem, repoIndex);
+
+            SaveRepoProjLinking();
+        }
+
+        /// <summary>
         /// Removes the linking.
         /// </summary>
         /// <param name="repoIndex">Index of the repo.</param>
         /// <param name="projectIndex">Index of the project.</param>
-        public static void RemoveLinking(int repoIndex, int projectIndex)
+        public static void RemoveLinking(ProjectItem pItem, int repoIndex, int projectIndex)
         {
             if (!RepoProjLinking.ContainsKey(repoIndex))
                 return;
 
             RepoProjLinking[repoIndex] = RepoProjLinking[repoIndex].Where((val, index) => index != projectIndex).ToArray();
 
+            CheckIfEmptyLinking(pItem, repoIndex);
+
             SaveRepoProjLinking();
+        }
+
+        /// <summary>
+        /// Checks if empty linking.
+        /// </summary>
+        /// <param name="repoIndex">Index of the repo.</param>
+        private static void CheckIfEmptyLinking(ProjectItem pItem, int repoIndex)
+        {
+            if (RepoProjLinking[repoIndex].IsNullOrEmpty())
+            {
+                RepoProjLinking.Remove(repoIndex);
+
+                if (RepoMap[pItem.SelectedPath].Remove(repoIndex))
+                    SaveRepoMap(true);
+            }
         }
 
         /// <summary>
@@ -370,13 +401,13 @@ namespace QuickFork.Lib
         /// <summary>
         /// Saves the repo map.
         /// </summary>
-        public static void SaveRepoMap(bool forceRemapping = true)
+        public static void SaveRepoMap(bool doRemapping = false)
         {
             if (RepoMap == null)
                 return;
 
-            if (forceRemapping)
-                DoRemapping();
+            if (doRemapping)
+                DoRemapping(false);
 
             MySettings.RepoMap = JsonConvert.SerializeObject(RepoMap);
             MySettings.Save();

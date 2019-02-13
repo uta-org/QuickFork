@@ -32,6 +32,7 @@ namespace QuickFork.Shell.Pages
                 throw new ArgumentException("index", "Index cannot be null.");
 
             Forker.Repos[item.SelectedPath].RemoveAt(index);
+            Forker.DoRemapping();
             Forker.SaveRepoMap();
 
             CurrentProgram.NavigateBack(true);
@@ -45,6 +46,7 @@ namespace QuickFork.Shell.Pages
             RepoItem rItem = Forker.StoredRepos.ElementAt(index);
 
             Forker.Repos.ForEach(r => r.Value.Remove(rItem));
+            Forker.DoRemapping(); // You must do the Repos -> RepoMap mapping before saving anything (we could even add an enum to do nothing or doing the remapping (Repos -> RepoMap or RepoMap -> Repos))
             Forker.SaveRepoMap();
 
             Forker.StoredRepos.Remove(rItem);
