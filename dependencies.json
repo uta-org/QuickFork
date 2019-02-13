@@ -1,0 +1,13 @@
+{
+  "Data": {
+    "https://github.com/uta-org/uzLib.Lite.git": [
+      "uzLib.Lite.csproj"
+    ],
+    "https://github.com/uta-org/EasyConsole.git": [
+      "EasyConsole.csproj"
+    ],
+    "https://github.com/uta-org/SolutionParser.git": [
+      "Onion.SolutionParser.Parser.csproj"
+    ]
+  }
+}

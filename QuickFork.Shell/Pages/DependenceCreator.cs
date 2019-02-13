@@ -25,7 +25,11 @@ namespace QuickFork.Shell.Pages
         // Implement here a list of projects (like ProjectList) + add/remove, and then, when you select any project, then you only get ProjectItem and call with this to RepoItem.CreateDependencies(pItem)
         private static GetOptionsDelegate GetOptions(Program program)
         {
-            var list = Forker.StoredProjects == null ? new List<Option>() : ProjectFunc.Get((index) => Forker.StoredProjects.ElementAt(index).CreateDependencies()).ToList();
+            var list = Forker.StoredProjects == null ? new List<Option>() : ProjectFunc.Get((index) =>
+            {
+                Forker.StoredProjects.ElementAt(index).CreateDependencies();
+                CurrentProgram.NavigateBack();
+            }).ToList();
 
             list.AddRange(CommonFunc.CommonOptions<ProjectItem>(program, (newProject) =>
             {

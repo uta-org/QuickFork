@@ -77,7 +77,7 @@ namespace QuickFork.Lib
             string projectName = Path.GetFileName((string)startingFolder.Clone());
 
             if (string.IsNullOrEmpty(rootFolder) && !Path.IsPathRooted(startingFolder))
-                throw new ArgumentNullException("rootFolder", "The startingFolder provided isn't rooted.");
+                throw new ArgumentNullException("rootFolder", "The startingFolder provided isn't rooted. This is obligatory due to the method logic.");
 
             string projPath;
             if (!Path.IsPathRooted(startingFolder))
@@ -91,6 +91,9 @@ namespace QuickFork.Lib
                     return false;
                 }
 
+                if (!projPath.IsDirectory())
+                    projPath = Path.GetDirectoryName(projPath);
+
                 if (!Directory.Exists(projPath))
                 { // If we couldn't get the project path, then we would exit
                     Console.WriteLine($"The '{projectName}' project from this solution couldn't be found, check that you have then and where are you executing this!", Color.Yellow);
@@ -100,7 +103,12 @@ namespace QuickFork.Lib
                 }
             }
             else
+            { // Un-tested
                 projPath = startingFolder;
+
+                if (!projPath.IsDirectory())
+                    projPath = Path.GetDirectoryName(projPath);
+            }
 
             do
             {
