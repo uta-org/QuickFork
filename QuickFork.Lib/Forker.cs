@@ -151,21 +151,21 @@ namespace QuickFork.Lib
                 {
                     StoredRepos = JsonConvert.DeserializeObject<HashSet<RepoItem>>(loadRepoNeedle);
 
-                    int i = 0;
-                    bool needsToSave = false;
-                    foreach (var repo in StoredRepos)
-                    {
-                        if (repo.Index == -1)
-                        {
-                            repo.Index = i;
-                            if (!needsToSave) needsToSave = true;
-                        }
+                    //int i = 0;
+                    //bool needsToSave = false;
+                    //foreach (var repo in StoredRepos)
+                    //{
+                    //    if (repo.Index == -1)
+                    //    {
+                    //        repo.Index = i;
+                    //        if (!needsToSave) needsToSave = true;
+                    //    }
 
-                        ++i;
-                    }
+                    //    ++i;
+                    //}
 
-                    if (needsToSave)
-                        SaveStoredRepos();
+                    //if (needsToSave)
+                    //    SaveStoredRepos();
                 }
                 else
                     StoredRepos = new HashSet<RepoItem>();
@@ -319,7 +319,7 @@ namespace QuickFork.Lib
         /// <param name="pItem">The p item.</param>
         /// <param name="rItem">The repository item.</param>
         /// <returns>The index of the last added repository.</returns>
-        public static int Add(ProjectItem pItem, RepoItem rItem)
+        public static void Add(ProjectItem pItem, RepoItem rItem)
         {
             // projectPath == string.Empty, this means that the project will not be linked
             string projectPath = pItem == null ? string.Empty : pItem.SelectedPath;
@@ -330,7 +330,6 @@ namespace QuickFork.Lib
             if (!StoredRepos.Contains(rItem))
             {
                 StoredRepos.Add(rItem);
-                rItem.Index = StoredRepos.Count - 1;
 
                 SaveStoredRepos();
             }
@@ -338,21 +337,21 @@ namespace QuickFork.Lib
             if (RepoMap == null)
                 RepoMap = new Dictionary<string, List<int>>();
 
-            UpdateMap(projectPath);
-
-            return rItem.Index;
+            UpdateMap(projectPath, rItem);
         }
 
-        public static void UpdateMap(string projectPath, int? index = null)
+        public static void UpdateMap(string projectPath, RepoItem rItem, bool force = true)
         {
             if (!string.IsNullOrEmpty(projectPath))
             {
                 if (!RepoMap.ContainsKey(projectPath))
                     RepoMap.Add(projectPath, new List<int>());
 
-                if (index.HasValue && !RepoMap[projectPath].Contains(index.Value) || !index.HasValue)
+                int index = rItem.GetIndex();
+                if (!RepoMap[projectPath].Contains(index) || force)
                 {
-                    RepoMap[projectPath].Add(index.HasValue ? index.Value : StoredRepos.Count - 1);
+                    // index.HasValue ? index.Value : (StoredRepos.Count > 0 ? StoredRepos.Select(r => r.Index).Last() + 1 : 0)
+                    RepoMap[projectPath].Add(index);
                     SaveRepoMap();
                 }
             }

@@ -24,9 +24,6 @@ namespace QuickFork.Lib.Model
     public class RepoItem : IModel
     {
         [JsonProperty]
-        public int Index { get; internal set; }
-
-        [JsonProperty]
         public string GitUrl { get; set; }
 
         [JsonIgnore]
@@ -41,7 +38,6 @@ namespace QuickFork.Lib.Model
 
         private RepoItem()
         {
-            Index = -1;
         }
 
         public RepoItem(string gitUrl, bool fSave = true)
@@ -53,11 +49,11 @@ namespace QuickFork.Lib.Model
             GitUrl = gitUrl;
         }
 
-        public RepoItem(int index, string gitUrl, bool fSave = true)
-            : this(gitUrl, fSave)
-        {
-            Index = index;
-        }
+        //public RepoItem(int index, string gitUrl, bool fSave = true)
+        //    : this(gitUrl, fSave)
+        //{
+        //    Index = index;
+        //}
 
         public async Task<string[]> Execute(ProjectItem pItem, OperationType operationType = OperationType.AddProjToSLN, bool? doLinking = null)
         {
@@ -116,7 +112,7 @@ namespace QuickFork.Lib.Model
                             GetProjects(solution, out typeGuid, out projects);
                             solution.Projects = projects.ToList().AddAndGet(GetProject(projects, pItem.SelectedPath, Path.GetFileName(projs.First()), projs.First(), typeGuid, out alreadyExists));
 
-                            Forker.AddLinking(Index, Path.GetFileName(projs.First()));
+                            Forker.AddLinking(GetIndex(), Path.GetFileName(projs.First()));
                         }
                         else
                         {
@@ -150,7 +146,7 @@ namespace QuickFork.Lib.Model
                                 })
                                 .Where(p => !projectNames.Contains(p.Name)));
 
-                                Forker.AddLinking(Index, projs.Select(proj => Path.GetFileName(proj)));
+                                Forker.AddLinking(GetIndex(), projs.Select(proj => Path.GetFileName(proj)));
                             }
                             else
                             {
@@ -158,7 +154,7 @@ namespace QuickFork.Lib.Model
                                     .ToList()
                                     .AddRangeAndGet(selectedProjs.Select(selectedProj => GetProject(projects, pItem.SelectedPath, Path.GetFileName(projs[selectedProj]), projs[selectedProj], typeGuid, out alreadyExists)));
 
-                                Forker.AddLinking(Index, selectedProjs.Select(sp => Path.GetFileName(projs[sp])));
+                                Forker.AddLinking(GetIndex(), selectedProjs.Select(sp => Path.GetFileName(projs[sp])));
                             }
                         }
 
@@ -256,7 +252,7 @@ namespace QuickFork.Lib.Model
             if (firstTime)
             {
                 rItem = new RepoItem(gitUrl);
-                rItem.Index = Forker.Add(pItem, rItem);
+                Forker.Add(pItem, rItem);
             }
             else
             {
@@ -275,6 +271,11 @@ namespace QuickFork.Lib.Model
         public override string ToString()
         {
             return $"{Name} ({GitUrl})";
+        }
+
+        public int GetIndex()
+        {
+            return Forker.StoredRepos.IndexOf(this);
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using EasyConsole;
 using System.Collections.Generic;
-using System.IO;
 using System.Drawing;
 using System.Linq;
 using uzLib.Lite.Extensions;
@@ -57,8 +56,8 @@ namespace QuickFork.Shell.Pages
                 {
                     var repoMenus = new Menu();
 
-                    hasLinkedProjs = repos.Any(r => Forker.RepoProjLinking.ContainsKey(r.Index) && !Forker.RepoProjLinking[r.Index].IsNullOrEmpty());
-                    repoMenus.AddRange(repos.Select(r => new Option($"{r.Name} ({(hasLinkedProjs ? string.Join(", ", Forker.RepoProjLinking[r.Index]) : "This repo hasn't any CSProj linked.")})")));
+                    hasLinkedProjs = repos.Any(r => { int index = r.GetIndex(); return Forker.RepoProjLinking.ContainsKey(index) && !Forker.RepoProjLinking[index].IsNullOrEmpty(); });
+                    repoMenus.AddRange(repos.Select(r => new Option($"{r.Name} ({(hasLinkedProjs ? string.Join(", ", Forker.RepoProjLinking[r.GetIndex()]) : "This repo hasn't any CSProj linked.")})")));
                     repoMenus.DisplayOptions();
                 }
             }
@@ -66,14 +65,7 @@ namespace QuickFork.Shell.Pages
             Console.WriteLine(new string('-', DashLength), Color.Gray);
 
             {
-                var repoMenus = new Menu(() => RepoList.GetOptions(CurrentProgram, (rItem) =>
-                {
-                    // This will update the RepoMap without adding new entries
-                    Forker.UpdateMap(CurrentItem.SelectedPath, rItem.Index);
-
-                    CurrentProgram.AddPage(new RepoOperation(CurrentProgram, rItem, CurrentItem));
-                    CurrentProgram.NavigateTo<RepoOperation>();
-                }, true, null, hasLinkedProjs ? new OptionAction("Remove linked csproj from solution", () =>
+                var repoMenus = new Menu(() => RepoList.GetOptions(CurrentProgram, SelectRepo, true, null, hasLinkedProjs ? new OptionAction("Remove linked csproj from solution", () =>
                 {
                     Console.WriteLine();
                     Console.WriteLineFormatted("{0} To remove the entire linked repository you must select '{1}' or go to '{2}' and remove from there.", Color.Yellow, Color.White, new[] { "Note:", "Delete the entire repository", "Repository List" });
@@ -123,6 +115,10 @@ namespace QuickFork.Shell.Pages
                     CurrentProgram.NavigateBack();
                 }) : null));
 
+                // Add all available repositories (available means that they aren't already added to this project) (UNTESTED)
+                var notAddedRepos = Forker.StoredRepos.Where(r => !Forker.Repos[CurrentItem.SelectedPath].Contains(r));
+                repoMenus.Add("Add all the available repositories", () => notAddedRepos.ForEach((_r) => SelectRepo(_r)));
+
                 // Display available options...
                 repoMenus.DisplayOptions();
 
@@ -131,6 +127,15 @@ namespace QuickFork.Shell.Pages
                 // Then, display caption to choose multiple options
                 repoMenus.DisplayCaption(true);
             }
+        }
+
+        private static void SelectRepo(RepoItem rItem)
+        {
+            // This will update the RepoMap without adding new entries
+            Forker.UpdateMap(CurrentItem.SelectedPath, rItem, false);
+
+            CurrentProgram.AddPage(new RepoOperation(CurrentProgram, rItem, CurrentItem)); //.UpdateOptions(CurrentProgram, rItem, CurrentItem);
+            CurrentProgram.NavigateTo<RepoOperation>();
         }
     }
 }

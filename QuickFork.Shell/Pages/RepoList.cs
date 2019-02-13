@@ -35,15 +35,18 @@ namespace QuickFork.Shell.Pages
         {
             var list = Forker.StoredRepos.IsNullOrEmpty() ? new List<Option>() : RepoFunc.Get((i) => selectedRepo(Forker.StoredRepos.ElementAt(i))).ToList();
 
-            list.AddRange(CommonFunc.CommonOptions<RepoItem>(program, (newRepo) =>
-            {
-                CurrentProgram.NavigateBack(true, PopAction.NoPop);
-            }, null, captions));
+            list.AddRange(CommonFunc.CommonOptions<RepoItem>(program, DefaultAddAction, null, captions));
 
             if (addBack)
                 list.Add(new Option("Go back", () => CurrentProgram.NavigateBack()));
 
             return () => list;
+        }
+
+        private static void DefaultAddAction(RepoItem newRepo)
+        {
+            Forker.StoredRepos.Add(newRepo);
+            CurrentProgram.NavigateBack(true, PopAction.NoPop);
         }
     }
 }
