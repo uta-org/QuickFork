@@ -190,26 +190,10 @@ namespace QuickFork.Lib.Model
             string solutionPath = F.GetSolutionPath(pItem);
             Solution solution = SolutionParser.Parse(solutionPath) as Solution;
 
-            CsProjLinking map = pItem.RetrieveDependencies();
+            // Forker.Repos.ContainsKey(pItem.SelectedPath) && !Forker.Repos[pItem.SelectedPath].Any(r => r.GitUrl == GitUrl) // Idk why I did this inside of the project loop
+            // Basically, to check if the project was already on the collection to avoid dependencies creation (CreateDependencies) be balled multiple times.
 
-            foreach (Project project in solution.Projects)
-            {
-                if (project == null)
-                    continue;
-
-                if (Forker.Repos.ContainsKey(pItem.SelectedPath) && !Forker.Repos[pItem.SelectedPath].Any(r => r.GitUrl == GitUrl))
-                {
-                    // This is not the real path, we need to find the sln file or the root folder for this project
-                    string path = project.Path,
-                           gitPath;
-
-                    if (F.FindGitFolder(path, out gitPath, solutionPath))
-                    {
-                        string remoteUrl = GitHelper.GetRemoteUrl(Path.Combine(gitPath, ".git"));
-                        map.AddLink(remoteUrl, Path.GetFileName(project.Path));
-                    }
-                }
-            }
+            pItem.CreateDependencies();
 
             return new Tuple<string, Solution>(solutionPath, solution);
         }

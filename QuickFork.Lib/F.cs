@@ -65,7 +65,7 @@ namespace QuickFork.Lib
         /// </summary>
         /// <param name="pItem">The p item.</param>
         /// <returns></returns>
-        public static void CreateDependencies(this ProjectItem pItem)
+        public static void CreateDependencies(this ProjectItem pItem, bool forceNew = false)
         {
             string solutionPath = GetSolutionPath(pItem),
                    packageFile = pItem.GetPackageFile();
@@ -77,7 +77,7 @@ namespace QuickFork.Lib
             }
 
             var solution = SolutionParser.Parse(solutionPath) as Solution;
-            CsProjLinking map = new CsProjLinking();
+            CsProjLinking map = forceNew ? new CsProjLinking() : pItem.RetrieveDependencies();
 
             foreach (Project project in solution.Projects)
             {
@@ -92,7 +92,7 @@ namespace QuickFork.Lib
                 }
             }
 
-            map.SerializeProject(packageFile);
+            map.SaveDependencies(packageFile);
         }
 
         public static bool FindGitFolder(string startingFolder, out string folderPath, string rootFolder = "")
