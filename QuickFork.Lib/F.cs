@@ -76,10 +76,14 @@ namespace QuickFork.Lib
 
             string projectName = Path.GetFileName((string)startingFolder.Clone());
 
-            if (!Path.IsPathRooted(startingFolder) && !string.IsNullOrEmpty(rootFolder))
+            if (string.IsNullOrEmpty(rootFolder) && !Path.IsPathRooted(startingFolder))
+                throw new ArgumentNullException("rootFolder", "The startingFolder provided isn't rooted.");
+
+            string projPath;
+            if (!Path.IsPathRooted(startingFolder))
             {
                 // Search for the solution folder of the folder instead of using RootFolder
-                string projPath = Path.GetFullPath(Path.Combine(rootFolder, startingFolder));
+                projPath = Path.GetFullPath(Path.Combine(rootFolder, startingFolder));
 
                 if (projPath.Contains(rootFolder))
                 { // We are not interested on iterating self-folders so exit when needed
@@ -94,38 +98,19 @@ namespace QuickFork.Lib
                     folderPath = "";
                     return false;
                 }
-
-                do
-                {
-                    var files = Directory.GetFiles(projPath, "*.sln");
-                    if (files.Length > 0)
-                    {
-                        startingFolder = Path.GetDirectoryName(files[0]); // We want the root folder where the solution is present
-                        break;
-                    }
-
-                    projPath = Path.GetDirectoryName(projPath);
-                }
-                while (!string.IsNullOrEmpty(projPath));
-
-                /*if (string.IsNullOrEmpty(projPath))
-                {
-                    Console.WriteLine($"The '{projectName}' project from this solution couldn't be found, check that you have then and where are you executing this!", Color.Yellow);
-
-                    folderPath = "";
-                    return false;
-                }*/
             }
+            else
+                projPath = startingFolder;
 
             do
             {
-                if (Directory.Exists(Path.Combine(startingFolder, ".git")))
+                if (Directory.Exists(Path.Combine(projPath, ".git")))
                 {
-                    folderPath = startingFolder;
+                    folderPath = projPath;
                     return true;
                 }
 
-                startingFolder = Path.GetDirectoryName(startingFolder);
+                projPath = Path.GetDirectoryName(projPath);
             }
             while (!string.IsNullOrEmpty(startingFolder));
 
