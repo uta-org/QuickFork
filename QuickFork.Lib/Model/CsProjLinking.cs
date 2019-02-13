@@ -28,8 +28,9 @@ namespace QuickFork.Lib.Model
 
         public void AddLink(string gitUrl, params string[] csprojs)
         {
-            if (!Data.AddOrAppend(gitUrl, csprojs))
-                Console.WriteLine("The gitUrl you specified, is already available. The program has modify it!", Color.Yellow);
+            //if (!
+            Data.AddOrAppend(gitUrl, csprojs);
+            //Console.WriteLine("The gitUrl you specified, is already available. The program has modify it!", Color.Yellow);
         }
 
         public bool HasKey(string gitUrl)
