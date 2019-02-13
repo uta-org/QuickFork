@@ -76,26 +76,23 @@ namespace QuickFork.Lib
         /// </value>
         public static Dictionary<int, string[]> RepoProjLinking { get; private set; }
 
-        public static void SerializeProject(string path, ProjectItem pItem, RepoItem rItem, params string[] selectedProjects)
+        public static void SerializeProject(ProjectItem pItem, RepoItem rItem, params string[] selectedProjects)
         {
+            string packageFile = pItem.GetPackageFile();
+
             if (!RepoMap.ContainsKey(pItem.SelectedPath))
                 throw new Exception("Can't serialize provided path (it's not present on Dictionary)!");
 
             CsProjLinking map = new CsProjLinking();
 
-            if (!SerializationHelper.TryDeserialize(path, out map))
+            if (!SerializationHelper.TryDeserialize(packageFile, out map))
             {
-                Console.WriteLine($"Can't deserialize content from '{path}'", Color.Red);
+                Console.WriteLine($"Can't deserialize content from '{packageFile}'", Color.Red);
                 return;
             }
 
             map.AddLink(rItem.GitUrl, selectedProjects);
-            SerializeProject(path, map);
-        }
-
-        public static void SerializeProject(string path, CsProjLinking map)
-        {
-            File.WriteAllText(path, JsonConvert.SerializeObject(map, Formatting.Indented));
+            map.SaveDependencies(packageFile);
         }
 
         /// <summary>

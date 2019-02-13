@@ -1,13 +1,17 @@
 ﻿using Newtonsoft.Json;
+
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
+using System.IO;
+
+// using System.Drawing;
+
 using uzLib.Lite.Extensions;
 
 namespace QuickFork.Lib.Model
 {
-    using Console = Colorful.Console;
+    // using Console = Colorful.Console;
 
     [Serializable]
     public class CsProjLinking
@@ -41,6 +45,16 @@ namespace QuickFork.Lib.Model
         public bool HasCsProj(string csprojName)
         {
             return Data.Keys.Any(csproj => csproj == csprojName);
+        }
+
+        public void SaveDependencies(ProjectItem pItem)
+        {
+            SaveDependencies(pItem.GetPackageFile());
+        }
+
+        public void SaveDependencies(string path)
+        {
+            File.WriteAllText(path, JsonConvert.SerializeObject(this, Formatting.Indented));
         }
     }
 }

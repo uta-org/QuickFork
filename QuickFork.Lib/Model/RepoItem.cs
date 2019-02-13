@@ -190,7 +190,7 @@ namespace QuickFork.Lib.Model
             string solutionPath = F.GetSolutionPath(pItem);
             Solution solution = SolutionParser.Parse(solutionPath) as Solution;
 
-            CsProjLinking map = new CsProjLinking();
+            CsProjLinking map = pItem.RetrieveDependencies();
 
             foreach (Project project in solution.Projects)
             {
@@ -207,8 +207,6 @@ namespace QuickFork.Lib.Model
                     {
                         string remoteUrl = GitHelper.GetRemoteUrl(Path.Combine(gitPath, ".git"));
                         map.AddLink(remoteUrl, Path.GetFileName(project.Path));
-
-                        //Forker.SerializeProject(pItem.GetPackageFile(), pItem, this, Path.GetFileName(project.Path));
                     }
                 }
             }

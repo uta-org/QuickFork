@@ -1,12 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Drawing;
-using System.Threading.Tasks;
 
 using Onion.SolutionParser.Parser;
 using Onion.SolutionParser.Parser.Model;
 
 using uzLib.Lite.Extensions;
+
+using Newtonsoft.Json;
 
 using Console = Colorful.Console;
 
@@ -32,6 +33,31 @@ namespace QuickFork.Lib
 
             // This project will only read the first solution that is found.
             return solutions[0];
+        }
+
+        /// <summary>
+        /// Retrieves the dependencies.
+        /// </summary>
+        /// <param name="pItem">The p item.</param>
+        /// <returns></returns>
+        public static CsProjLinking RetrieveDependencies(this ProjectItem pItem)
+        {
+            string packageFile = pItem.GetPackageFile();
+
+            if (File.Exists(packageFile))
+            {
+                string contents = File.ReadAllText(packageFile);
+
+                if (!contents.IsValidJSON())
+                {
+                    Console.WriteLine($"The {pItem.Name} project doesn't have a valid dependencies.json file.", Color.Yellow);
+                    return new CsProjLinking();
+                }
+
+                return JsonConvert.DeserializeObject<CsProjLinking>(contents);
+            }
+
+            return new CsProjLinking();
         }
 
         /// <summary>
@@ -66,7 +92,7 @@ namespace QuickFork.Lib
                 }
             }
 
-            Forker.SerializeProject(packageFile, map);
+            map.SerializeProject(packageFile);
         }
 
         public static bool FindGitFolder(string startingFolder, out string folderPath, string rootFolder = "")
