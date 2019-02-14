@@ -49,7 +49,7 @@ namespace QuickFork.Lib.Model
             GitUrl = gitUrl;
         }
 
-        public async Task<string[]> Execute(ProjectItem pItem, OperationType operationType = OperationType.AddProjToSLN, bool? doLinking = null)
+        public string[] Execute(ProjectItem pItem, OperationType operationType = OperationType.AddProjToSLN, bool? doLinking = null)
         {
             // Clear the project list
             CsProjs.Clear();
@@ -63,7 +63,7 @@ namespace QuickFork.Lib.Model
             if (!doLinking.HasValue || doLinking.HasValue && !doLinking.Value)
             {
                 if (!Directory.Exists(FolderPath))
-                    await GitHelper.CloneRepo(workingPath, GitUrl, folderName);
+                    GitHelper.CloneRepo(workingPath, GitUrl, folderName);
                 else
                 {
                     Console.WriteLine();

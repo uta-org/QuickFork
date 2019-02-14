@@ -197,7 +197,7 @@ namespace QuickFork.Lib
 
                 if (!Directory.Exists(projPath))
                 { // If we couldn't get the project path, then we would exit
-                    Console.WriteLine($"The '{projectName}' project from this solution couldn't be found, check that you have then and where are you executing this!", Color.Yellow);
+                    Console.WriteLine($"The '{projectName}' project from this solution couldn't be found, please check that you have then and where are you executing this!", Color.Yellow);
 
                     folderPath = "";
                     return false;

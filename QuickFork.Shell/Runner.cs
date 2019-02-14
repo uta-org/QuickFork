@@ -61,7 +61,7 @@ namespace QuickFork.Shell
                                Console.WriteWithGradient(Enumerable.Repeat('-', 30), Color.Red, Color.Green, 10);
                                Console.WriteLine();
 
-                               ExecuteRelinker(cli.RelinkPath).GetAwaiter().GetResult();
+                               ExecuteRelinker(cli.RelinkPath);
                            }
                            catch (Exception ex)
                            {
@@ -86,7 +86,7 @@ namespace QuickFork.Shell
         }
 
         // This must work with the "$(SolutionDir)" from Tools > External Tools...
-        private static async Task ExecuteRelinker(string rootFolder)
+        private static void ExecuteRelinker(string rootFolder)
         {
             if (!rootFolder.IsDirectory())
                 throw new ArgumentException("Specified path was not a folder.", "rootFolder");
@@ -99,14 +99,24 @@ namespace QuickFork.Shell
             foreach (var kv in map.Data)
             {
                 // Working Path must be the same/has the same hierarchy as the project we specified on the relinkerPath (to avoid people contributing to a project break the solution file)
-                string workingPath = Path.GetFullPath(Path.Combine(rootFolder, kv.Key)),
-                       workingFolder = !workingPath.IsDirectory() ? Path.GetDirectoryName(workingPath) : workingPath;
 
-                if (!Directory.Exists(workingFolder))
-                    Directory.CreateDirectory(workingFolder);
+                // This a little bit more difficult than expected. Why? On the kv.Values we have the csproj files. But we don't know exactly where are the root folder of this projects (where solution is located).
+                // So, we will asume that the last folder of this relative folder is where we need to clone everything.
 
-                // Test: This should fail due to a non-empty folder
-                await GitHelper.CloneRepo(workingFolder, kv.Key, Path.GetFileNameWithoutExtension(kv.Key));
+                string workingFolder = IOHelper.GetTopLevelDir(kv.Value[0]);
+
+                if (kv.Value.Any(pth => IOHelper.GetTopLevelDir(pth) != workingFolder))
+                    throw new Exception("There is an inconsistence on the dependencies.json file. The same repository can't contain different top-level folders.");
+
+                string workingPath = Path.GetFullPath(Path.Combine(rootFolder, workingFolder));
+
+                if (!Directory.Exists(workingPath))
+                    Directory.CreateDirectory(workingPath);
+
+                string repoName = Path.GetFileNameWithoutExtension(kv.Key);
+                GitHelper.CloneRepo(workingPath, kv.Key, repoName);
+
+                Console.WriteLine($"Succesfully cloned '{repoName}' into '{workingPath}'!", Color.Green);
             }
         }
 

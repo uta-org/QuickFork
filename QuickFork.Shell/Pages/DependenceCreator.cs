@@ -1,5 +1,6 @@
 ﻿using EasyConsole;
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -27,6 +28,10 @@ namespace QuickFork.Shell.Pages
             var list = Forker.StoredProjects == null ? new List<Option>() : ProjectFunc.Get((index) =>
             {
                 Forker.StoredProjects.ElementAt(index).CreateDependencies();
+
+                Console.WriteLine();
+                Console.WriteLine("Press any key to go back...");
+                Console.Read();
                 CurrentProgram.NavigateBack();
             }).ToList();
 

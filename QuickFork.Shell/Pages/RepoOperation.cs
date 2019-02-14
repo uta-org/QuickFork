@@ -38,7 +38,7 @@ namespace QuickFork.Shell.Pages
         {
             try
             {
-                var csProjs = rItem?.Execute(pItem, pItem.Type, doLinking).GetAwaiter().GetResult();
+                var csProjs = rItem?.Execute(pItem, pItem.Type, doLinking);
 
                 if ((!doLinking.HasValue || doLinking.HasValue && !doLinking.Value) &&
                     !Forker.IsAlreadyOnFile(RepoSelection.PackageFile, rItem.GitUrl))
