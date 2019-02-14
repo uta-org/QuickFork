@@ -1,12 +1,10 @@
-﻿using System;
+﻿using EasyConsole;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Drawing;
-using EasyConsole;
+using System.Linq;
 using uzLib.Lite.Extensions;
-
 using Console = Colorful.Console;
-using static EasyConsole.MenuPage;
 
 namespace QuickFork.Shell.Pages.Common
 {

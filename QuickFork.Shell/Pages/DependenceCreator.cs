@@ -6,9 +6,9 @@ using System.Linq;
 
 namespace QuickFork.Shell.Pages
 {
+    using Common;
     using Lib;
     using Lib.Model;
-    using Common;
 
     internal class DependenceCreator : MenuPage
     {

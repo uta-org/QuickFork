@@ -1,10 +1,9 @@
-﻿using System.Linq;
-using EasyConsole;
+﻿using EasyConsole;
 
 namespace QuickFork.Shell
 {
-    using Pages;
     using Lib;
+    using Pages;
 
     internal class MainProgram : Program
     {

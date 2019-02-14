@@ -1,14 +1,10 @@
 ﻿using CommandLine;
-
 using System;
 using System.Drawing;
 using System.IO;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using System.Linq;
-
+using System.Runtime.InteropServices;
 using uzLib.Lite.Extensions;
-
 using Console = Colorful.Console;
 
 namespace QuickFork.Shell

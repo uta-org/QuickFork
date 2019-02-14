@@ -1,14 +1,13 @@
 ﻿using EasyConsole;
-using System.Drawing;
 using System.Collections.Generic;
+using System.Drawing;
 using uzLib.Lite.Extensions;
 
 namespace QuickFork.Shell.Pages
 {
+    using Common;
     using Lib;
     using Lib.Model;
-    using Common;
-
     using Console = Colorful.Console;
 
     internal sealed class ProjectSelection : MenuPage

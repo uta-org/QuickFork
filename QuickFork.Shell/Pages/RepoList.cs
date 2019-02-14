@@ -6,10 +6,10 @@ using uzLib.Lite.Extensions;
 
 namespace QuickFork.Shell.Pages
 {
-    using Lib;
-    using Lib.Model;
     using Common;
     using Interfaces;
+    using Lib;
+    using Lib.Model;
 
     internal sealed class RepoList : MenuPage, IPageList<RepoItem>
     {

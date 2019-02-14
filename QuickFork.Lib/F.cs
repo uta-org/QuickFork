@@ -1,13 +1,10 @@
-﻿using System;
-using System.IO;
-using System.Drawing;
-
+﻿using Newtonsoft.Json;
 using Onion.SolutionParser.Parser;
 using Onion.SolutionParser.Parser.Model;
-
+using System;
+using System.Drawing;
+using System.IO;
 using uzLib.Lite.Extensions;
-using Newtonsoft.Json;
-
 using Console = Colorful.Console;
 
 namespace QuickFork.Lib

@@ -2,11 +2,10 @@
 using QuickFork.Lib.Properties;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-using uzLib.Lite.Extensions;
-
 using System.Drawing;
+using System.IO;
+using System.Linq;
+using uzLib.Lite.Extensions;
 using Console = Colorful.Console;
 
 namespace QuickFork.Lib

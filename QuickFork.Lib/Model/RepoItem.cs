@@ -2,23 +2,19 @@
 using Newtonsoft.Json;
 using Onion.SolutionParser.Parser;
 using Onion.SolutionParser.Parser.Model;
-
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Drawing;
-using System.Threading.Tasks;
-
-using uzLib.Lite.Plugins.SymLinker;
 using uzLib.Lite.Extensions;
-
+using uzLib.Lite.Plugins.SymLinker;
 using Console = Colorful.Console;
 
 namespace QuickFork.Lib.Model
 {
-    using Properties;
     using Interfaces;
+    using Properties;
 
     [Serializable]
     public class RepoItem : IModel

@@ -5,9 +5,9 @@ using uzLib.Lite.Extensions;
 
 namespace QuickFork.Shell.Pages
 {
+    using Common;
     using Lib;
     using Lib.Model;
-    using Common;
 
     internal sealed class RepoDeletion : MenuPage
     {

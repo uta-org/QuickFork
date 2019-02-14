@@ -1,6 +1,6 @@
-﻿using System;
+﻿using EasyConsole;
+using System;
 using System.Collections.Generic;
-using EasyConsole;
 
 namespace QuickFork.Shell.Pages.Common
 {
