@@ -37,6 +37,18 @@ namespace QuickFork.Lib
         }
 
         /// <summary>
+        /// Determines whether the specified path has dependencies.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified path has dependencies; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool HasDependencies(string path)
+        {
+            return File.Exists(GetPackageFile(path));
+        }
+
+        /// <summary>
         /// Gets the solution path.
         /// </summary>
         /// <param name="pItem">The p item.</param>

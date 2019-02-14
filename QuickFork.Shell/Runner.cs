@@ -5,8 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using System.Diagnostics;
-using System.Reflection;
+using System.Linq;
 
 using uzLib.Lite.Extensions;
 
@@ -19,21 +18,6 @@ namespace QuickFork.Shell
 
     internal class Runner
     {
-        //private static FileVersionInfo VersionInfo => FileVersionInfo.GetVersionInfo(Assembly.GetEntryAssembly().Location);
-
-        //private static string WorkingPath
-        //{
-        //    get
-        //    {
-        //        string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), VersionInfo.CompanyName, "SyncFolder");
-
-        //        if (!Directory.Exists(path))
-        //            Directory.CreateDirectory(path);
-
-        //        return path;
-        //    }
-        //}
-
         [DllImport("Kernel32")]
         private static extern bool SetConsoleCtrlHandler(EventHandler handler, bool add);
 
@@ -73,6 +57,10 @@ namespace QuickFork.Shell
                        {
                            try
                            {
+                               Console.WriteAscii("RELINKING", Color.White);
+                               Console.WriteWithGradient(Enumerable.Repeat('-', 30), Color.Red, Color.Green, 10);
+                               Console.WriteLine();
+
                                ExecuteRelinker(cli.RelinkPath).GetAwaiter().GetResult();
                            }
                            catch (Exception ex)
@@ -87,24 +75,65 @@ namespace QuickFork.Shell
                        }
                        else
                            MainExecution();
+                   })
+                   .WithNotParsed((errors) =>
+                   {
+                       foreach (var e in errors)
+                           Console.WriteLine(e);
+
+                       Console.Read();
                    });
         }
 
-        private static async Task ExecuteRelinker(string relinkerPath)
+        // This must work with the "$(SolutionDir)" from Tools > External Tools...
+        private static async Task ExecuteRelinker(string rootFolder)
         {
-            var slnFiles = Directory.GetFiles(relinkerPath, "*.sln", SearchOption.AllDirectories);
+            /*bool isSlnFound = false;
+            if (Path.GetExtension(relinkerPath) == "csproj")
+            {
+                do
+                {
+                    var files = Directory.GetFiles(relinkerPath, "*.sln", SearchOption.AllDirectories);
 
-            if (slnFiles.Length == 0)
-                throw new Exception("Provided path doesn't have any sln file.");
+                    if (files.Length > 0)
+                    {
+                        relinkerPath = files[0];
+                        break;
+                    }
 
-            string slnFile = slnFiles[0];
+                    relinkerPath = Path.GetDirectoryName(relinkerPath);
+                }
+                while (!string.IsNullOrEmpty(relinkerPath));
 
-            CsProjLinking map = F.RetrieveDependencies(relinkerPath, true);
+                if (string.IsNullOrEmpty(relinkerPath))
+                    throw new Exception("The project path you provided doesn't have any valid solution. (We need it to determine the root folder of this project).");
+            }
+
+            string[] slnFiles = null;
+
+            if (!isSlnFound)
+            {
+                slnFiles = Directory.GetFiles(relinkerPath, "*.sln", SearchOption.AllDirectories);
+
+                if (slnFiles.Length == 0)
+                    throw new Exception("Provided path doesn't have any sln file.");
+            }
+
+            string slnFile = isSlnFound ? relinkerPath : slnFiles[0],
+                   rootFolder = Path.GetDirectoryName(slnFile);*/
+
+            if (!rootFolder.IsDirectory())
+                throw new ArgumentException("Specified path was not a folder.", "rootFolder");
+
+            if (!F.HasDependencies(rootFolder))
+                throw new ArgumentException("Specefied folder doesn't contain any 'dependencies.json'.");
+
+            CsProjLinking map = F.RetrieveDependencies(rootFolder, true);
 
             foreach (var kv in map.Data)
             {
                 // Working Path must be the same/has the same hierarchy as the project we specified on the relinkerPath (to avoid people contributing to a project break the solution file)
-                string workingPath = Path.GetFullPath(Path.Combine(relinkerPath, kv.Key)),
+                string workingPath = Path.GetFullPath(Path.Combine(rootFolder, kv.Key)),
                        workingFolder = !workingPath.IsDirectory() ? Path.GetDirectoryName(workingPath) : workingPath;
 
                 if (!Directory.Exists(workingFolder))
