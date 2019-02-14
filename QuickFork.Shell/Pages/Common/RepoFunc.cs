@@ -33,7 +33,7 @@ namespace QuickFork.Shell.Pages.Common
 
         public static IEnumerable<Option> Get(Action<int> selectedRepo = null)
         {
-            return Forker.StoredRepos?.Select((r, i) => new Option(r.Name, selectedRepo == null ? (Action)null : () => selectedRepo(i)));
+            return Forker.StoredRepos?.Select((r, i) => new Option(CommonFunc.GetName(r), selectedRepo == null ? (Action)null : () => selectedRepo(i)));
         }
 
         public static RepoItem Add()

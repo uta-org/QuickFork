@@ -1,9 +1,11 @@
 ﻿using EasyConsole;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace QuickFork.Shell.Pages.Common
 {
+    using Lib;
     using Lib.Model;
     using Lib.Model.Interfaces;
 
@@ -30,12 +32,44 @@ namespace QuickFork.Shell.Pages.Common
             });
         }
 
+        internal static string GetName(IModel element)
+        {
+            string retValue = element.Name;
+
+            if (element is RepoItem)
+            {
+                RepoItem rItem = element as RepoItem;
+
+                if (Forker.StoredRepos.Any(r => r.Name == element.Name))
+                    retValue += $" ({rItem.GitUrl.SafeTruncate()})";
+            }
+            else if (element is ProjectItem)
+            {
+                ProjectItem pItem = element as ProjectItem;
+
+                if (Forker.StoredProjects.Any(p => p.Name == element.Name))
+                    retValue += $" ({pItem.SelectedPath.SafeTruncate()})";
+            }
+
+            return retValue;
+        }
+
         private static IModel Add(bool fIsRepo)
         {
             if (fIsRepo)
                 return RepoFunc.Add();
             else
                 return ProjectFunc.Add();
+        }
+
+        private static string SafeTruncate(this string str, int maxLen = 30, int threshold = 10)
+        {
+            if (str.Length < maxLen)
+                return str;
+            else if (str.Length < maxLen + threshold)
+                return "..." + str.Substring(threshold);
+            else
+                return "..." + str.Substring(maxLen);
         }
     }
 }

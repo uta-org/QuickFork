@@ -147,25 +147,7 @@ namespace QuickFork.Lib
                     RepoMap = JsonConvert.DeserializeObject<Dictionary<string, List<int>>>(loadMapNeedle);
 
                 if (!string.IsNullOrEmpty(loadRepoNeedle) && loadRepoNeedle != "null")
-                {
                     StoredRepos = JsonConvert.DeserializeObject<HashSet<RepoItem>>(loadRepoNeedle);
-
-                    //int i = 0;
-                    //bool needsToSave = false;
-                    //foreach (var repo in StoredRepos)
-                    //{
-                    //    if (repo.Index == -1)
-                    //    {
-                    //        repo.Index = i;
-                    //        if (!needsToSave) needsToSave = true;
-                    //    }
-
-                    //    ++i;
-                    //}
-
-                    //if (needsToSave)
-                    //    SaveStoredRepos();
-                }
                 else
                     StoredRepos = new HashSet<RepoItem>();
 

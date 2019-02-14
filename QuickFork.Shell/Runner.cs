@@ -65,8 +65,10 @@ namespace QuickFork.Shell
                            }
                            finally
                            {
+#if DEBUG
                                Console.WriteLine("Press any key to exit...");
                                Console.Read();
+#endif
                            }
                        }
                        else
@@ -102,7 +104,7 @@ namespace QuickFork.Shell
                 string workingFolder = IOHelper.GetTopLevelDir(kv.Value[0]);
 
                 if (kv.Value.Any(pth => IOHelper.GetTopLevelDir(pth) != workingFolder))
-                    throw new Exception("There is an inconsistence on the dependencies.json file. The same repository can't contain different top-level folders.");
+                    throw new Exception("There is an inconsistence on the 'dependencies.json' file. The same repository can't contain different top-level folders.");
 
                 string workingPath = Path.GetFullPath(Path.Combine(rootFolder, workingFolder));
 
