@@ -88,40 +88,6 @@ namespace QuickFork.Shell
         // This must work with the "$(SolutionDir)" from Tools > External Tools...
         private static async Task ExecuteRelinker(string rootFolder)
         {
-            /*bool isSlnFound = false;
-            if (Path.GetExtension(relinkerPath) == "csproj")
-            {
-                do
-                {
-                    var files = Directory.GetFiles(relinkerPath, "*.sln", SearchOption.AllDirectories);
-
-                    if (files.Length > 0)
-                    {
-                        relinkerPath = files[0];
-                        break;
-                    }
-
-                    relinkerPath = Path.GetDirectoryName(relinkerPath);
-                }
-                while (!string.IsNullOrEmpty(relinkerPath));
-
-                if (string.IsNullOrEmpty(relinkerPath))
-                    throw new Exception("The project path you provided doesn't have any valid solution. (We need it to determine the root folder of this project).");
-            }
-
-            string[] slnFiles = null;
-
-            if (!isSlnFound)
-            {
-                slnFiles = Directory.GetFiles(relinkerPath, "*.sln", SearchOption.AllDirectories);
-
-                if (slnFiles.Length == 0)
-                    throw new Exception("Provided path doesn't have any sln file.");
-            }
-
-            string slnFile = isSlnFound ? relinkerPath : slnFiles[0],
-                   rootFolder = Path.GetDirectoryName(slnFile);*/
-
             if (!rootFolder.IsDirectory())
                 throw new ArgumentException("Specified path was not a folder.", "rootFolder");
 
