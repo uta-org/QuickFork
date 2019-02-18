@@ -81,7 +81,7 @@ namespace QuickFork.Shell.Pages.Common
                     else
                         rItem = RepoItem.Update(pItem, gitUrl);
 
-                    Console.WriteLine("Repository has created succesfully!", Color.Green);
+                    Console.WriteLine("Repository has created succesfully!", Color.DarkGreen);
                 }
                 else
                     showWarning = true;

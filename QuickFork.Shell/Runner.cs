@@ -114,7 +114,7 @@ namespace QuickFork.Shell
                 string repoName = Path.GetFileNameWithoutExtension(kv.Key);
                 GitHelper.CloneRepo(workingPath, kv.Key, repoName);
 
-                Console.WriteLine($"Succesfully cloned '{repoName}' into '{workingPath}'!", Color.Green);
+                Console.WriteLine($"Succesfully cloned '{repoName}' into '{workingPath}'!", Color.DarkGreen);
             }
         }
 

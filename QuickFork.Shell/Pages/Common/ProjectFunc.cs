@@ -38,7 +38,7 @@ namespace QuickFork.Shell.Pages.Common
                 // Save it (in case of exception this will saved before exception occurs)
                 Forker.Add(pItem);
 
-                Console.WriteLine("Project has created succesfully!", Color.Green);
+                Console.WriteLine("Project has created succesfully!", Color.DarkGreen);
             }
             else
                 pItem = Forker.StoredProjects.ElementAt(index);

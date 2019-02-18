@@ -156,7 +156,7 @@ namespace QuickFork.Lib.Model
 
                 if (!alreadyExists)
                 {
-                    Console.WriteLine($"Execution of '{operationType}' has been done succesfully!", Color.Green);
+                    Console.WriteLine($"Execution of '{operationType}' has been done succesfully!", Color.DarkGreen);
                     Console.WriteLine();
                 }
             }
