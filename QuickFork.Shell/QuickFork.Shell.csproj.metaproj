@@ -7,6 +7,10 @@
     <MSBuildToolsPath64>C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\MSBuild\15.0\Bin\amd64</MSBuildToolsPath64>
     <MSBuildSDKsPath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\MSBuild\Sdks</MSBuildSDKsPath>
     <FrameworkSDKRoot>C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\</FrameworkSDKRoot>
+    <MSBuildRuntimeVersion>4.0.30319</MSBuildRuntimeVersion>
+    <MSBuildFrameworkToolsPath>C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\</MSBuildFrameworkToolsPath>
+    <MSBuildFrameworkToolsPath32>C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\</MSBuildFrameworkToolsPath32>
+    <MSBuildFrameworkToolsPath64>C:\WINDOWS\Microsoft.NET\Framework64\v4.0.30319\</MSBuildFrameworkToolsPath64>
     <MSBuildFrameworkToolsRoot>C:\WINDOWS\Microsoft.NET\Framework\</MSBuildFrameworkToolsRoot>
     <SDK35ToolsPath>C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\</SDK35ToolsPath>
     <SDK40ToolsPath>C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.1 Tools\</SDK40ToolsPath>
@@ -22,6 +26,7 @@
     <AndroidTargetsPath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\MSBuild\Microsoft\MDD\Android\V150\</AndroidTargetsPath>
     <iOSTargetsPath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\MSBuild\Microsoft\MDD\iOS\V150\</iOSTargetsPath>
     <AspNetConfiguration>Debug</AspNetConfiguration>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <NuGetRestoreTargets>C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\MSBuild\..\Common7\IDE\CommonExtensions\Microsoft\NuGet\NuGet.targets</NuGetRestoreTargets>
     <IsRestoreTargetsFileLoaded>true</IsRestoreTargetsFileLoaded>
     <RestoreTaskAssemblyFile>NuGet.Build.Tasks.dll</RestoreTaskAssemblyFile>

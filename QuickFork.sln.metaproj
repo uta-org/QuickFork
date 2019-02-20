@@ -7,6 +7,10 @@
     <MSBuildToolsPath64>C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\MSBuild\15.0\Bin\amd64</MSBuildToolsPath64>
     <MSBuildSDKsPath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\MSBuild\Sdks</MSBuildSDKsPath>
     <FrameworkSDKRoot>C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\</FrameworkSDKRoot>
+    <MSBuildRuntimeVersion>4.0.30319</MSBuildRuntimeVersion>
+    <MSBuildFrameworkToolsPath>C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\</MSBuildFrameworkToolsPath>
+    <MSBuildFrameworkToolsPath32>C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\</MSBuildFrameworkToolsPath32>
+    <MSBuildFrameworkToolsPath64>C:\WINDOWS\Microsoft.NET\Framework64\v4.0.30319\</MSBuildFrameworkToolsPath64>
     <MSBuildFrameworkToolsRoot>C:\WINDOWS\Microsoft.NET\Framework\</MSBuildFrameworkToolsRoot>
     <SDK35ToolsPath>C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\</SDK35ToolsPath>
     <SDK40ToolsPath>C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.1 Tools\</SDK40ToolsPath>
@@ -27,6 +31,7 @@
     <SolutionFileName>QuickFork.sln</SolutionFileName>
     <SolutionName>QuickFork</SolutionName>
     <SolutionPath>E:\VISUAL STUDIO\Visual Studio Projects\QuickFork\QuickFork.sln</SolutionPath>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <CurrentSolutionConfigurationContents>
       <SolutionConfiguration xmlns="">
   <ProjectConfiguration Project="{16BFC3E4-8CDB-4BC1-A11D-F228111E8318}" AbsolutePath="E:\VISUAL STUDIO\Visual Studio Projects\QuickFork\QuickFork.Shell\QuickFork.Shell.csproj" BuildProjectInSolution="True">Debug|AnyCPU<ProjectDependency Project="{88947410-A67F-4577-8403-50054F83380C}" /></ProjectConfiguration>
