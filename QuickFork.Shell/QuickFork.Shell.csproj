@@ -68,14 +68,14 @@
     <Compile Include="Pages\DependenceCreator.cs" />
     <Compile Include="Pages\Interfaces\IPageList.cs" />
     <Compile Include="Pages\MainPage.cs" />
-    <Compile Include="Pages\ProjectDeletion.cs" />
-    <Compile Include="Pages\ProjectList.cs" />
-    <Compile Include="Pages\RepoDeletion.cs" />
-    <Compile Include="Pages\RepoList.cs" />
-    <Compile Include="Pages\RepoOperation.cs" />
-    <Compile Include="Pages\ProjectOperation.cs" />
-    <Compile Include="Pages\ProjectSelection.cs" />
-    <Compile Include="Pages\RepoSelection.cs" />
+    <Compile Include="Pages\Projects\ProjectDeletion.cs" />
+    <Compile Include="Pages\Projects\ProjectList.cs" />
+    <Compile Include="Pages\Repos\RepoDeletion.cs" />
+    <Compile Include="Pages\Repos\RepoList.cs" />
+    <Compile Include="Pages\Repos\RepoOperation.cs" />
+    <Compile Include="Pages\Projects\ProjectOperation.cs" />
+    <Compile Include="Pages\Projects\ProjectSelection.cs" />
+    <Compile Include="Pages\Repos\RepoSelection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Runner.cs" />
   </ItemGroup>

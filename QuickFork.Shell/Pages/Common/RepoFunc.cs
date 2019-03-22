@@ -11,13 +11,28 @@ namespace QuickFork.Shell.Pages.Common
     using Lib;
     using Lib.Model;
 
+    /// <summary>
+    /// The RepoFunc class (the funcionality for the Reposities)
+    /// </summary>
     internal static class RepoFunc
     {
+        /// <summary>
+        /// Gets the delegate.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="action">The action.</param>
+        /// <returns></returns>
         public static GetOptionsDelegate GetDelegate(ProjectItem item, Action<int, ProjectItem> action)
         {
             return () => Get(item, action);
         }
 
+        /// <summary>
+        /// Gets the specified item.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="action">The action.</param>
+        /// <returns></returns>
         public static IEnumerable<Option> Get(ProjectItem item, Action<int, ProjectItem> action)
         {
             if (Forker.Repos.Count > 0 && Forker.Repos.ContainsKey(item.SelectedPath))
@@ -26,23 +41,45 @@ namespace QuickFork.Shell.Pages.Common
                 return null;
         }
 
+        /// <summary>
+        /// Gets the delegate.
+        /// </summary>
+        /// <param name="selectedRepo">The selected repo.</param>
+        /// <returns></returns>
         public static GetOptionsDelegate GetDelegate(Action<int> selectedRepo)
         {
             return () => Get(selectedRepo);
         }
 
+        /// <summary>
+        /// Gets the specified selected repo.
+        /// </summary>
+        /// <param name="selectedRepo">The selected repo.</param>
+        /// <returns></returns>
         public static IEnumerable<Option> Get(Action<int> selectedRepo = null)
         {
             return Forker.StoredRepos?.Select((r, i) => new Option(CommonFunc.GetName(r), selectedRepo == null ? (Action)null : () => selectedRepo(i)));
         }
 
+        /// <summary>
+        /// Adds this instance.
+        /// </summary>
+        /// <returns></returns>
         public static RepoItem Add()
         {
             return Add(-1, null);
         }
 
+        /// <summary>
+        /// Adds the specified index.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <param name="pItem">The p item.</param>
+        /// <returns></returns>
         public static RepoItem Add(int index = -1, ProjectItem pItem = null)
         {
+            // TODO: Refactorize this
+
             RepoItem rItem = null;
             bool alreadyAdded = false, showWarning = false;
 

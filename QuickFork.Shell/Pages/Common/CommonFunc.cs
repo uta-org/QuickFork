@@ -8,12 +8,28 @@ namespace QuickFork.Shell.Pages.Common
     using Lib;
     using Lib.Model;
     using Lib.Model.Interfaces;
+    using Repos;
+    using Projects;
 
+    /// <summary>
+    /// The CommonFunc class (here are some of the common methods for Repositories and Projects)
+    /// </summary>
     internal static class CommonFunc
     {
+        /// <summary>
+        /// Commons the options.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="program">The program.</param>
+        /// <param name="addAction">The add action.</param>
+        /// <param name="pItem">The p item.</param>
+        /// <param name="captions">The captions.</param>
+        /// <returns></returns>
         public static IEnumerable<Option> CommonOptions<T>(Program program, Action<T> addAction, ProjectItem pItem = null, params OptionAction[] captions)
             where T : IModel
         {
+            // TODO: Refactorize this
+
             bool isActionReady = captions != null && captions.Length == 2;
 
             bool isRepo = typeof(RepoItem) == typeof(T);
@@ -32,8 +48,15 @@ namespace QuickFork.Shell.Pages.Common
             });
         }
 
+        /// <summary>
+        /// Gets the name.
+        /// </summary>
+        /// <param name="element">The element.</param>
+        /// <returns></returns>
         internal static string GetName(IModel element)
         {
+            // TODO: Refactorize this
+
             string retValue = element.Name;
 
             if (element is RepoItem)
@@ -54,6 +77,11 @@ namespace QuickFork.Shell.Pages.Common
             return retValue;
         }
 
+        /// <summary>
+        /// Adds the specified f is repo.
+        /// </summary>
+        /// <param name="fIsRepo">if set to <c>true</c> [f is repo].</param>
+        /// <returns></returns>
         private static IModel Add(bool fIsRepo)
         {
             if (fIsRepo)
@@ -62,6 +90,13 @@ namespace QuickFork.Shell.Pages.Common
                 return ProjectFunc.Add();
         }
 
+        /// <summary>
+        /// Safes the truncate.
+        /// </summary>
+        /// <param name="str">The string.</param>
+        /// <param name="maxLen">The maximum length.</param>
+        /// <param name="threshold">The threshold.</param>
+        /// <returns></returns>
         private static string SafeTruncate(this string str, int maxLen = 30, int threshold = 10)
         {
             if (str.Length < maxLen)

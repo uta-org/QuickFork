@@ -8,32 +8,65 @@ using uzLib.Lite.Extensions;
 
 using Console = Colorful.Console;
 
-namespace QuickFork.Shell.Pages
+namespace QuickFork.Shell.Pages.Repos
 {
     using Lib;
     using Lib.Model;
 
+    /// <summary>
+    /// The RepoSelection class (here is selected the Repository you need)
+    /// </summary>
+    /// <seealso cref="EasyConsole.MenuPage" />
     internal sealed class RepoSelection : MenuPage
     {
+        /// <summary>
+        /// The dash length
+        /// </summary>
         private const int DashLength = 30;
 
+        /// <summary>
+        /// Gets the current item.
+        /// </summary>
+        /// <value>
+        /// The current item.
+        /// </value>
         public static ProjectItem CurrentItem { get; private set; }
 
+        /// <summary>
+        /// Gets the package file.
+        /// </summary>
+        /// <value>
+        /// The package file.
+        /// </value>
         public static string PackageFile => CurrentItem.GetPackageFile();
 
+        /// <summary>
+        /// Prevents a default instance of the <see cref="RepoSelection"/> class from being created.
+        /// </summary>
         private RepoSelection()
             : base("", null)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RepoSelection"/> class.
+        /// </summary>
+        /// <param name="program">The program.</param>
+        /// <param name="item">The item.</param>
         public RepoSelection(Program program, ProjectItem item)
             : base("Repository Selection", program)
         {
             CurrentItem = item;
         }
 
+        /// <summary>
+        /// Displays the specified caption.
+        /// </summary>
+        /// <param name="caption">The caption.</param>
         public override void Display(string caption = "Choose an option: ")
         {
+            // TODO: Refactorize this
+
             bool isNew = Forker.Repos.IsNullOrEmpty(CurrentItem.SelectedPath),
                  hasLinkedProjs;
 
@@ -142,6 +175,10 @@ namespace QuickFork.Shell.Pages
             }
         }
 
+        /// <summary>
+        /// Selects the repo.
+        /// </summary>
+        /// <param name="rItem">The r item.</param>
         private static void SelectRepo(RepoItem rItem)
         {
             // This will update the RepoMap without adding new entries

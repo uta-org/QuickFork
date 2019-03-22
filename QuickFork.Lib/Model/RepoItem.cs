@@ -16,26 +16,56 @@ namespace QuickFork.Lib.Model
     using Interfaces;
     using Properties;
 
+    /// <summary>
+    /// The RepoItem class
+    /// </summary>
     [Serializable]
     public class RepoItem : IModel
     {
+        /// <summary>
+        /// Gets or sets the git URL.
+        /// </summary>
+        /// <value>
+        /// The git URL.
+        /// </value>
         [JsonProperty]
         public string GitUrl { get; set; }
 
+        /// <summary>
+        /// Gets the name.
+        /// </summary>
+        /// <value>
+        /// The name.
+        /// </value>
         [JsonIgnore]
         public string Name => GitUrl.GetFileNameFromUrlWithoutExtension();
 
+        /// <summary>
+        /// A list of CSharp Projects
+        /// </summary>
         private static List<string> CsProjs { get; set; }
 
+        /// <summary>
+        /// A static constructor for RepoItem
+        /// </summary>
         static RepoItem()
         {
             CsProjs = new List<string>();
         }
 
+        /// <summary>
+        /// Prevents a default instance of the <see cref="RepoItem"/> class from being created.
+        /// </summary>
         private RepoItem()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RepoItem"/> class.
+        /// </summary>
+        /// <param name="gitUrl">The git URL.</param>
+        /// <param name="fSave">if set to <c>true</c> [f save].</param>
+        /// <exception cref="Exception">Invalid url given</exception>
         public RepoItem(string gitUrl, bool fSave = true)
             : this()
         {
@@ -45,8 +75,18 @@ namespace QuickFork.Lib.Model
             GitUrl = gitUrl;
         }
 
+        /// <summary>
+        /// Executes the specified p item.
+        /// </summary>
+        /// <param name="pItem">The p item.</param>
+        /// <param name="operationType">Type of the operation.</param>
+        /// <param name="doLinking">The do linking.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">The cloned repo '{Path.GetFileName(FolderPath)}</exception>
         public string[] Execute(ProjectItem pItem, OperationType operationType = OperationType.AddProjToSLN, bool? doLinking = null)
         {
+            // TODO: Refactorize this
+
             // Clear the project list
             CsProjs.Clear();
 
@@ -181,6 +221,12 @@ namespace QuickFork.Lib.Model
             return new Tuple<string, Solution>(solutionPath, solution);
         }
 
+        /// <summary>
+        /// Gets the projects.
+        /// </summary>
+        /// <param name="solution">The solution.</param>
+        /// <param name="typeGuid">The type unique identifier.</param>
+        /// <param name="projects">The projects.</param>
         private static void GetProjects(Solution solution, out Guid typeGuid, out IEnumerable<Project> projects)
         {
             if (solution.Projects.IsNullOrEmpty())
@@ -195,6 +241,17 @@ namespace QuickFork.Lib.Model
             }
         }
 
+        /// <summary>
+        /// Gets the project.
+        /// </summary>
+        /// <param name="projects">The projects.</param>
+        /// <param name="workingPath">The working path.</param>
+        /// <param name="projectName">Name of the project.</param>
+        /// <param name="projectPath">The project path.</param>
+        /// <param name="typeGuid">The type unique identifier.</param>
+        /// <param name="alreadyExists">if set to <c>true</c> [already exists].</param>
+        /// <param name="promptWarning">if set to <c>true</c> [prompt warning].</param>
+        /// <returns></returns>
         private static Project GetProject(IEnumerable<Project> projects, string workingPath, string projectName, string projectPath, Guid typeGuid, out bool alreadyExists, bool promptWarning = true)
         {
             CsProjs.Add(projectPath);
@@ -220,11 +277,24 @@ namespace QuickFork.Lib.Model
                                             Guid.NewGuid());
         }
 
+        /// <summary>
+        /// Updates the specified git URL.
+        /// </summary>
+        /// <param name="gitUrl">The git URL.</param>
+        /// <param name="fSave">if set to <c>true</c> [f save].</param>
+        /// <returns></returns>
         public static RepoItem Update(string gitUrl, bool fSave = true)
         {
             return Update(null, gitUrl, fSave);
         }
 
+        /// <summary>
+        /// Updates the specified p item.
+        /// </summary>
+        /// <param name="pItem">The p item.</param>
+        /// <param name="gitUrl">The git URL.</param>
+        /// <param name="fSave">if set to <c>true</c> [f save].</param>
+        /// <returns></returns>
         public static RepoItem Update(ProjectItem pItem, string gitUrl, bool fSave = true)
         {
             RepoItem rItem = null;
@@ -255,11 +325,21 @@ namespace QuickFork.Lib.Model
             return rItem;
         }
 
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public override string ToString()
         {
             return $"{Name} ({GitUrl})";
         }
 
+        /// <summary>
+        /// Gets the index.
+        /// </summary>
+        /// <returns></returns>
         public int GetIndex()
         {
             return Forker.StoredRepos.IndexOf(this);

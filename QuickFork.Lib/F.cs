@@ -11,6 +11,9 @@ namespace QuickFork.Lib
 {
     using Model;
 
+    /// <summary>
+    /// The main extensions
+    /// </summary>
     public static class F
     {
         /// <summary>

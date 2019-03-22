@@ -2,6 +2,9 @@
 
 namespace QuickFork.Lib.Model
 {
+    /// <summary>
+    /// The OptionAction class
+    /// </summary>
     public class OptionAction
     {
         public Action Action { get; set; }
@@ -18,6 +21,9 @@ namespace QuickFork.Lib.Model
         }
     }
 
+    /// <summary>
+    /// The IndexedOptionAction class
+    /// </summary>
     public class IndexedOptionAction
     {
         public Action<int> Action { get; set; }
@@ -34,6 +40,10 @@ namespace QuickFork.Lib.Model
         }
     }
 
+    /// <summary>
+    /// The OptionAction class
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class OptionAction<T>
     {
         public Action<T> Action { get; set; }

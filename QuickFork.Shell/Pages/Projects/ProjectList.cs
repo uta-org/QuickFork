@@ -2,16 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace QuickFork.Shell.Pages
+namespace QuickFork.Shell.Pages.Projects
 {
     using Common;
     using Interfaces;
     using Lib;
     using Lib.Model;
 
+    /// <summary>
+    /// The ProjectList class (all the Projects are listed here)
+    /// </summary>
+    /// <seealso cref="EasyConsole.MenuPage" />
+    /// <seealso cref="QuickFork.Shell.Pages.Interfaces.IPageList{QuickFork.Lib.Model.ProjectItem}" />
     internal class ProjectList : MenuPage, IPageList<ProjectItem>
     {
-        // Not used
+        // Note: Not used (but needed for the interface)
+        // TODO: Delete this
         public ProjectItem NewItem { get; set; }
 
         private ProjectList()

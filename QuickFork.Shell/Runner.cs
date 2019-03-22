@@ -12,15 +12,35 @@ namespace QuickFork.Shell
     using Lib;
     using Lib.Model;
 
+    /// <summary>
+    /// The Runner class
+    /// </summary>
     internal class Runner
     {
+        /// <summary>
+        /// Sets the console control handler.
+        /// </summary>
+        /// <param name="handler">The handler.</param>
+        /// <param name="add">if set to <c>true</c> [add].</param>
+        /// <returns></returns>
         [DllImport("Kernel32")]
         private static extern bool SetConsoleCtrlHandler(EventHandler handler, bool add);
 
+        /// <summary>
+        /// Event Handler used by the Hook
+        /// </summary>
+        /// <param name="sig">The sig.</param>
+        /// <returns></returns>
         private delegate bool EventHandler(CtrlType sig);
 
+        /// <summary>
+        /// The handler
+        /// </summary>
         private static EventHandler _handler;
 
+        /// <summary>
+        /// CtrlType enum
+        /// </summary>
         private enum CtrlType
         {
             CTRL_C_EVENT = 0,
@@ -30,6 +50,11 @@ namespace QuickFork.Shell
             CTRL_SHUTDOWN_EVENT = 6
         }
 
+        /// <summary>
+        /// Handlers the specified sig.
+        /// </summary>
+        /// <param name="sig">The sig.</param>
+        /// <returns></returns>
         private static bool Handler(CtrlType sig)
         {
             switch (sig)
@@ -44,11 +69,16 @@ namespace QuickFork.Shell
             }
         }
 
+        /// <summary>
+        /// Defines the entry point of the application.
+        /// </summary>
+        /// <param name="args">The arguments.</param>
         private static void Main(string[] args)
         {
             Parser.Default.ParseArguments<CLI>(args)
                    .WithParsed(cli =>
                    {
+                       // Relinker entry
                        if (!string.IsNullOrEmpty(cli.RelinkPath))
                        {
                            try
@@ -84,6 +114,16 @@ namespace QuickFork.Shell
         }
 
         // This must work with the "$(SolutionDir)" from Tools > External Tools...
+        /// <summary>
+        /// Executes the relinker.
+        /// </summary>
+        /// <param name="rootFolder">The root folder.</param>
+        /// <exception cref="ArgumentException">
+        /// Specified path was not a folder. - rootFolder
+        /// or
+        /// Specefied folder doesn't contain any 'dependencies.json'.
+        /// </exception>
+        /// <exception cref="Exception">There is an inconsistence on the 'dependencies.json' file. The same repository can't contain different top-level folders.</exception>
         private static void ExecuteRelinker(string rootFolder)
         {
             if (!rootFolder.IsDirectory())
@@ -118,6 +158,9 @@ namespace QuickFork.Shell
             }
         }
 
+        /// <summary>
+        /// The main the execution.
+        /// </summary>
         private static void MainExecution()
         {
             _handler += new EventHandler(Handler);
@@ -132,6 +175,9 @@ namespace QuickFork.Shell
             }
         }
 
+        /// <summary>
+        /// Make a safe exit.
+        /// </summary>
         internal static void SafeExit()
         {
             // We call SaveInstance from here, because Env.Exit doesn't trigger handler.
